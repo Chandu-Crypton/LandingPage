@@ -6,16 +6,17 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   BoxCubeIcon,
-  CalenderIcon,
+  // CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   PieChartIcon,
-  UserCircleIcon,
+  // UserCircleIcon,
   FolderIcon,
-  BoxIcon
+  BoxIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
+
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -29,60 +30,23 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     path: "/",
   },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   path: "/calendar",
-  // },
-  // {
-  //   icon: <UserCircleIcon />,
-  //   name: "User Profile",
-  //   path: "/profile",
-  // },
-  // {
-  //   name: "Forms",
-  //   icon: <ListIcon />,
-  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  // },
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  // },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank", pro: false },
-  //     { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
 ];
 
 const moduleItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Module",
-    path: "/module-management/module"
-    // subItems: [
-    //   { name: "Modules", path: "/module-management/module", pro: false },
-    // ],
+    path: "/module-management/module",
   },
   {
     icon: <FolderIcon />,
     name: "Category",
-    path: "/category-management/category"
-    // subItems: [
-    //   { name: "Category", path: "/category-management/category", pro: false },
-    // ],
+    path: "/category-management/category",
   },
   {
     icon: <BoxIcon />,
     name: "SubCategory",
-    path: "/subCategory-management/subCategory"
-    // subItems: [
-    //   { name: "SubCategory", path: "/subCategory-management/subCategory", pro: false },
-    // ],
+    path: "/subCategory-management/subCategory",
   },
   {
     icon: <FolderIcon />,
@@ -92,7 +56,6 @@ const moduleItems: NavItem[] = [
       { name: "Banner-list", path: "/banner-management/banners", pro: false },
     ],
   },
-
 ];
 
 const customerItems: NavItem[] = [
@@ -100,19 +63,12 @@ const customerItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Users",
     path: "/customer-management/user/user-list",
-    // subItems: [
-    //   { name: "User List", path: "/customer-management/user/user-list", pro: false },
-    // ],
   },
   {
     icon: <BoxCubeIcon />,
     name: "Franchise",
     path: "/customer-management/franchise/franchise-list",
-    // subItems: [
-    //   { name: "Franchise List", path: "/customer-management/franchise/franchise-list", pro: false },
-    // ],
   },
-
 ];
 
 const providerItems: NavItem[] = [
@@ -158,6 +114,63 @@ const subscribeItems: NavItem[] = [
   },
 ];
 
+const counterItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Counter",
+    subItems: [
+      { name: "Add New Counter", path: "/counter-management/Add-Counter", pro: false },
+      { name: "Counter List", path: "/counter-management/Counter-List", pro: false },
+    ],
+  },
+];
+
+const jobItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Job",
+    subItems: [
+      { name: "Add New Job", path: "/job-management/Add-Job", pro: false },
+      { name: "Job List", path: "/job-management/Job-List", pro: false },
+    ],
+  },
+];
+
+const candidateItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Candidates",
+    subItems: [
+      { name: "Add New Candidate", path: "/appliedcandidates-management/Add-Candidates", pro: false },
+      { name: "Candidate List", path: "/appliedcandidates-management/Candidates-List", pro: false },
+    ],
+  },
+];
+
+
+const footerItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Footer",
+    subItems: [
+      { name: "Add New Footer", path: "/footer-management/Add-Footer", pro: false },
+      { name: "Footer List", path: "/footer-management/Footer-List", pro: false },
+    ],
+  },
+];
+
+
+const testimonialItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Testimonial",
+    subItems: [
+      { name: "Add New Testimonial", path: "/testimonial-management/Add-Testimonial", pro: false },
+      { name: "Testimonial List", path: "/testimonial-management/Testimonial-List", pro: false },
+    ],
+  },
+];
+
 const promotionItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -169,13 +182,106 @@ const promotionItems: NavItem[] = [
   },
 ];
 
+const privacyItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Privacy",
+    subItems: [
+      { name: "Add Privacy", path: "/privacy-management/add-privacy", pro: false },
+      { name: "Privacy List", path: "/privacy-management/privacy-list", pro: false },
+    ],
+  },
+];
+
+const academyItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Academy",
+    subItems: [
+      { name: "Training Tutorials", path: "/academy/certifications" },
+      { name: "Live Webinars", path: "/academy/livewebinars" },
+      { name: "Recorded Webinars", path: "/academy/webinars" },
+      { name: "Understanding Fetch True", path: "/academy/understandingfetchtrue" },
+    ],
+  },
+];
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
+  const [openSubmenu, setOpenSubmenu] = useState<{
+    type: string;
+    index: number;
+  } | null>(null);
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
+  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const isActive = useCallback((path: string): boolean => path === pathname, [pathname]);
+
+  const handleSubmenuToggle = (index: number, menuType: string) => {
+    setOpenSubmenu((prevOpenSubmenu) => {
+      if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
+        return null;
+      }
+      return { type: menuType, index };
+    });
+  };
+
+  useEffect(() => {
+    let submenuMatched = false;
+    const allMenuTypes = [
+      { type: "main", items: navItems },
+      { type: "customer", items: customerItems },
+      { type: "module", items: moduleItems },
+      { type: "provider", items: providerItems },
+      { type: "service", items: serviceItems },
+      { type: "counter", items: counterItems },
+      { type: "job", items: jobItems },
+      { type: "footer", items: footerItems },
+      { type: "testimonial", items: testimonialItems },
+      { type: "candidate", items: candidateItems },
+      { type: "subscribe", items: subscribeItems },
+      { type: "coupon", items: promotionItems },
+      { type: "privacy", items: privacyItems },
+      { type: "academy", items: academyItems },
+    ];
+
+    // Iterate over all menu types to find a matching submenu
+    allMenuTypes.forEach(({ type, items }) => {
+      items.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem) => {
+            if (isActive(subItem.path)) {
+              setOpenSubmenu({ type, index });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    });
+
+    if (!submenuMatched) {
+      setOpenSubmenu(null);
+    }
+  }, [pathname, isActive, ...Object.values(moduleItems), ...Object.values(customerItems), ...Object.values(providerItems), ...Object.values(serviceItems), ...Object.values(subscribeItems), ...Object.values(promotionItems), ...Object.values(privacyItems), ...Object.values(academyItems)]);
+
+
+  useEffect(() => {
+    if (openSubmenu !== null) {
+      const key = `${openSubmenu.type}-${openSubmenu.index}`;
+      if (subMenuRefs.current[key]) {
+        setSubMenuHeight((prevHeights) => ({
+          ...prevHeights,
+          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+        }));
+      }
+    }
+  }, [openSubmenu]);
+
   const renderMenuItems = (
     navItems: NavItem[],
-    menuType: "main" | "module" | "customer" | "provider" | "service" | "subscribe" | "coupon"
+    menuType: string
   ) => (
     <ul className="flex flex-col gap-4">
       {navItems.map((nav, index) => (
@@ -183,7 +289,7 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group  ${openSubmenu?.type === menuType && openSubmenu?.index === index
+              className={`menu-item group  ${openSubmenu?.type === menuType && openSubmenu?.index === index
                 ? "menu-item-active"
                 : "menu-item-inactive"
                 } cursor-pointer ${!isExpanded && !isHovered
@@ -204,7 +310,7 @@ const AppSidebar: React.FC = () => {
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200  ${openSubmenu?.type === menuType &&
+                  className={`ml-auto w-5 h-5 transition-transform duration-200  ${openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
                     ? "rotate-180 text-brand-500"
                     : ""
@@ -290,95 +396,22 @@ const AppSidebar: React.FC = () => {
     </ul>
   );
 
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "customer" | "module" | "provider" | "service" | "subscribe" | "coupon";
-    index: number;
-  } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
-  );
-  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  // const isActive = (path: string) => path === pathname;
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
-
-  useEffect(() => {
-    // Check if the current path matches any submenu item
-    let submenuMatched = false;
-    ["main", "customer", "module", "provider", "service", "subscribe", "coupon"].forEach((menuType) => {
-      const items =
-        menuType === "main"
-          ? navItems
-          : menuType === "module"
-            ? moduleItems : menuType === "provider"
-              ? providerItems : menuType === "service"
-                ? serviceItems : menuType === "subscribe"
-                  ? subscribeItems : menuType === "coupon"
-                    ? promotionItems
-                    : customerItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as "main" | "customer" | "module" | "provider" | "service" | "subscribe"| "coupon",
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    // If no submenu item matches, close the open submenu
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [pathname, isActive]);
-
-  useEffect(() => {
-    // Set the height of the submenu items when the submenu is opened
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
-
-  const handleSubmenuToggle = (index: number, menuType: "main" | "customer" | "module" | "provider" | "service" | "subscribe" | "coupon") => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
-        return null;
-      }
-      return { type: menuType, index };
-    });
-  };
-
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
-        ${isExpanded || isMobileOpen
+        ${isExpanded || isMobileOpen
           ? "w-[290px]"
           : isHovered
             ? "w-[290px]"
             : "w-[90px]"
         }
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0`}
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`pb-8 pt-3 flex  ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+        className={`pb-8 pt-3 flex  ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
           }`}
       >
         <Link href="/">
@@ -427,8 +460,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -443,8 +475,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(customerItems, "customer")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -460,7 +491,89 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(moduleItems, "module")}
             </div>
 
-            <div className="">
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "COUNTER MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(counterItems, "counter")}
+            </div>
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "JOB MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(jobItems, "job")}
+            </div>
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "CANDIDATE MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(candidateItems, "candidate")}
+            </div>
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Footer MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(footerItems, "footer")}
+            </div>
+
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Testimonial MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(testimonialItems, "testimonial")}
+            </div>
+
+
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -475,8 +588,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(serviceItems, "service")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -491,8 +603,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(subscribeItems, "subscribe")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -507,8 +618,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(providerItems, "provider")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -522,6 +632,37 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(promotionItems, "coupon")}
+            </div>
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "PRIVACY MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(privacyItems, "privacy")}
+            </div>
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "ACADEMY MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(academyItems, "academy")}
             </div>
 
           </div>

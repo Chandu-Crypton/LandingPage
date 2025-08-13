@@ -17,6 +17,11 @@ import RouteLoader from '@/components/RouteLoader';
 import { SubscribeProvider } from '@/context/SubscribeContext';
 import { CouponProvider } from '@/context/CouponContext';
 import { ServiceCustomerProvider } from '@/context/ServiceCustomerContext';
+import { CounterProvider } from '@/context/CounterContext';
+import { JobProvider } from '@/context/JobContext';
+import { AppliedCandidatesProvider } from '@/context/AppliedCandidatesContext';
+import { FooterProvider } from '@/context/FooterContext';
+import { TestimonialProvider } from '@/context/TestimonialContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -33,33 +38,43 @@ export default function RootLayout({
         <RouteLoader />
         <ThemeProvider>
           <SidebarProvider>
-            <AuthProvider>
-              <UserProvider>
-                <ModuleProvider>
-                  <CategoryProvider>
-                    <SubcategoryProvider>
-                      <BannerProvider>
-                        <ServiceProvider>
-                          <ProviderContextProvider>
-                            <WhyChooseProvider>
-                              <ZoneProvider>
-                                <SubscribeProvider>
-                                  <CouponProvider>
-                                    <ServiceCustomerProvider>
-                                    {children}
-                                    </ServiceCustomerProvider>
-                                  </CouponProvider>
-                                </SubscribeProvider>
-                              </ZoneProvider>
-                            </WhyChooseProvider>
-                          </ProviderContextProvider>
-                        </ServiceProvider>
-                      </BannerProvider>
-                    </SubcategoryProvider>
-                  </CategoryProvider>
-                </ModuleProvider>
-              </UserProvider>
-            </AuthProvider>
+            <CounterProvider>
+              <JobProvider>
+                <AppliedCandidatesProvider>
+                  <FooterProvider>
+                    <TestimonialProvider>
+                      <AuthProvider>
+                        <UserProvider>
+                          <ModuleProvider>
+                            <CategoryProvider>
+                              <SubcategoryProvider>
+                                <BannerProvider>
+                                  <ServiceProvider>
+                                    <ProviderContextProvider>
+                                      <WhyChooseProvider>
+                                        <ZoneProvider>
+                                          <SubscribeProvider>
+                                            <CouponProvider>
+                                              <ServiceCustomerProvider>
+                                                {children}
+                                              </ServiceCustomerProvider>
+                                            </CouponProvider>
+                                          </SubscribeProvider>
+                                        </ZoneProvider>
+                                      </WhyChooseProvider>
+                                    </ProviderContextProvider>
+                                  </ServiceProvider>
+                                </BannerProvider>
+                              </SubcategoryProvider>
+                            </CategoryProvider>
+                          </ModuleProvider>
+                        </UserProvider>
+                      </AuthProvider>
+                    </TestimonialProvider>
+                  </FooterProvider>
+                </AppliedCandidatesProvider>
+              </JobProvider>
+            </CounterProvider>
           </SidebarProvider>
         </ThemeProvider>
       </body>

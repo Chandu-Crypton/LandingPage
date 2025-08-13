@@ -273,7 +273,7 @@ const BasicDetailsForm = ({ data, setData }: BasicDetailsFormProps) => {
                     </div>
 
                     {/* Tags Input Section */}
-                    <div>
+                    <div>cb 
                         <Label>Tags</Label>
                         <div className="border rounded rounded-lg px-3 py-1 flex flex-wrap items-center gap-2">
                             {tags.map((tag, index) => (
