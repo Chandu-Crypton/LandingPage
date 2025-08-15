@@ -13,14 +13,20 @@ const corsHeaders = {
 };
 
 
-export async function GET(
-    req: NextRequest,
-    { params }: { params: { id: string } } // Get ID from params
-) {
+export async function GET(req: NextRequest) {
     await connectToDatabase();
 
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return NextResponse.json(
+            { success: false, message: 'Invalid or missing Technology ID.' },
+            { status: 400, headers: corsHeaders }
+        );
+    }
+
     try {
-        const { id } = params;
 
         const technology = await Technology.findById(id);
 
