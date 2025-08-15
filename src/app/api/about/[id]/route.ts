@@ -13,7 +13,7 @@ const corsHeaders = {
 };
 
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
     await connectToDatabase();
 
     const url = new URL(req.url);
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 }
 
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
     await connectToDatabase();
 
     const url = new URL(req.url);
@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest) {
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
-            { success: false, message: 'Invalid or missing Blog ID.' },
+            { success: false, message: 'Invalid or missing About ID.' },
             { status: 400, headers: corsHeaders }
         );
     }
