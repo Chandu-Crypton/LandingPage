@@ -53,85 +53,194 @@ export async function GET(req: Request) {
 }
 
 
-export async function PUT(req: Request) {
+// export async function PUT(req: Request) {
+//     await connectToDatabase();
+
+//     const url = new URL(req.url);
+//     const id = url.pathname.split("/").pop();
+
+//     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+//         return NextResponse.json(
+//             { success: false, message: 'Invalid or missing About ID.' },
+//             { status: 400, headers: corsHeaders }
+//         );
+//     }
+
+//     try {
+     
+//         const formData = await req.formData();
+
+//         const title = formData.get('title');
+//         const mainImage = formData.get('mainImage');
+//         const description = formData.get('description');
+//         const typeData = formData.get('typeData');
+       
+        
+//           const updateData: Partial<IAbout> = {}; 
+//         if (title && typeof title === 'string') updateData.title = title;
+//         if (description && typeof description === 'string') updateData.description = description;
+//         if (typeData && typeof typeData === 'string') updateData.typeData = typeData;
+
+       
+//         if (mainImage instanceof File) {
+          
+//             if (mainImage.size > 0) {
+//                 const buffer = Buffer.from(await mainImage.arrayBuffer());
+//                 const uploadResponse = await imagekit.upload({
+//                     file: buffer,
+//                     fileName: `${uuidv4()}-${mainImage.name}`,
+//                     folder: '/about-main-images',
+//                 });
+//                 if (uploadResponse.url) {
+//                     updateData.mainImage = uploadResponse.url;
+//                 } else {
+//                     return NextResponse.json(
+//                         { success: false, message: 'Failed to upload new main image to ImageKit.' },
+//                         { status: 500, headers: corsHeaders }
+//                     );
+//                 }
+//             } else {
+            
+//                 updateData.mainImage = '';
+                
+//             }
+//         } else if (mainImage === '') {
+            
+//             updateData.mainImage = '';
+            
+//         }
+       
+
+//         // Find and update the blog entry
+//         const updatedBlog = await About.findByIdAndUpdate(
+//             id,
+//             { $set: updateData }, // Use $set to update only specified fields
+//             { new: true, runValidators: true } // Return the updated document, run schema validators
+//         );
+
+//         if (!updatedBlog) {
+//             return NextResponse.json(
+//                 { success: false, message: 'Blog not found for update.' },
+//                 { status: 404, headers: corsHeaders }
+//             );
+//         }
+
+//         return NextResponse.json(
+//             { success: true, data: updatedBlog, message: 'Blog updated successfully.' },
+//             { status: 200, headers: corsHeaders }
+//         );
+
+//     } catch (error) {
+//         console.error('PUT /api/blog/[id] error:', error);
+//         const message = error instanceof Error ? error.message : 'Internal Server Error';
+//         return NextResponse.json(
+//             { success: false, message },
+//             { status: 500, headers: corsHeaders }
+//         );
+//     }
+// }
+
+
+
+// Interface for API response structure when updating
+interface AboutApiResponse {
+    success: boolean;
+    data?: IAbout; // The actual updated data
+    message?: string;
+}
+
+/*
+| --- |
+| ## PUT Route: Update an About Entry by ID |
+| --- |
+*/
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: { id: string } } // Corrected: Add params object to the signature
+): Promise<NextResponse<AboutApiResponse>> {
     await connectToDatabase();
 
-    const url = new URL(req.url);
-    const id = url.pathname.split("/").pop();
-
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        return NextResponse.json(
-            { success: false, message: 'Invalid or missing About ID.' },
-            { status: 400, headers: corsHeaders }
-        );
-    }
-
     try {
-     
+        const { id } = params; // Corrected: Get id directly from params
+
+        // Validate ID format early
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return NextResponse.json(
+                { success: false, message: 'Invalid or missing About ID.' },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+
         const formData = await req.formData();
+
+        // Corrected: Allow string indexing on updateData for dynamic assignments
+        const updateData: Partial<IAbout> & { [key: string]: string | string[] } = {};
 
         const title = formData.get('title');
         const mainImage = formData.get('mainImage');
         const description = formData.get('description');
-        const typeData = formData.get('typeData');
-       
-        
-          const updateData: Partial<IAbout> = {}; 
+        const typeData = formData.get('typeData'); // Assuming typeData is a string field
+
         if (title && typeof title === 'string') updateData.title = title;
         if (description && typeof description === 'string') updateData.description = description;
         if (typeData && typeof typeData === 'string') updateData.typeData = typeData;
 
-       
-        if (mainImage instanceof File) {
-          
-            if (mainImage.size > 0) {
-                const buffer = Buffer.from(await mainImage.arrayBuffer());
-                const uploadResponse = await imagekit.upload({
-                    file: buffer,
-                    fileName: `${uuidv4()}-${mainImage.name}`,
-                    folder: '/about-main-images',
-                });
-                if (uploadResponse.url) {
-                    updateData.mainImage = uploadResponse.url;
+        // Handle mainImage file upload or URL
+        if (mainImage) { // Check if the mainImage field was provided at all
+            if (mainImage instanceof File) {
+                if (mainImage.size > 0) {
+                    const buffer = Buffer.from(await mainImage.arrayBuffer());
+                    const uploadResponse = await imagekit.upload({
+                        file: buffer,
+                        fileName: `${uuidv4()}-${mainImage.name}`,
+                        folder: '/about-main-images',
+                    });
+                    if (uploadResponse.url) {
+                        updateData.mainImage = uploadResponse.url;
+                    } else {
+                        return NextResponse.json(
+                            { success: false, message: 'Failed to upload new main image to ImageKit.' },
+                            { status: 500, headers: corsHeaders }
+                        );
+                    }
                 } else {
-                    return NextResponse.json(
-                        { success: false, message: 'Failed to upload new main image to ImageKit.' },
-                        { status: 500, headers: corsHeaders }
-                    );
+                    // Empty file upload, means remove existing image
+                    updateData.mainImage = '';
+                    // OPTIONAL: Consider deleting the old image file from ImageKit here
                 }
-            } else {
-            
+            } else if (typeof mainImage === 'string' && mainImage.trim()) {
+                // If it's a string, treat it as a URL
+                updateData.mainImage = mainImage.trim();
+            } else if (mainImage === '') { // Explicitly sent empty string, means clear
                 updateData.mainImage = '';
-                
+                // OPTIONAL: Consider deleting the old image file from ImageKit here
             }
-        } else if (mainImage === '') {
-            
-            updateData.mainImage = '';
-            
         }
-       
+        // If 'mainImage' key is entirely absent from formData, it won't be in updateData,
+        // thus preserving the existing value in the database.
 
-        // Find and update the blog entry
-        const updatedBlog = await About.findByIdAndUpdate(
+
+        // Find and update the About entry
+        const updatedAboutEntry = await About.findByIdAndUpdate(
             id,
             { $set: updateData }, // Use $set to update only specified fields
             { new: true, runValidators: true } // Return the updated document, run schema validators
-        );
+        ).lean(); // Use .lean() for plain object response
 
-        if (!updatedBlog) {
+        if (!updatedAboutEntry) {
             return NextResponse.json(
-                { success: false, message: 'Blog not found for update.' },
+                { success: false, message: 'About entry not found for update.' },
                 { status: 404, headers: corsHeaders }
             );
         }
 
         return NextResponse.json(
-            { success: true, data: updatedBlog, message: 'Blog updated successfully.' },
+            { success: true, data: updatedAboutEntry as IAbout, message: 'About entry updated successfully.' },
             { status: 200, headers: corsHeaders }
         );
 
     } catch (error) {
-        console.error('PUT /api/blog/[id] error:', error);
+        console.error('PUT /api/about/[id] error:', error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
             { success: false, message },
