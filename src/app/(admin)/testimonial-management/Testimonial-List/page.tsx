@@ -84,7 +84,8 @@ const TestimonialListPage: React.FC = () => {
         return testimonials.filter((testimonial) =>
             testimonial.title.toLowerCase().includes(lowercasedSearchTerm) ||
             testimonial.fullName.toLowerCase().includes(lowercasedSearchTerm) ||
-            testimonial.description.toLowerCase().includes(lowercasedSearchTerm)
+            testimonial.description.toLowerCase().includes(lowercasedSearchTerm) ||
+            testimonial.rating.toString().includes(lowercasedSearchTerm)
         );
     }, [testimonials, searchTerm]);
 

@@ -18,6 +18,36 @@ export async function OPTIONS() {
     return NextResponse.json({}, { status: 200, headers: corsHeaders });
 }
 
+export async function GET(req: Request) {
+  await connectToDatabase();
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  try {
+    const doc = await Blog.findById(id);
+    if (!doc) {
+      return NextResponse.json(
+        { success: false, message: 'Blog not found.' },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+    return NextResponse.json(
+      { success: true, data: doc },
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (error) {
+    console.error(`GET /api/blog/${id} error:`, error);
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json(
+      { success: false, message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+}
+
+
+
 export async function PUT(req: NextRequest) {
     await connectToDatabase();
 
@@ -118,7 +148,7 @@ export async function PUT(req: NextRequest) {
                 );
             }
         } else if (headingImageFile === 'null' || headingImageFile === '') {
-            updateData.headingImage = ''; // Corrected casing: HeadingImage
+            updateData.headingImage = ''; 
         }
 
         // Check if any update data is provided
@@ -149,6 +179,46 @@ export async function PUT(req: NextRequest) {
 
     } catch (error) {
         console.error(`PUT /api/blog/${id} error:`, error);
+        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        return NextResponse.json(
+            { success: false, message },
+            { status: 500, headers: corsHeaders }
+        );
+    }
+}
+
+
+
+export async function DELETE(req: NextRequest) {
+    await connectToDatabase();
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
+
+    
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return NextResponse.json(
+            { success: false, message: 'Invalid or missing ID.' },
+            { status: 400, headers: corsHeaders }
+        );
+    }
+
+    try {
+        const deletedDoc = await Blog.findByIdAndDelete(id);
+
+        if (!deletedDoc) {
+            return NextResponse.json(
+                { success: false, message: 'Blog document not found for deletion.' },
+                { status: 404, headers: corsHeaders }
+            );
+        }
+
+        return NextResponse.json(
+            { success: true, message: 'Blog content deleted successfully.' },
+            { status: 200, headers: corsHeaders }
+        );
+
+    } catch (error) {
+        console.error(`DELETE /api/blog/${id} error:`, error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
             { success: false, message },

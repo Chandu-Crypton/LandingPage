@@ -171,6 +171,54 @@ const testimonialItems: NavItem[] = [
   },
 ];
 
+
+const blogItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Blog",
+    subItems: [
+      { name: "Add New Blog", path: "/blog-management/Add-Blog", pro: false },
+      { name: "Blog List", path: "/blog-management/Blog-List", pro: false },
+    ],
+  },
+];
+
+
+const aboutItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "About",
+    subItems: [
+      { name: "Add New About", path: "/about-management/Add-About", pro: false },
+      { name: "About List", path: "/about-management/About-List", pro: false },
+    ],
+  },
+];
+
+
+const technologyItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Technology",
+    subItems: [
+      { name: "Add New Technology", path: "/technology-management/Add-Technology", pro: false },
+      { name: "Technology List", path: "/technology-management/Technology-List", pro: false },
+    ],
+  },
+];
+
+
+const productItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Product",
+    subItems: [
+      { name: "Add New Product", path: "/product-management/Add-Product", pro: false },
+      { name: "Product List", path: "/product-management/Product-List", pro: false },
+    ],
+  },
+];
+
 const promotionItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -240,6 +288,10 @@ const AppSidebar: React.FC = () => {
       { type: "job", items: jobItems },
       { type: "footer", items: footerItems },
       { type: "testimonial", items: testimonialItems },
+      { type: "blog", items: blogItems },
+      { type: "about", items: aboutItems },
+      { type: "technology", items: technologyItems },
+      { type: "product", items: productItems },
       { type: "candidate", items: candidateItems },
       { type: "subscribe", items: subscribeItems },
       { type: "coupon", items: promotionItems },
@@ -475,22 +527,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(customerItems, "customer")}
             </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Module MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(moduleItems, "module")}
-            </div>
-
+           
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
@@ -547,7 +584,7 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Footer MANAGEMENT"
+                  "FOOTER MANAGEMENT"
                 ) : (
                   <HorizontaLDots />
                 )}
@@ -564,7 +601,7 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Testimonial MANAGEMENT"
+                  "TESTIMONIAL MANAGEMENT"
                 ) : (
                   <HorizontaLDots />
                 )}
@@ -581,72 +618,12 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "SERVICE MANAGEMENT"
+                  "BLOG MANAGEMENT"
                 ) : (
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(serviceItems, "service")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "SUBSCRIBE MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(subscribeItems, "subscribe")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "PROVIDER MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(providerItems, "provider")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "PROMOTION MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(promotionItems, "coupon")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "PRIVACY MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(privacyItems, "privacy")}
+              {renderMenuItems(blogItems, "blog")}
             </div>
 
             <div>
@@ -657,14 +634,50 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "ACADEMY MANAGEMENT"
+                  "ABOUT MANAGEMENT"
                 ) : (
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(academyItems, "academy")}
+              {renderMenuItems(aboutItems, "about")}
             </div>
 
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "TECHNOLOGY MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(technologyItems, "technology")}
+            </div>
+
+               <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "PRODUCT MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(productItems, "product")}
+            </div>
+
+
+
+         
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

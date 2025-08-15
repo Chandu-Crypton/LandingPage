@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Blog from "@/models/Blog";
-import { v4 as uuidv4 } from 'uuid';
+import About from "@/models/About";
 import { connectToDatabase } from "@/utils/db";
 import imagekit from "@/utils/imagekit";
+import { v4 as uuidv4 } from 'uuid';
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -20,23 +20,21 @@ export async function GET() {
     await connectToDatabase();
 
     try {
-
-        const docs = await Blog.find({});
+        const docs = await About.find({});
 
         if (docs.length === 0) {
             return NextResponse.json(
-                { success: true, data: [], message: 'No Blog documents found.' },
+                { success: true, data: [], message: 'No about documents found.' },
                 { status: 200, headers: corsHeaders }
             );
         }
-
 
         return NextResponse.json(
             { success: true, data: docs },
             { status: 200, headers: corsHeaders }
         );
     } catch (error) {
-        console.error('GET /api/blog error:', error);
+        console.error('GET /api/about error:', error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
             { success: false, message },
@@ -44,8 +42,6 @@ export async function GET() {
         );
     }
 }
-
-
 
 
 export async function POST(req: NextRequest) {
@@ -57,14 +53,14 @@ export async function POST(req: NextRequest) {
         const title = formData.get('title');
         const mainImage = formData.get('mainImage');
         const description = formData.get('description');
-        const headingImage = formData.get('headingImage');
-        const items = formData.get('items');
-
+        const typeData = formData.get('typeData');
+       
         if (typeof title !== 'string' || !title.trim() ||
             typeof description !== 'string' || !description.trim() ||
-            typeof items !== 'string' || !items.trim()) {
+            typeof typeData !== 'string' || !typeData.trim()
+          ) {
             return NextResponse.json(
-                { success: false, message: 'Missing or invalid data for title, description, or items.' },
+                { success: false, message: 'Missing or invalid data for title, description, or typeData.' },
                 { status: 400, headers: corsHeaders }
             );
         }
@@ -92,62 +88,23 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        let headingImageUrl = '';
-        if (headingImage instanceof File && headingImage.size > 0) {
-            const buffer = Buffer.from(await headingImage.arrayBuffer());
-            const uploadResponse = await imagekit.upload({
-                file: buffer,
-                fileName: `${uuidv4()}-${headingImage.name}`,
-                folder: '/blog-heading-images',
-            });
-            if (uploadResponse.url) {
-                headingImageUrl = uploadResponse.url;
-            } else {
-                return NextResponse.json(
-                    { success: false, message: 'Failed to upload heading image to ImageKit.' },
-                    { status: 500, headers: corsHeaders }
-                );
-            }
-        } else {
-            return NextResponse.json(
-                { success: false, message: 'Heading Image file is required and must not be empty.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
 
-        let parsedItems;
-        try {
-            parsedItems = JSON.parse(items as string);
-            if (!Array.isArray(parsedItems) || !parsedItems.every(item => typeof item === 'object' && item !== null && 'itemTitle' in item && 'itemDescription' in item)) {
-                return NextResponse.json(
-                    { success: false, message: 'Invalid format for "items" field. Expected an array of objects with itemTitle and itemDescription.' },
-                    { status: 400, headers: corsHeaders }
-                );
-            }
-        } catch (error) {
-            console.error('POST /api/blog error:', error);
-            const message = error instanceof Error ? error.message : 'Invalid JSON format for "items" field.';
-            return NextResponse.json(
-                { success: false, message },
-                { status: 400, headers: corsHeaders }
-            );
-        }
 
-        const newEntry = await Blog.create({
+        const newEntry = await About.create({
             title: title as string,
             mainImage: mainImageUrl,
             description: description as string,
-            headingImage: headingImageUrl, // Corrected casing
-            items: parsedItems,
+            typeData: typeData as string
+   
         });
 
         return NextResponse.json(
-            { success: true, data: newEntry, message: 'Blog entry created successfully.' },
+            { success: true, data: newEntry, message: 'About entry created successfully.' },
             { status: 201, headers: corsHeaders }
         );
 
     } catch (error) {
-        console.error('POST /api/blog error:', error);
+        console.error('POST /api/about error:', error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
             { success: false, message },
