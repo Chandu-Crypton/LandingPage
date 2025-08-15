@@ -142,34 +142,25 @@ export async function GET(req: Request) {
 
 
 
-// Interface for API response structure when updating
-interface AboutApiResponse {
-    success: boolean;
-    data?: IAbout; // The actual updated data
-    message?: string;
-}
 
-/*
-| --- |
-| ## PUT Route: Update an About Entry by ID |
-| --- |
-*/
-export async function PUT(
-    req: NextRequest,
-    { params }: { params: { id: string } } // Corrected: Add params object to the signature
-): Promise<NextResponse<AboutApiResponse>> {
+
+
+export async function PUT(req: Request) {
     await connectToDatabase();
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return NextResponse.json(
+            { success: false, message: 'Invalid or missing ID.' },
+            { status: 400, headers: corsHeaders }
+        );
+    }
+
+   
 
     try {
-        const { id } = params; // Corrected: Get id directly from params
-
-        // Validate ID format early
-        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-            return NextResponse.json(
-                { success: false, message: 'Invalid or missing About ID.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
+       
 
         const formData = await req.formData();
 
@@ -216,11 +207,7 @@ export async function PUT(
                 // OPTIONAL: Consider deleting the old image file from ImageKit here
             }
         }
-        // If 'mainImage' key is entirely absent from formData, it won't be in updateData,
-        // thus preserving the existing value in the database.
-
-
-        // Find and update the About entry
+      
         const updatedAboutEntry = await About.findByIdAndUpdate(
             id,
             { $set: updateData }, // Use $set to update only specified fields
