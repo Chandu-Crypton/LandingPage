@@ -141,7 +141,7 @@ const candidateItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Candidates",
     subItems: [
-      { name: "Add New Candidate", path: "/appliedcandidates-management/Add-Candidates", pro: false },
+      // { name: "Add New Candidate", path: "/appliedcandidates-management/Add-Candidates", pro: false },
       { name: "Candidate List", path: "/appliedcandidates-management/Candidates-List", pro: false },
     ],
   },
@@ -471,14 +471,7 @@ const AppSidebar: React.FC = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/final-logo.png"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/final-logo.png"
+                src="/images/icons/ftfllogo.jpeg"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -486,7 +479,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              src="/images/icons/ftfllogo.jpeg"
               alt="Logo"
               width={32}
               height={32}

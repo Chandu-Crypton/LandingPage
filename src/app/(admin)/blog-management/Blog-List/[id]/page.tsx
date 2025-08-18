@@ -93,7 +93,7 @@ const BlogDetailPage: React.FC = () => {
             setLoading(true); // Indicate loading while deleting
             await axios.delete(`/api/blog/${blog._id}`); // Use blog._id directly
             alert('Blog deleted successfully!');
-            router.push('/admin/blog-management/Blog-List'); // Redirect to blog list page
+            router.push('/blog-management/Blog-List'); // Redirect to blog list page
         } catch (err) {
             console.error('Error deleting blog:', err);
             if (axios.isAxiosError(err)) {
@@ -115,7 +115,7 @@ const BlogDetailPage: React.FC = () => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{blog.title}</h1>
                     <div className="flex space-x-3">
                         <Link
-                            href={`/admin/blog-management/Add-Blog?page=edit&id=${blog._id as string}`}
+                            href={`/blog-management/Add-Blog?page=edit&id=${blog._id as string}`}
                             className="text-yellow-600 border border-yellow-600 rounded-md p-2 hover:bg-yellow-600 hover:text-white transition-colors flex items-center justify-center"
                             title="Edit Blog"
                         >

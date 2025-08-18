@@ -13,10 +13,8 @@ type Job = {
   department: string;
   location: string;
   jobDescription: string;
-  requirements: {
-    musthave: string[];
-    nicetohave: string[];
-  };
+  keyResponsibilities: string[];
+  requirements: string[];
   workEnvironment: string[];
   benefits: string[];
   salary: string;
@@ -88,7 +86,7 @@ const JobDetailPage: React.FC = () => {
           <h1 className="text-3xl font-bold">{job.title}</h1>
           <div className="flex space-x-3">
             <Link
-              href={`/job-management/add-job?page=edit&id=${job._id}`}
+              href={`/job-management/Add-Job?page=edit&id=${job._id}`}
               className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
             >
               <PencilIcon size={16} />
@@ -110,12 +108,12 @@ const JobDetailPage: React.FC = () => {
             <p className="mt-1">{job.jobDescription}</p>
           </div>
           <div>
-            <strong>Requirements (Must Have):</strong>
-            {renderList(job.requirements.musthave)}
+            <strong>Key Responsibilities:</strong>
+            {renderList(job.keyResponsibilities)}
           </div>
           <div>
-            <strong>Requirements (Nice to Have):</strong>
-            {renderList(job.requirements.nicetohave)}
+            <strong>Requirements:</strong>
+            {renderList(job.requirements)}
           </div>
           <div>
             <strong>Work Environment:</strong>

@@ -74,22 +74,22 @@ export async function PUT(req: NextRequest) {
         const updateData: Partial<IProduct> & { [key: string]: string | string[] | Array<Record<string, string>> } = {};
         // 1. Process string fields
         const stringFields = [
-            'titleA', 'titleB', 'heading', 'description', 'franchiseData', 'efficiency', 'rating'
+            'heading', 'title', 'subHeading', 'description', 'franchiseData', 'efficiency', 'rating'
         ];
         stringFields.forEach(field => {
             const value = formData.get(field);
             if (typeof value === 'string' && value.trim()) {
                 updateData[field] = value.trim();
-            } else if (value === '') { // Allow clearing fields if empty string is explicitly sent
+            } else if (value === '') { 
                 updateData[field] = '';
             }
         });
 
         // 2. Handle videoFile (URL or File Upload)
         const videoFile = formData.get('videoFile');
-        if (videoFile) { // Check if the field was provided at all
+        if (videoFile) { 
             if (typeof videoFile === 'string' && videoFile.trim()) {
-                updateData.videoFile = videoFile.trim(); // Use URL directly
+                updateData.videoFile = videoFile.trim(); 
             } else if (videoFile instanceof File) {
                 if (videoFile.size > 0) {
                     const buffer = Buffer.from(await videoFile.arrayBuffer());
@@ -182,6 +182,8 @@ export async function PUT(req: NextRequest) {
     }
 }
 
+
+
 export async function DELETE(req: NextRequest) {
     await connectToDatabase();
 
@@ -197,11 +199,7 @@ export async function DELETE(req: NextRequest) {
 
     try {
         // Perform a soft delete by setting 'isDeleted' to true
-        const deletedProduct = await Product.findByIdAndUpdate(
-            id,
-            { $set: { isDeleted: true } },
-            { new: true } // Returns the updated document (with isDeleted: true)
-        ).lean();
+        const deletedProduct = await Product.findByIdAndDelete(id);
 
         if (!deletedProduct) {
             return NextResponse.json(
@@ -210,10 +208,8 @@ export async function DELETE(req: NextRequest) {
             );
         }
 
-        // OPTIONAL: You might want to delete associated files from ImageKit here
-        // This requires storing ImageKit file IDs in your schema when uploading.
-        // For example: if (deletedProduct.videoFileId) await imagekit.deleteFile(deletedProduct.videoFileId);
-        console.log(`Soft deleted product ID: ${id}`);
+      
+        
 
         return NextResponse.json(
             { success: true, message: 'Product successfully marked as deleted.' },

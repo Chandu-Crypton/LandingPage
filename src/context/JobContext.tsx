@@ -10,10 +10,8 @@ type Job = {
   department: string;
   location: string;
   jobDescription: string;
-  requirements: {
-    musthave: string[];
-    nicetohave: string[];
-  };
+  keyResponsibilities: string[];
+  requirements: string[];
   workEnvironment: string[];
   benefits: string[];
   salary: string;

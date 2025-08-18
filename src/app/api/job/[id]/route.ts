@@ -13,6 +13,7 @@ interface IJob {
     title?: string;
     location?: number;
     department?: string;
+    keyResponsibilities?: [string];
     requirements?: [string];
     workEnvironment?: [string];
     benefits?: [string];
@@ -71,10 +72,8 @@ export async function PUT(req: Request) {
         if (typeof body.location === 'string') updateData.location = body.location;
         if (typeof body.department === 'string') updateData.department = body.department;
         if (typeof body.jobDescription === 'string') updateData.jobDescription = body.jobDescription;
-
-        if (body.requirements && typeof body.requirements === 'object') {
-            updateData.requirements = body.requirements;
-        }
+        if (Array.isArray(body.requirements)) updateData.requirements = body.requirements;
+        if (Array.isArray(body.keyResponsibilities)) updateData.keyResponsibilities = body.keyResponsibilities;
         if (Array.isArray(body.workEnvironment)) updateData.workEnvironment = body.workEnvironment;
         if (Array.isArray(body.benefits)) updateData.benefits = body.benefits;
 

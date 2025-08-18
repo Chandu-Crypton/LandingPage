@@ -1,11 +1,10 @@
 import mongoose, {Document,Schema} from 'mongoose'
 
-// IMPORTANT: Changed array types from tuple syntax ([{...}]) to standard array syntax ({...}[])
-// This allows arrays to be empty or contain multiple elements.
+
 export interface IProduct extends Document {
-    titleA: string,
-    titleB: string,
     heading: string,
+    title: string,
+    subHeading: string,
     description: string,
     videoFile: string,
     franchiseData: string,
@@ -32,17 +31,17 @@ export interface IProduct extends Document {
 
 const productSchema: Schema = new Schema ({
 
-    titleA: {
-        type : String,
-        required : true
-    },
-
-    titleB: {
-        type : String,
-        required : true
-    },
-
     heading: {
+        type : String,
+        required : true
+    },
+
+    title: {
+        type : String,
+        required : true
+    },
+
+    subHeading: {
         type : String,
         required : true
     },

@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       title,
       department,
       location,
+      keyResponsibilities,
       requirements,
       jobDescription,
       jobType,
@@ -71,14 +72,13 @@ export async function POST(req: NextRequest) {
       !department || typeof department !== 'string' ||
       !location || typeof location !== 'string' ||
       !jobDescription || typeof jobDescription !== 'string' ||
-      !requirements || typeof requirements !== 'object' ||
-      !Array.isArray(requirements.musthave) ||
-      !Array.isArray(requirements.nicetohave) ||
+      !keyResponsibilities || !Array.isArray(keyResponsibilities) ||
+      !requirements || !Array.isArray(requirements) ||
       !workEnvironment || !Array.isArray(workEnvironment) ||
       !benefits || !Array.isArray(benefits) ||
       !salary || typeof salary !== 'string' ||
       !experience || typeof experience !== 'string' ||
-      !applicationDeadline || isNaN(parsedDeadline.getTime()) || // ✅ date check
+      !applicationDeadline || isNaN(parsedDeadline.getTime()) || 
       !openingType || typeof openingType !== 'string' ||
       !jobType || typeof jobType !== 'string' ||
       !qualification || typeof qualification !== 'string'
@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
       title,
       department,
       location,
+      keyResponsibilities,
       requirements,
       jobDescription,
       jobType,

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 // import formidable from 'formidable';
-import fs from 'fs/promises';
+// import fs from 'fs/promises';
 import imagekit from '@/utils/imagekit';
 
 // Disable Next.js default body parsing

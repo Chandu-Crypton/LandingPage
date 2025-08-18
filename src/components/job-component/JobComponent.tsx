@@ -22,8 +22,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     const [applicationDeadline, setApplicationDeadline] = useState('');
     const [qualification, setQualification] = useState('');
     const [openingType, setOpeningType] = useState('');
-    const [requirementsMustHave, setRequirementsMustHave] = useState<string[]>([]);
-    const [requirementsNiceToHave, setRequirementsNiceToHave] = useState<string[]>([]);
+    const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>([]);
+    const [requirements, setRequirements] = useState<string[]>([]);
     const [workEnvironment, setWorkEnvironment] = useState<string[]>([]);
     const [benefits, setBenefits] = useState<string[]>([]);
     const router = useRouter();
@@ -50,8 +50,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             setApplicationDeadline(jobToEdit.applicationDeadline ? new Date(jobToEdit.applicationDeadline).toISOString().split('T')[0] : '');
             setQualification(jobToEdit.qualification);
             setOpeningType(jobToEdit.openingType);
-            setRequirementsMustHave(jobToEdit.requirements.musthave || []);
-            setRequirementsNiceToHave(jobToEdit.requirements.nicetohave || []);
+            setRequirements(jobToEdit.requirements || []);
+            setKeyResponsibilities(jobToEdit.keyResponsibilities || []);
             setWorkEnvironment(jobToEdit.workEnvironment || []);
             setBenefits(jobToEdit.benefits || []);
         }
@@ -74,10 +74,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : new Date(),
             qualification,
             openingType,
-            requirements: {
-                musthave: requirementsMustHave,
-                nicetohave: requirementsNiceToHave,
-            },
+            keyResponsibilities,
+            requirements,
             workEnvironment,
             benefits,
             count: 0,
@@ -111,8 +109,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         setApplicationDeadline('');
         setQualification('');
         setOpeningType('');
-        setRequirementsMustHave([]);
-        setRequirementsNiceToHave([]);
+        setRequirements([]);
+        setKeyResponsibilities([]);
         setWorkEnvironment([]);
         setBenefits([]);
     };
@@ -206,8 +204,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                     </div>
 
 
-                    {renderArrayField('Must-have Requirements', requirementsMustHave, setRequirementsMustHave)}
-                    {renderArrayField('Nice-to-have Requirements', requirementsNiceToHave, setRequirementsNiceToHave)}
+                    {renderArrayField('Requirements', requirements, setRequirements)}
+                    {renderArrayField('Key Responsibilities', keyResponsibilities, setKeyResponsibilities)}
                     {renderArrayField('Work Environment', workEnvironment, setWorkEnvironment)}
                     {renderArrayField('Benefits', benefits, setBenefits)}
 

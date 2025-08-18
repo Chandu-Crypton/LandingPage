@@ -5,7 +5,7 @@ import imagekit from '@/utils/imagekit';
 import { v4 as uuidv4 } from 'uuid'; // Assuming uuid is used for file names
 import mongoose from 'mongoose';
 
-// IMPORTANT: Define or import these as per your project setup
+
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',

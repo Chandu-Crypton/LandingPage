@@ -131,8 +131,7 @@ const JobListPage: React.FC = () => {
                 <tr className="text-gray-600">
                   <th className="px-5 py-3 text-left">Title</th>
                   <th className="px-5 py-3 text-left">Department</th>
-                  <th className="px-5 py-3 text-left">Location</th>
-                 
+                  <th className="px-5 py-3 text-left">Location</th>                 
                   <th className="px-5 py-3 text-left">Salary</th>
                   <th className="px-5 py-3 text-left">Experience</th>
                   <th className="px-5 py-3 text-left">Qualification</th>

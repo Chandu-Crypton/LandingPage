@@ -5,10 +5,8 @@ export interface IJob extends Document {
     title: string,
     department: string,
     location: string,
-    requirements : {
-        musthave: [string],
-        nicetohave: [string]
-    },
+    keyResponsibilities: [string],
+    requirements : [string],
     jobDescription: string,
     experience: string,
     jobType: string,
@@ -38,16 +36,19 @@ const jobSchema: Schema = new Schema ({
         required : true
     },
 
-    requirements : {
-        musthave: {
+    keyResponsibilities: {
         type: [String],
         required: true
-        },
-        nicetohave: {
-          type: [String],
-          required : true
-        }, 
     },
+
+    requirements : {
+     
+        type: [String],
+        required: true
+       
+    },
+
+
 
     jobDescription:{
         type: String,
