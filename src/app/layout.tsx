@@ -17,6 +17,7 @@ import { BlogProvider } from '@/context/BlogContext';
 import { AboutProvider } from '@/context/AboutContext';
 import { TechnologyProvider } from '@/context/TechnologyContext';
 import { ProductProvider } from '@/context/ProductContext';
+import { ContactProvider } from '@/context/ContactContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -42,10 +43,11 @@ export default function RootLayout({
                         <AboutProvider>
                           <TechnologyProvider>
                             <ProductProvider>
-                              <AuthProvider>
-                                <UserProvider>
-                                  <WhyChooseProvider>
-                                    <ZoneProvider>
+                              <ContactProvider>
+                                <AuthProvider>
+                                  <UserProvider>
+                                    <WhyChooseProvider>
+                                      <ZoneProvider>
 
                                 {children}
 
@@ -53,6 +55,7 @@ export default function RootLayout({
                             </WhyChooseProvider>
                           </UserProvider>
                         </AuthProvider>
+                        </ContactProvider>
                         </ProductProvider>
                         </TechnologyProvider>
                         </AboutProvider>

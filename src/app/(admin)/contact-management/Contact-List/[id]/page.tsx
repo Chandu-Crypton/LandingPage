@@ -1,0 +1,136 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios'; // Import AxiosError
+import { PencilIcon } from 'lucide-react'; // Changed Link to LinkIcon to avoid conflict
+import Link from 'next/link';
+import { TrashBinIcon } from '@/icons';
+
+
+interface IContact {
+    _id: string;
+    phoneNumber: string;
+    fullName: string;
+    email: string;
+    message: string;
+    createdAt?: string; // Assuming createdAt might be part of the document
+    updatedAt?: string; // Assuming updatedAt might be part of the document
+    __v?: number;
+}
+
+
+const ContactDetailPage: React.FC = () => {
+    const { id } = useParams();
+    const router = useRouter();
+    const [contact, setContact] = useState<IContact | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchContact = async () => {
+
+            try {
+                setLoading(true);
+                const res = await axios.get(`/api/contact/${id}`);
+                if (res.data.success && res.data.data) {
+                    setContact(res.data.data);
+                } else {
+                    setError('Contact entry not found.');
+                }
+            } catch (err: unknown) {
+                console.error('Error fetching contact details:', err);
+                let errorMessage = 'Failed to load contact details. Please try again.';
+                if (axios.isAxiosError(err) && err.response?.data?.message) {
+                    errorMessage = err.response.data.message;
+                } else if (err instanceof Error) {
+                    errorMessage = err.message;
+                }
+                setError(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchContact();
+    }, [id]);
+
+    if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading contact details...</p></div>;
+    if (error) return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
+    if (!contact) return <div className="flex items-center justify-center min-h-screen"><p className="text-center text-red-500">Contact entry not found.</p></div>;
+
+    const handleDelete = async () => {
+        if (!window.confirm('Are you sure you want to delete this contact entry?')) return;
+
+        try {
+            await axios.delete(`/api/contact/${contact._id}`);
+            alert('Contact entry deleted successfully!');
+            router.push('/admin/contact-management'); // Redirect to the contact list page
+        } catch (err: unknown) {
+            console.error('Error deleting contact entry:', err);
+            let errorMessage = 'Failed to delete the contact entry. Please try again.';
+            if (axios.isAxiosError(err) && err.response?.data?.message) {
+                errorMessage = err.response.data.message;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+            alert(errorMessage); // Display alert for deletion failure
+        }
+    };
+
+    return (
+        <div className="container mx-auto px-4 py-8 w-full">
+            {/* Hero Section */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Contact Details</h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">Information about your contact entry</p>
+                </div>
+                <div className="flex space-x-3 mt-4 sm:mt-0">
+                    <Link
+                        href={`/contact-management/Add-Contact?page=edit&id=${contact._id}`}
+                        className="flex items-center gap-1 text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white transition-colors duration-200"
+                    >
+                        <PencilIcon size={16} />
+                    </Link>
+                    <button
+                        onClick={handleDelete}
+                        className="flex items-center gap-1 text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white transition-colors duration-200"
+                    >
+                        <TrashBinIcon size={16} />
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Contact Information Card */}
+                <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Contact Information</h2>
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300">
+                        <div>
+                            <p className="font-medium">Phone Number</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.phoneNumber}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Full Name</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.fullName}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Email Address</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.email}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Message</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.message}</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    );
+};
+
+export default ContactDetailPage;

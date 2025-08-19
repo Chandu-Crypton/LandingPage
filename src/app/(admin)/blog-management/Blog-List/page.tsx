@@ -116,6 +116,7 @@ const BlogListPage: React.FC = () => {
                             <thead>
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Title</th>
+                                    <th className="px-5 py-3 text-left">Blog Heading</th>
                                     <th className="px-5 py-3 text-left">Description</th>
                                     <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-left">Heading Image</th>
@@ -128,7 +129,8 @@ const BlogListPage: React.FC = () => {
                                 {filteredBlogs.map((blog: IBlog) => (
                                     <tr key={blog._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{blog.title}</td>
-                                        <td className="px-5 py-3 ">{blog.description}</td>
+                                        <td className="px-5 py-3 ">{blog.blogHeading}</td>
+                                        <td className="px-5 py-3">{blog.description}</td>
                                         <td className="px-5 py-3">
                                             {blog.mainImage ? (
                                                 <NextImage

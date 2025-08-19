@@ -103,16 +103,7 @@ const serviceItems: NavItem[] = [
   },
 ];
 
-const subscribeItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Subscribe",
-    subItems: [
-      { name: "Subscribe Request", path: "/subscribe-management/subscribe-request", pro: false },
-      { name: "Subscribe List", path: "/subscribe-management/subscribe-list", pro: false },
-    ],
-  },
-];
+
 
 const counterItems: NavItem[] = [
   {
@@ -219,40 +210,21 @@ const productItems: NavItem[] = [
   },
 ];
 
-const promotionItems: NavItem[] = [
+const contactItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Coupons",
+    name: "Contact",
     subItems: [
-      { name: "Add Coupons", path: "/coupons-management/add-coupon", pro: false },
-      { name: "Coupons List", path: "/coupons-management/coupons-list", pro: false },
+      { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
+      { name: "Contact List", path: "/contact-management/Contact-List", pro: false },
     ],
   },
 ];
+     
 
-const privacyItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Privacy",
-    subItems: [
-      { name: "Add Privacy", path: "/privacy-management/add-privacy", pro: false },
-      { name: "Privacy List", path: "/privacy-management/privacy-list", pro: false },
-    ],
-  },
-];
 
-const academyItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Academy",
-    subItems: [
-      { name: "Training Tutorials", path: "/academy/certifications" },
-      { name: "Live Webinars", path: "/academy/livewebinars" },
-      { name: "Recorded Webinars", path: "/academy/webinars" },
-      { name: "Understanding Fetch True", path: "/academy/understandingfetchtrue" },
-    ],
-  },
-];
+
+
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -292,11 +264,9 @@ const AppSidebar: React.FC = () => {
       { type: "about", items: aboutItems },
       { type: "technology", items: technologyItems },
       { type: "product", items: productItems },
+      { type: "contact", items: contactItems },
       { type: "candidate", items: candidateItems },
-      { type: "subscribe", items: subscribeItems },
-      { type: "coupon", items: promotionItems },
-      { type: "privacy", items: privacyItems },
-      { type: "academy", items: academyItems },
+     
     ];
 
     // Iterate over all menu types to find a matching submenu
@@ -316,7 +286,7 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [pathname, isActive, ...Object.values(moduleItems), ...Object.values(customerItems), ...Object.values(providerItems), ...Object.values(serviceItems), ...Object.values(subscribeItems), ...Object.values(promotionItems), ...Object.values(privacyItems), ...Object.values(academyItems)]);
+  }, [pathname, isActive,  ]);
 
 
   useEffect(() => {
@@ -666,6 +636,22 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(productItems, "product")}
+            </div>
+
+              <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "CONTACT MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(contactItems, "contact")}
             </div>
 
 
