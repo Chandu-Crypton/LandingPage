@@ -6,6 +6,7 @@ import axios from 'axios';
 // Type for a Job document
 type Job = {
   _id: string;
+  addHeading?: string; // Optional field for additional heading
   title: string;
   department: string;
   location: string;

@@ -135,9 +135,9 @@ const ProductDetailPage: React.FC = () => {
                             <NextImage
                                 src={item.productIcon || item.featureIcon || "https://placehold.co/50x50/cccccc/ffffff?text=X"}
                                 alt={`${type} Icon`}
-                                width={40}
-                                height={40}
-                                className="rounded-full flex-shrink-0"
+                                width={140}
+                                height={140}
+                                className="rounded-md flex-shrink-0"
                                 unoptimized={true} // Use unoptimized for external URLs if not configured in next.config.js
                                 onError={(e) => {
                                     e.currentTarget.src = "https://placehold.co/50x50/cccccc/ffffff?text=X"; // Fallback on error
@@ -190,18 +190,18 @@ const ProductDetailPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
                     <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-0">{product.title}</h1>
                     <div className="flex space-x-3">
-                        {/* Link to edit product */}
+                       
                         <Link
-                            href={`/admin/product-management/Add-Product?page=edit&id=${product._id}`}
-                            className="text-yellow-500 border border-yellow-500 rounded-full p-3 hover:bg-yellow-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm"
+                            href={`/product-management/Add-Product?page=edit&id=${product._id}`}
+                            className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                             aria-label={`Edit ${product.title}`}
                         >
                             <PencilIcon size={20} />
                         </Link>
-                        {/* Button to delete product */}
+                      
                         <button
                             onClick={handleDelete}
-                            className="text-red-500 border border-red-500 rounded-full p-3 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm"
+                            className="text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white"
                             aria-label={`Delete ${product.title}`}
                         >
                             <TrashBinIcon size={20} />
@@ -210,7 +210,7 @@ const ProductDetailPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-8">
-                    {/* Basic Product Details */}
+                  
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         <div>
                             <p className="text-gray-600 dark:text-gray-400 font-semibold">Heading:</p>
@@ -236,9 +236,6 @@ const ProductDetailPage: React.FC = () => {
                             <p className="text-gray-600 dark:text-gray-400 font-semibold">Rating:</p>
                             <p className="text-gray-800 dark:text-gray-200">{product.rating}</p>
                         </div>
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Created At:</p>
-                        </div>
                         {product.updatedAt && (
                             <div>
                                 <p className="text-gray-600 dark:text-gray-400 font-semibold">Last Updated:</p>
@@ -247,31 +244,30 @@ const ProductDetailPage: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Video File Section */}
+                    
                     {product.videoFile && (
                         <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
                             <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Product Video</h3>
                             <video controls className="w-full max-w-2xl rounded-lg shadow-md mx-auto">
-                                <source src={product.videoFile} type="video/mp4" /> {/* Assuming mp4, adjust type if needed */}
+                                <source src={product.videoFile} type="video/mp4" /> 
                                 Your browser does not support the video tag.
                             </video>
                             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 text-center">Video URL: <a href={product.videoFile} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-words">{product.videoFile}</a></p>
                         </div>
                     )}
 
-                    {/* Product Controls Section */}
+                  
                     <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
                         <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Product Controls</h3>
                         {renderFeatureList(product.productControls, 'productControl')}
                     </div>
 
-                    {/* Key Features Section */}
                     <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
                         <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Key Features</h3>
                         {renderFeatureList(product.keyFeatures, 'keyFeature')}
                     </div>
 
-                    {/* Screenshots Section */}
+                 
                     <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
                         <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Screenshots</h3>
                         {renderScreenshots(product.screenshot)}

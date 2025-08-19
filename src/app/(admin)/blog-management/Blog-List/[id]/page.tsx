@@ -104,7 +104,7 @@ const BlogDetailPage: React.FC = () => {
                 setError('An unknown error occurred during deletion. Please try again.');
             }
         } finally {
-            setLoading(false); // Stop loading regardless of success or failure
+            setLoading(false); 
         }
     };
 
@@ -133,6 +133,7 @@ const BlogDetailPage: React.FC = () => {
 
                 {/* Main Blog Details */}
                 <div className="space-y-6 text-gray-700 dark:text-gray-300">
+                    <h2><strong>Blog Heading:</strong> {blog.blogHeading}</h2>
                     <p><strong>Description:</strong> {blog.description}</p>
 
                     {/* Main Image */}

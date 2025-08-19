@@ -1,60 +1,141 @@
-import mongoose, {Document,Schema} from 'mongoose'
+// import mongoose, {Document,Schema} from 'mongoose'
+
+
+// export interface IBlog extends Document {
+//     blogHeading: string,
+//     title: string,
+//     mainImage: string,
+//     description: string,
+//     items: {
+//         itemTitle: string;
+//         itemDescription: string;
+//     }[];
+//     headingImage: string,
+//     isDeleted?: boolean;
+//     createdAt?: string;
+//     updatedAt?: string;
+//     __v?: number;
+// }
+
+// const blogSchema: Schema = new Schema ({
+
+//       blogHeading: {
+//         type: String,
+//         required: true
+//       },
+
+//       title: {
+//         type : String,
+//         required : true
+//       },
+     
+//     mainImage: {
+//         type : String,
+//         required : true
+//     },
+
+//     description: {
+//         type: String,
+//         required : true
+//     },
+
+//    items: [
+//     {
+//       itemTitle: {
+//            type: String,
+//         required : true
+//       },
+//        itemDescription: {
+//            type: String,
+//         required : true
+//       }
+//     }
+//    ],
+
+//     headingImage:{
+//         type: String,
+//         required: true
+//     },
+    
+    
+// }, { timestamps: true }); 
+
+
+// const Blog = mongoose.models.Blog || mongoose.model<IBlog>("Blog", blogSchema)
+
+// export default Blog;
+
+
+
+
+import mongoose, { Document, Schema } from 'mongoose';
 
 
 export interface IBlog extends Document {
-    title: string,
-    mainImage: string,
-    description: string,
+    addHeading?: string;
+    blogHeading: string;
+    title: string;
+    description: string;
+    mainImage?: string;
+    headingImage?: string;
     items: {
         itemTitle: string;
         itemDescription: string;
     }[];
-    headingImage: string,
     isDeleted?: boolean;
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     __v?: number;
 }
 
-const blogSchema: Schema = new Schema ({
 
-      title: {
-        type : String,
-        required : true
-      },
-     
-    mainImage: {
-        type : String,
-        required : true
+const BlogSchema: Schema = new Schema({
+    addHeading: {
+        type: String,
+        required: false,
+        trim: true,
     },
-
+    blogHeading: {
+        type: String,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     description: {
         type: String,
-        required : true
+        required: true,
+        trim: true,
     },
-
-   items: [
-    {
-      itemTitle: {
-           type: String,
-        required : true
-      },
-       itemDescription: {
-           type: String,
-        required : true
-      }
-    }
-   ],
-
-    headingImage:{
+    mainImage: {
         type: String,
-        required: true
+        required: false, // Optional field
     },
-    
-    
-}, { timestamps: true }); 
+    headingImage: {
+        type: String,
+        required: false, // Optional field
+    },
+    items: [{
+        itemTitle: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        itemDescription: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+    }],
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+}, { timestamps: true });
 
+// Export the Mongoose model. If the model already exists, use it.
+const BlogModal = mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
 
-const Blog = mongoose.models.Blog || mongoose.model<IBlog>("Blog", blogSchema)
-
-export default Blog;
+export default BlogModal;

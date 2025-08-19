@@ -66,6 +66,7 @@ export async function PUT(req: NextRequest) {
         const updateData: Partial<IBlog> = {}; // Using Partial<IBlog> for type safety
 
         // Get values from FormData
+        const blogHeading = formData.get('blogHeading');    
         const title = formData.get('title');
         const mainImageFile = formData.get('mainImage');
         const headingImageFile = formData.get('headingImage');
@@ -73,6 +74,9 @@ export async function PUT(req: NextRequest) {
         const items = formData.get('items');
 
         // --- Text Field Validation and Assignment ---
+        if (blogHeading !== null && typeof blogHeading === 'string' && blogHeading.trim()) {
+            updateData.blogHeading = blogHeading;
+        }
         if (title !== null && typeof title === 'string' && title.trim()) {
             updateData.title = title;
         }

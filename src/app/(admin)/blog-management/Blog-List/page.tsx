@@ -50,7 +50,7 @@ const BlogListPage: React.FC = () => {
         }
     };
 
-    
+
 
     const filteredBlogs = useMemo(() => {
         if (!searchTerm.trim()) {
@@ -128,7 +128,7 @@ const BlogListPage: React.FC = () => {
                                 {filteredBlogs.map((blog: IBlog) => (
                                     <tr key={blog._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{blog.title}</td>
-                                        <td className="px-5 py-3 max-w-[200px] truncate">{blog.description}</td>
+                                        <td className="px-5 py-3 ">{blog.description}</td>
                                         <td className="px-5 py-3">
                                             {blog.mainImage ? (
                                                 <NextImage
@@ -164,14 +164,14 @@ const BlogListPage: React.FC = () => {
                                         <td className="px-5 py-3">
                                             <div className="flex justify-center gap-2">
                                                 <Link
-                                                    href={`/blog-management/Blog-List/${blog._id as string}`} 
+                                                    href={`/blog-management/Blog-List/${blog._id as string}`}
                                                     className="text-blue-500 border border-blue-500 rounded-md p-2 hover:bg-blue-500 hover:text-white"
                                                     title="View Blog"
                                                 >
                                                     <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
-                                                    href={`/blog-management/Add-Blog?page=edit&id=${blog._id as string}`} 
+                                                    href={`/blog-management/Add-Blog?page=edit&id=${blog._id as string}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                                                     title="Edit Blog"
                                                 >
