@@ -7,6 +7,7 @@ export interface IJob extends Document {
     department: string;
     location: string;
     keyResponsibilities: string[];
+    requiredSkills: string[];
     requirements: string[];
     jobDescription: string;
     experience: string;
@@ -16,18 +17,21 @@ export interface IJob extends Document {
     qualification: string;
     workEnvironment: string[];
     openingType: string;
-    benefits: string[];
+    benefits: {
+        title: string;
+        description: string;
+    }[]
     isDeleted?: boolean; // Added for soft delete functionality
     createdAt?: Date; // Added via timestamps option
     updatedAt?: Date; // Added via timestamps option
     __v?: number;
 }
 
-// Define the Mongoose schema for Job
+
 const jobSchema: Schema = new Schema({
-    addHeading: { // This field is stored directly in the Job document
+    addHeading: { 
         type: String,
-        required: false, // It's optional as jobs might be created without using the "add new" input
+        required: false, 
         trim: true,
     },
     title: {
@@ -46,10 +50,14 @@ const jobSchema: Schema = new Schema({
         type: [String],
         required: true
     },
-    requirements: {
+    requiredSkills: {
         type: [String],
         required: true
     },
+    requirements: {
+        type: [String],
+        required: true
+    },  
     jobDescription: {
         type: String,
         required: true
@@ -82,17 +90,17 @@ const jobSchema: Schema = new Schema({
         type: [String],
         required: true
     },
-    benefits: {
-        type: [String],
-        required: true
-    },
-    isDeleted: { // Added for soft delete
+    benefits: [{ 
+        title: { type: String, required: true, trim: true },
+        description: { type: String, required: true, trim: true }
+    }],
+    isDeleted: { 
         type: Boolean,
         default: false,
     }
-}, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
+}, { timestamps: true }); 
 
-// Export the Mongoose model. If the model already exists, use it.
+
 const JobModal = mongoose.models.JobModal || mongoose.model<IJob>("JobModal", jobSchema);
 
 export default JobModal;

@@ -1,55 +1,69 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import ComponentCard from '@/components/common/ComponentCard';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import axios from 'axios'; 
-import { ITechnology } from '@/models/Technology';
-import { useTechnology } from '@/context/TechnologyContext';
+import axios from 'axios';
+import { ITechnology } from '@/models/Technology'; // Assuming this is your Mongoose model interface
+import { useTechnology } from '@/context/TechnologyContext'; // Assuming TechnologyContext
 
 interface TechnologyFormProps {
     technologyIdToEdit?: string;
 }
 
-
+// Interface for backend API response for a single technology entry
 interface SingleTechnologyApiResponse {
     success: boolean;
     data?: ITechnology;
     message?: string;
 }
 
+// Interface for managing state of each dynamic technology item in the form
+interface ITechnologyItemState {
+    id?: string; // Optional, for identifying existing items if needed (e.g., for deletion by ID)
+    title: string;
+    file: File | null; // For a new file upload
+    previewUrl: string | null; // For displaying a preview (from file or existing URL)
+    existingImageUrl: string | null; // For the URL already stored in the database
+    isNew?: boolean; // To mark if this is a newly added item slot (helps with validation/logic)
+}
+
 const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdToEdit }) => {
     const [fieldName, setFieldName] = useState('');
-    const [technologyName, setTechnologyName] = useState('');
-    const [iconImageFile, setIconImageFile] = useState<File | null>(null);
-
-
-    // State for the URL used to display the image preview (could be DB URL or URL.createObjectURL)
-    const [iconImagePreview, setIconImagePreview] = useState<string | null>(null);
-
-
+    // Changed technologyName and iconImage states to an array of ITechnologyItemState
+    const [technologyItems, setTechnologyItems] = useState<ITechnologyItemState[]>([
+        { title: '', file: null, previewUrl: null, existingImageUrl: null, isNew: true }
+    ]);
 
     const router = useRouter();
-    // Assuming addTechnology and updateTechnology in TechnologyContext handle ITechnology types or FormData correctly
     const { addTechnology, updateTechnology, technologies } = useTechnology();
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
+    // Helper to normalize data from backend to component state structure
+    const normalizeTechnologyItems = useCallback((
+        rawItems: ITechnology['technologyName'] | undefined
+    ): ITechnologyItemState[] => {
+        if (!Array.isArray(rawItems) || rawItems.length === 0) {
+            return [{ title: '', file: null, previewUrl: null, existingImageUrl: null, isNew: true }];
+        }
+        return rawItems.map(item => ({
+            title: item.title || '',
+            file: null, // No file initially, it's an existing image
+            previewUrl: item.iconImage || null, // Display existing URL
+            existingImageUrl: item.iconImage || null, // Store existing URL
+            isNew: false // This item came from the database
+        }));
+    }, []);
 
-
-
-
-    // Effect to populate form fields when editing an existing blog
+    // Effect to populate form fields when editing an existing technology entry
     useEffect(() => {
-
-        // This function now expects ITechnology directly, as requested.
         const populateForm = (technologyData: ITechnology) => {
-            setFieldName(technologyData.fieldName);
-            setTechnologyName(technologyData.technologyName);
-            setIconImagePreview(technologyData.iconImage);
+            setFieldName(technologyData.fieldName || '');
+            setTechnologyItems(normalizeTechnologyItems(technologyData.technologyName));
         };
 
         if (technologyIdToEdit) {
@@ -58,25 +72,21 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
             const technologyToEditFromContext = technologies.find(b => b._id === cleanId);
 
             if (technologyToEditFromContext) {
-                console.log("technology data from context:", technologyToEditFromContext);
+                console.log("Technology data from context:", technologyToEditFromContext);
                 populateForm(technologyToEditFromContext);
             } else {
                 setLoading(true);
                 const fetchSingleTechnology = async () => {
                     try {
-                        // Type the axios response directly to the SingleTechnologyApiResponse interface
                         const res = await axios.get<SingleTechnologyApiResponse>(`/api/technology/${cleanId}`);
-
-                        // Access the 'data' property from the response wrapper
                         if (res.data.success && res.data.data) {
-                            populateForm(res.data.data); // 'res.data.data' is already ITechnology
+                            populateForm(res.data.data);
                         } else {
                             setFormError(res.data.message || 'Technology entry not found.');
                         }
                     } catch (err) {
                         console.error('Error fetching single technology data:', err);
                         if (axios.isAxiosError(err)) {
-                            // Safely access error response data if it exists
                             setFormError(err.response?.data?.message || 'Failed to load technology data for editing.');
                         } else {
                             setFormError('An unexpected error occurred while fetching technology data.');
@@ -88,7 +98,50 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
                 fetchSingleTechnology();
             }
         }
-    }, [technologyIdToEdit, technologies]);
+    }, [technologyIdToEdit, technologies, normalizeTechnologyItems]);
+
+    // Handler for changing title of a specific technology item
+    const handleTechnologyItemChange = useCallback((index: number, value: string) => {
+        setTechnologyItems(prevItems => {
+            const newItems = [...prevItems];
+            if (newItems[index]) {
+                newItems[index] = { ...newItems[index], title: value };
+            }
+            return newItems;
+        });
+    }, []);
+
+    // Handler for changing icon image file of a specific technology item
+    const handleIconImageFileChange = useCallback((index: number, file: File | null) => {
+        setTechnologyItems(prevItems => {
+            const newItems = [...prevItems];
+            if (newItems[index]) {
+                newItems[index] = {
+                    ...newItems[index],
+                    file: file, // Set the new file
+                    previewUrl: file ? URL.createObjectURL(file) : newItems[index].existingImageUrl, // Update preview based on new file or old URL
+                    // If a new file is selected, effectively clear the existing URL for submission logic
+                    existingImageUrl: file ? null : newItems[index].existingImageUrl,
+                    isNew: file ? true : newItems[index].isNew // Mark as new if a file is uploaded
+                };
+            }
+            return newItems;
+        });
+    }, []);
+
+    // Handler for adding a new empty technology item
+    const handleAddTechnologyItem = useCallback(() => {
+        setTechnologyItems(prevItems => [
+            ...prevItems,
+            { title: '', file: null, previewUrl: null, existingImageUrl: null, isNew: true }
+        ]);
+    }, []);
+
+    // Handler for removing a technology item
+    const handleRemoveTechnologyItem = useCallback((index: number) => {
+        setTechnologyItems(prevItems => prevItems.filter((_, i) => i !== index));
+    }, []);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -96,15 +149,56 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
         setLoading(true);
 
         const formData = new FormData();
-        formData.append('fieldName', fieldName);
-        formData.append('technologyName', technologyName);
-        if (iconImageFile) {
-            formData.append('iconImage', iconImageFile);
-        } else if (technologyIdToEdit && !iconImagePreview) {
-            formData.append('iconImage', '');
+        formData.append('fieldName', fieldName.trim());
+
+        // Prepare technologyName array for JSON serialization and append files
+        const finalTechnologyName: { title: string; iconImage: string; }[] = [];
+        let hasValidTechEntry = false; // Track if at least one valid technology entry exists
+
+        for (let i = 0; i < technologyItems.length; i++) {
+            const item = technologyItems[i];
+            const trimmedTitle = item.title.trim();
+
+            if (trimmedTitle === '' && !item.file && !item.existingImageUrl) {
+                // Skip completely empty items
+                continue;
+            }
+
+            // Validation: Ensure title is present if an icon is provided or expected
+            if (trimmedTitle === '' && (item.file || item.existingImageUrl)) {
+                setFormError(`Technology title is required for entry ${i + 1}.`);
+                setLoading(false);
+                return;
+            }
+
+            // Validation: Ensure icon is present if title is provided
+            if (trimmedTitle !== '' && !item.file && !item.existingImageUrl) {
+                setFormError(`Icon image is required for technology "${trimmedTitle}".`);
+                setLoading(false);
+                return;
+            }
+
+            hasValidTechEntry = true;
+
+            // If a new file is selected, append it to FormData
+            if (item.file) {
+                formData.append(`iconImage_${i}`, item.file);
+                finalTechnologyName.push({ title: trimmedTitle, iconImage: '' }); // Placeholder, URL will be set by backend
+            } else if (item.existingImageUrl) {
+                // If no new file, but an existing URL, use that
+                finalTechnologyName.push({ title: trimmedTitle, iconImage: item.existingImageUrl });
+            }
+            // If neither, this item should have been caught by validation or filtered out earlier.
         }
 
+        if (!fieldName.trim() || !hasValidTechEntry) {
+            setFormError('Please fill in Field Name and add at least one valid Technology entry (with title and icon).');
+            setLoading(false);
+            return;
+        }
 
+        // Append the technologyName array as a JSON string
+        formData.append('technologyNameJson', JSON.stringify(finalTechnologyName));
 
         try {
             if (technologyIdToEdit) {
@@ -116,11 +210,10 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
                 alert('Technology added successfully!');
                 clearForm();
             }
-            router.push('/technology-management/Technology-List');
+            router.push('/technology-management/Technology-List'); // Adjust redirect path as needed
         } catch (err) {
             console.error('Submission failed:', err);
             if (axios.isAxiosError(err)) {
-
                 setFormError(err.response?.data?.message || 'An error occurred during submission.');
             } else if (err instanceof Error) {
                 setFormError(err.message || 'An unexpected error occurred.');
@@ -134,9 +227,8 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
 
     const clearForm = () => {
         setFieldName('');
-        setTechnologyName('');
-        setIconImageFile(null);
-        setIconImagePreview(null);
+        setTechnologyItems([{ title: '', file: null, previewUrl: null, existingImageUrl: null, isNew: true }]);
+        setFormError(null);
     };
 
     return (
@@ -144,89 +236,103 @@ const TechnologyFormComponent: React.FC<TechnologyFormProps> = ({ technologyIdTo
             <ComponentCard title={technologyIdToEdit ? 'Edit Technology Entry' : 'Add New Technology Entry'}>
                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Title */}
+                    {/* Field Name */}
                     <div>
-                        <Label htmlFor="title">Field Name</Label>
-                        <Input
-                            id="title"
-                            type="text"
-                            value={fieldName}
-                            onChange={(e) => setFieldName(e.target.value)}
-                            placeholder="Enter field name"
-                            required
-                        />
+                        <Label htmlFor="fieldName">Field Name</Label>
+
+                         <select value={fieldName} onChange={(e) => setFieldName(e.target.value)} className="w-full border rounded p-2" required>
+                            <option value="">Select Technology</option>
+                            <option value="Database">Database</option>
+                            <option value="Frontend">Frontend</option>
+                            <option value="Backend">Backend</option>
+                            <option value="Full Stack">Full Stack</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="UI/UX Designer">UI/UX Designer</option>
+                        </select>
+                       
                     </div>
 
-                    {/* Description */}
-                    <div>
-                        <Label htmlFor="description">Technology Name</Label>
-                        <Input
-                            id="description"
-                            type="text"
-                            value={technologyName}
-                            onChange={(e) => setTechnologyName(e.target.value)}
-                            placeholder="Enter technology name"
-                            required
-                        />
-                    </div>
+                    {/* Dynamic Technology Name and Icon Image fields */}
+                    <div className="space-y-4">
+                        <Label className="text-lg font-semibold block mb-2">Technology Entries</Label>
+                        {technologyItems.map((item, index) => (
+                            <div key={index} className="flex flex-col gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 shadow-sm">
+                                <h3 className="text-md font-medium text-gray-800 dark:text-gray-100">Technology {index + 1}</h3>
+                                <div>
+                                    <Label htmlFor={`technologyName-${index}`}>Technology Name</Label>
+                                    <Input
+                                        id={`technologyName-${index}`}
+                                        type="text"
+                                        value={item.title}
+                                        onChange={(e) => handleTechnologyItemChange(index, e.target.value)}
+                                        placeholder="e.g., React, Node.js, MongoDB"
+                                        required
+                                        disabled={loading}
+                                    />
+                                </div>
 
-                    {/* Icon Image */}
-                    <div>
-                        <Label htmlFor="iconImage">Icon Image</Label>
-                        {(iconImagePreview && !iconImageFile) && (
-                            <div className="mb-2">
-                                <p className="text-sm text-gray-600">Current Image:</p>
-                                <Image
-                                    src={iconImagePreview}
-                                    alt="Icon Image Preview"
-                                    width={300}
-                                    height={200}
-                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-                                    unoptimized={true}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIconImagePreview(null);
-                                        setIconImageFile(null);
-                                    }}
-                                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
-                                >
-                                    Remove Current Image
-                                </button>
+                                <div>
+                                    <Label htmlFor={`iconImage-${index}`}>Icon Image</Label>
+                                    {(item.previewUrl) && (
+                                        <div className="mb-2">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Current/New Preview:</p>
+                                            <Image
+                                                src={item.previewUrl}
+                                                alt={`Icon for ${item.title || 'Technology ' + (index + 1)}`}
+                                                width={60}
+                                                height={60}
+                                                className="rounded-md object-cover"
+                                                unoptimized={true}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = "https://placehold.co/60x60/cccccc/ffffff?text=X"; // Fallback image on error
+                                                }}
+                                            />
+                                            {item.file && <p className="text-xs text-gray-500 mt-1">New file selected: {item.file.name}</p>}
+                                        </div>
+                                    )}
+                                    <input
+                                        id={`iconImage-${index}`}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleIconImageFileChange(index, e.target.files ? e.target.files[0] : null)}
+                                        className="w-full border rounded p-2"
+                                        required={!technologyIdToEdit || (!item.previewUrl && !item.file)} // Required if not editing or no current image/file
+                                        disabled={loading}
+                                    />
+                                    {item.previewUrl && !item.file && ( // Only show clear button if there's an existing image and no new file selected
+                                        <button
+                                            type="button"
+                                            onClick={() => handleIconImageFileChange(index, null)} // Clear both file and preview
+                                            className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                            disabled={loading}
+                                        >
+                                            Clear Current Image
+                                        </button>
+                                    )}
+                                </div>
+
+                                {technologyItems.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTechnologyItem(index)}
+                                        className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors self-end"
+                                        disabled={loading}
+                                    >
+                                        Remove Technology
+                                    </button>
+                                )}
                             </div>
-                        )}
-                        {iconImageFile && (
-                            <div className="mb-2">
-                                <p className="text-sm text-gray-600">New Image Preview:</p>
-                                <Image
-                                    src={URL.createObjectURL(iconImageFile)}
-                                    alt="New Icon Image Preview"
-                                    width={300}
-                                    height={200}
-                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-                                    unoptimized={true}
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Selected: {iconImageFile.name}</p>
-                            </div>
-                        )}
-                        <input
-                            id="iconImage"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                                setIconImageFile(e.target.files ? e.target.files[0] : null);
-                                if (e.target.files && e.target.files.length > 0) {
-                                    setIconImagePreview(URL.createObjectURL(e.target.files[0]));
-                                } else if (!iconImagePreview) {
-                                    setIconImagePreview(null);
-                                }
-                            }}
-                            className="w-full border rounded p-2"
-                            required={!technologyIdToEdit || (!iconImagePreview && !iconImageFile)}
-                        />
+                        ))}
+                        <button
+                            type="button"
+                            onClick={handleAddTechnologyItem}
+                            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+                            disabled={loading}
+                        >
+                            Add New Technology
+                        </button>
                     </div>
-
 
                     <div className="pt-4 flex justify-end">
                         <button

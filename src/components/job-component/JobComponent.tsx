@@ -1,330 +1,47 @@
-// 'use client';
-
-// import React, { useState, useEffect, useMemo } from 'react';
-// import Input from '@/components/form/input/InputField';
-// import Label from '@/components/form/Label';
-// import ComponentCard from '@/components/common/ComponentCard';
-// import { useJob } from '@/context/JobContext';
-// import { useRouter } from 'next/navigation';
-
-// interface JobProps {
-//     jobIdToEdit?: string;
-// }
-
-// const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
-//     const [addHeading, setAddHeading] = useState('');
-//     const [customBlogHeadings, setCustomBlogHeadings] = useState<string[]>([]);
-//     const [title, setTitle] = useState('');
-//     const [location, setLocation] = useState('');
-//     const [department, setDepartment] = useState('');
-//     const [jobDescription, setJobDescription] = useState('');
-//     const [experience, setExperience] = useState('');
-//     const [jobType, setJobType] = useState('');
-//     const [salary, setSalary] = useState('');
-//     const [applicationDeadline, setApplicationDeadline] = useState('');
-//     const [qualification, setQualification] = useState('');
-//     const [openingType, setOpeningType] = useState('');
-//     const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>([]);
-//     const [requirements, setRequirements] = useState<string[]>([]);
-//     const [workEnvironment, setWorkEnvironment] = useState<string[]>([]);
-//     const [benefits, setBenefits] = useState<string[]>([]);
-//     const router = useRouter();
-//     const { addJob, updateJob, jobs } = useJob();
-
-//     const predefinedBlogHeadings = [
-//         "Senior MERN Stack Developer",
-//         "Frontend Developer",
-//         "Backend Developer",
-//         "Senior Flutter Developer",
-//         "Senior Digital Marketing Specialist",
-//         "Senior Video Editor",
-//         "Senior Content Writer",
-//         "Sales Executive (Female Candidate)",
-//         "Finance Executive (Freher)",
-//         "Graphic Designer",
-//     ];
-
-
-
-//     useEffect(() => {
-//         console.log("jobIdToEdit prop:", jobIdToEdit);
-//         console.log("jobs array:", jobs);
-
-//         if (jobIdToEdit && jobs.length > 0) {
-//             const cleanJobId = jobIdToEdit.replace(/^\//, "");
-//             const jobToEdit = jobs.find((c) => c._id === cleanJobId);
-//             console.log("jobiddata :", jobToEdit);
-
-//             if (jobToEdit) {
-//                 setTitle(jobToEdit.title);
-//                 setLocation(jobToEdit.location);
-//                 setDepartment(jobToEdit.department);
-//                 setJobDescription(jobToEdit.jobDescription);
-//                 setExperience(jobToEdit.experience);
-//                 setJobType(jobToEdit.jobType);
-//                 setSalary(jobToEdit.salary);
-//                 setApplicationDeadline(jobToEdit.applicationDeadline ? new Date(jobToEdit.applicationDeadline).toISOString().split('T')[0] : '');
-//                 setQualification(jobToEdit.qualification);
-//                 setOpeningType(jobToEdit.openingType);
-//                 setRequirements(jobToEdit.requirements || []);
-//                 setKeyResponsibilities(jobToEdit.keyResponsibilities || []);
-//                 setWorkEnvironment(jobToEdit.workEnvironment || []);
-//                 setBenefits(jobToEdit.benefits || []);
-//             }
-//         }
-//     }, [jobIdToEdit, jobs]);
-
-
-//     const handleAddCustomHeading = () => {
-//         const trimmedHeading = addHeading.trim();
-
-//         const allCurrentHeadings = [...predefinedBlogHeadings, ...customBlogHeadings];
-
-//         if (trimmedHeading && !allCurrentHeadings.includes(trimmedHeading)) {
-//             setCustomBlogHeadings(prev => [...prev, trimmedHeading]);
-//             setAddHeading('');
-//             setTitle(trimmedHeading);
-//         } else if (trimmedHeading && allCurrentHeadings.includes(trimmedHeading)) {
-//             alert("This heading already exists! Please choose from the list or enter a unique heading.");
-//         } else {
-//             alert("Please enter a heading to add.");
-//         }
-//     };
-
-//     const allBlogHeadings = useMemo(() => {
-//         return [...predefinedBlogHeadings, ...customBlogHeadings];
-//     }, [predefinedBlogHeadings, customBlogHeadings]);
-
-
-
-//     const handleSubmit = async (e: React.FormEvent) => {
-//         e.preventDefault();
-
-//         const jobData = {
-//             title,
-//             location,
-//             department,
-//             jobDescription,
-//             experience,
-//             jobType,
-//             salary,
-//             applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : new Date(),
-//             qualification,
-//             openingType,
-//             keyResponsibilities,
-//             requirements,
-//             workEnvironment,
-//             benefits,
-//             count: 0,
-//             isDeleted: false,
-//         };
-
-//         try {
-//             if (jobIdToEdit) {
-//                 await updateJob(jobIdToEdit, jobData);
-//                 alert('Job updated successfully!');
-//                 router.push('/job-management/Job-List')
-//             } else {
-//                 await addJob(jobData);
-//                 alert('Job created successfully!');
-//                 clearForm();
-//             }
-//         } catch (error) {
-//             console.error('Submission failed:', error);
-//             alert('An error occurred. Please try again.');
-//         }
-//     };
-
-//     const clearForm = () => {
-//         setTitle('');
-//         setLocation('');
-//         setDepartment('');
-//         setJobDescription('');
-//         setExperience('');
-//         setJobType('');
-//         setSalary('');
-//         setApplicationDeadline('');
-//         setQualification('');
-//         setOpeningType('');
-//         setRequirements([]);
-//         setKeyResponsibilities([]);
-//         setWorkEnvironment([]);
-//         setBenefits([]);
-//     };
-
-//     const handleAddArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, list: string[]) => {
-//         setter([...list, '']);
-//     };
-
-//     const handleArrayItemChange = (setter: React.Dispatch<React.SetStateAction<string[]>>, list: string[], index: number, value: string) => {
-//         const updatedList = [...list];
-//         updatedList[index] = value;
-//         setter(updatedList);
-//     };
-
-//     const handleRemoveArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, list: string[], index: number) => {
-//         setter(list.filter((_, i) => i !== index));
-//     };
-
-//     const renderArrayField = (label: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => (
-//         <div>
-//             <Label>{label}</Label>
-//             {list.map((item, index) => (
-//                 <div key={index} className="flex items-center gap-2 mb-2">
-//                     <Input
-//                         type="text"
-//                         value={item}
-//                         onChange={(e) => handleArrayItemChange(setter, list, index, e.target.value)}
-//                         placeholder={`Enter ${label.toLowerCase()} item`}
-//                     />
-//                     <button
-//                         type="button"
-//                         className="px-2 py-1 bg-red-500 text-white rounded"
-//                         onClick={() => handleRemoveArrayItem(setter, list, index)}
-//                     >
-//                         Remove
-//                     </button>
-//                 </div>
-//             ))}
-//             <button
-//                 type="button"
-//                 className="mt-2 px-3 py-1 bg-green-500 text-white rounded"
-//                 onClick={() => handleAddArrayItem(setter, list)}
-//             >
-//                 Add Field
-//             </button>
-//         </div>
-//     );
-
-//     return (
-//         <div>
-//             <ComponentCard title={jobIdToEdit ? 'Edit Job' : 'Add New Job'}>
-//                 <form onSubmit={handleSubmit} className="space-y-8">
-//                     <div>
-//                         <Label htmlFor="AddHeading">Add New Job Title</Label>
-//                         <div className="flex items-center gap-2">
-//                             <Input
-//                                 id="AddHeading"
-//                                 type="text"
-//                                 value={addHeading}
-//                                 onChange={(e) => setAddHeading(e.target.value)}
-//                                 placeholder="Enter new blog heading here..."
-//                                 className="flex-grow"
-//                             />
-//                             <button
-//                                 type="button"
-//                                 onClick={handleAddCustomHeading}
-//                                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-//                             >
-//                                 Add
-//                             </button>
-//                         </div>
-//                     </div>
-
-//                     <div>
-//                         <Label htmlFor="JobTitle">Job Title</Label>
-//                         <select
-//                             id="JobTitle"
-//                             value={title}
-//                             onChange={(e) => setTitle(e.target.value)}
-//                             className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-//                             required
-//                         >
-//                             <option value="">Select Job Title</option>
-//                             {allBlogHeadings.map((heading, index) => (
-//                                 <option key={index} value={heading}>
-//                                     {heading}
-//                                 </option>
-//                             ))}
-//                         </select>
-//                     </div>
-
-
-//                     <div><Label>Department</Label><Input value={department} required onChange={(e) => setDepartment(e.target.value)} /></div>
-//                     <div><Label>Location</Label><Input value={location} required onChange={(e) => setLocation(e.target.value)} /></div>
-//                     <div><Label>Job Description</Label>
-//                         <textarea value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={6} className="w-full border rounded p-2" required />
-//                     </div>
-//                     <div><Label>Experience</Label><Input value={experience} required onChange={(e) => setExperience(e.target.value)} /></div>
-//                     <div>
-//                         <Label>Job Type</Label>
-//                         <select
-//                             value={jobType}
-//                             onChange={(e) => setJobType(e.target.value)}
-//                             className="w-full border rounded p-2"
-//                             required
-//                         >
-//                             <option value="">Select Job Type</option>
-//                             <option value="Full-time">Full-time</option>
-//                             <option value="Part-time">Part-time</option>
-//                             <option value="Contract">Contract</option>
-//                             <option value="Internship">Internship</option>
-//                         </select>
-//                     </div>
-
-//                     <div><Label>Salary</Label><Input value={salary} required onChange={(e) => setSalary(e.target.value)} /></div>
-//                     <div><Label>Application Deadline</Label><Input type="date" required value={applicationDeadline} onChange={(e) => setApplicationDeadline(e.target.value)} /></div>
-//                     <div><Label>Qualification</Label><Input value={qualification} required onChange={(e) => setQualification(e.target.value)} /></div>
-//                     <div>
-//                         <Label>Opening Type</Label>
-//                         <select
-//                             value={openingType}
-//                             onChange={(e) => setOpeningType(e.target.value)}
-//                             className="w-full border rounded p-2"
-//                             required
-//                         >
-//                             <option value="">Select Opening Type</option>
-//                             <option value="Regular">Regular</option>
-//                             <option value="Urgent">Urgent</option>
-//                         </select>
-//                     </div>
-
-
-//                     {renderArrayField('Requirements', requirements, setRequirements)}
-//                     {renderArrayField('Key Responsibilities', keyResponsibilities, setKeyResponsibilities)}
-//                     {renderArrayField('Work Environment', workEnvironment, setWorkEnvironment)}
-//                     {renderArrayField('Benefits', benefits, setBenefits)}
-
-//                     <div className="pt-6">
-//                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
-//                             {jobIdToEdit ? 'Update Job' : 'Add Job'}
-//                         </button>
-//                     </div>
-//                 </form>
-//             </ComponentCard>
-//         </div>
-//     );
-// };
-
-// export default JobComponent;
-
-
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import ComponentCard from '@/components/common/ComponentCard';
-import { useJob } from '@/context/JobContext'; 
+import { useJob } from '@/context/JobContext'; // Assuming this context provides addJob, updateJob, and jobs data
 import { useRouter } from 'next/navigation';
-
 
 interface JobProps {
     jobIdToEdit?: string;
 }
 
-
+interface Job {
+    _id: string;
+    addHeading?: string;
+    title: string;
+    department: string;
+    location: string;
+    keyResponsibilities: string[];
+    requiredSkills: string[];
+    requirements: string[];
+    jobDescription: string;
+    experience: string;
+    jobType: string;
+    salary: string;
+    applicationDeadline: Date;
+    qualification: string;
+    workEnvironment: string[];
+    benefits: Array<{ title: string; description: string; }>;
+    openingType: string;
+    isDeleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    __v?: number;
+}
 
 const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     // State for the text input where the user types a new job title (addHeading)
     const [addHeading, setAddHeading] = useState('');
     // State to temporarily store new headings added during the current session
-    // These will be lost on refresh unless a job using them is saved.
     const [localNewHeadings, setLocalNewHeadings] = useState<string[]>([]);
 
     // State for the currently selected job title from the dropdown.
-    // This `title` will be the value saved to the `title` field of the job document.
     const [title, setTitle] = useState('');
 
     // States for other job fields
@@ -334,21 +51,23 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     const [experience, setExperience] = useState('');
     const [jobType, setJobType] = useState('');
     const [salary, setSalary] = useState('');
-    const [applicationDeadline, setApplicationDeadline] = useState(''); // Stores date as 'YYYY-MM-DD' string
+    const [applicationDeadline, setApplicationDeadline] = useState('');
     const [qualification, setQualification] = useState('');
     const [openingType, setOpeningType] = useState('');
 
     // States for dynamic array fields (initialized with a single empty string for an initial input field)
     const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>(['']);
+    // ADDED: State for requiredSkills
+    const [requiredSkills, setRequiredSkills] = useState<string[]>(['']);
     const [requirements, setRequirements] = useState<string[]>(['']);
     const [workEnvironment, setWorkEnvironment] = useState<string[]>(['']);
-    const [benefits, setBenefits] = useState<string[]>(['']);
+    // Benefits state is now an array of objects
+    const [benefits, setBenefits] = useState<{ title: string; description: string; }[]>([{ title: '', description: '' }]);
 
     const router = useRouter();
-    // Assuming useJob context provides addJob, updateJob, and a 'jobs' array to check against for editing
     const { addJob, updateJob, jobs } = useJob();
-    const [loading, setLoading] = useState(false); // For overall form submission loading
-    const [apiError, setApiError] = useState<string | null>(null); // For displaying API errors
+    const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     // Predefined job titles (these will always be available)
     const predefinedJobTitles = useMemo(() => ([
@@ -362,43 +81,52 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         "Sales Executive (Female Candidate)",
         "Finance Executive (Fresher)",
         "Graphic Designer",
-    ]), []); // Memoize to prevent re-creation on every render
+    ]), []);
 
     // Effect to populate form fields when editing an existing job
-    // This includes setting 'addHeading' if available in the fetched job.
     useEffect(() => {
         if (jobIdToEdit) {
             const cleanJobId = jobIdToEdit.replace(/^\//, "");
-            // Find the job in the context's jobs array
             const jobToEdit = jobs.find((j) => j._id === cleanJobId);
 
             if (jobToEdit) {
-                // Set main fields
-                setTitle(jobToEdit.title || ''); // Set the main title
-                setAddHeading(jobToEdit.addHeading || ''); // Set the addHeading field for the input
+                setTitle(jobToEdit.title || '');
+                setAddHeading(jobToEdit.addHeading || '');
                 setLocation(jobToEdit.location || '');
                 setDepartment(jobToEdit.department || '');
                 setJobDescription(jobToEdit.jobDescription || '');
                 setExperience(jobToEdit.experience || '');
                 setJobType(jobToEdit.jobType || '');
                 setSalary(jobToEdit.salary || '');
-                // Format Date object from backend to 'YYYY-MM-DD' for date input
+                // Convert Date object from backend to string for input type="date"
                 setApplicationDeadline(jobToEdit.applicationDeadline ? new Date(jobToEdit.applicationDeadline).toISOString().split('T')[0] : '');
                 setQualification(jobToEdit.qualification || '');
                 setOpeningType(jobToEdit.openingType || '');
 
                 setKeyResponsibilities(jobToEdit.keyResponsibilities?.length > 0 ? jobToEdit.keyResponsibilities : ['']);
+                // ADDED: Populate requiredSkills
+                setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ? jobToEdit.requiredSkills : ['']);
                 setRequirements(jobToEdit.requirements?.length > 0 ? jobToEdit.requirements : ['']);
                 setWorkEnvironment(jobToEdit.workEnvironment?.length > 0 ? jobToEdit.workEnvironment : ['']);
-                setBenefits(jobToEdit.benefits?.length > 0 ? jobToEdit.benefits : ['']);
+
+                // Populate benefits, ensuring each item has title and description
+                // Handle cases where benefits might be an old string[] format or undefined
+                setBenefits(jobToEdit.benefits?.length > 0 ?
+                    // Check if the first benefit item is an object with 'title' (to detect structured format)
+                    (typeof jobToEdit.benefits[0] === 'object' && 'title' in jobToEdit.benefits[0] ?
+                        jobToEdit.benefits.map((b: {title: string; description: string}) => ({ title: b.title || '', description: b.description || '' })) :
+                        // Fallback for old string[] format: convert string to title, empty description
+                        (jobToEdit.benefits as unknown as string[]).map((b: string) => ({ title: b, description: '' }))
+                    ) :
+                    [{ title: '', description: '' }] // Default empty structured benefit
+                );
             } else {
                 console.warn(`Job with ID ${cleanJobId} not found in context for editing.`);
             }
         }
-    }, [jobIdToEdit, jobs]); // Depend on jobIdToEdit and jobs array
+    }, [jobIdToEdit, jobs]);
 
     // Function to handle adding a new custom job title (addHeading) to the local state
-    // and setting it as the selected title for the current form.
     const handleAddCustomJobTitle = () => {
         const trimmedHeading = addHeading.trim();
 
@@ -407,10 +135,9 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             return;
         }
 
-        // Check against all currently available headings (predefined + existing from DB + newly added locally)
         const allCurrentlyVisibleHeadings = Array.from(new Set([
             ...predefinedJobTitles,
-            ...jobs.map(job => job.addHeading).filter(Boolean) as string[], // Extract all existing addHeadings from DB jobs
+            ...jobs.map(job => job.addHeading).filter(Boolean) as string[],
             ...localNewHeadings
         ]));
 
@@ -419,91 +146,108 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             return;
         }
 
-        // Add to local state for current session's dropdown
         setLocalNewHeadings(prev => [...prev, trimmedHeading]);
-        setTitle(trimmedHeading); // Set the newly added title as the selected one
-        // IMPORTANT: DO NOT clear 'addHeading' here. It should be sent with the form.
-        // setAddHeading(''); // REMOVED THIS LINE
+        setTitle(trimmedHeading);
     };
 
     // Memoized list of all job titles for the dropdown:
-    // Combines predefined, 'addHeading' from ALL existing jobs in DB, and locally added ones
     const allJobTitles = useMemo(() => {
-        // Extract addHeading from all jobs currently loaded in the context
         const existingAddHeadingsFromJobs = jobs
             .map(job => job.addHeading)
-            .filter(Boolean) as string[]; // Filter out undefined/null and cast
+            .filter(Boolean) as string[];
 
-        // Combine all lists and use a Set to ensure uniqueness
         return Array.from(new Set([
             ...predefinedJobTitles,
             ...existingAddHeadingsFromJobs,
             ...localNewHeadings
         ]));
-    }, [predefinedJobTitles, jobs, localNewHeadings]); // Recalculate if predefined, jobs, or localNewHeadings change
-
+    }, [predefinedJobTitles, jobs, localNewHeadings]);
 
     // Main form submission handler
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setApiError(null); // Clear previous errors
-        setLoading(true); // Set loading state for overall form submission
+        setApiError(null);
+        setLoading(true);
 
         // Basic validation for main required fields
-        if (!title || !department || !location || !jobDescription || !experience || !jobType || !salary || !applicationDeadline || !qualification || !openingType) {
-            setApiError('Please fill in all required job details.');
+        if (
+            !title.trim() ||
+            !department.trim() ||
+            !location.trim() ||
+            !jobDescription.trim() ||
+            !experience.trim() ||
+            !jobType.trim() ||
+            !salary.trim() ||
+            !applicationDeadline.trim() || // Check if date string is not empty
+            !qualification.trim() ||
+            !openingType.trim() ||
+            keyResponsibilities.filter(item => item.trim() !== '').length === 0 || // Ensure arrays are not empty
+            requiredSkills.filter(item => item.trim() !== '').length === 0 ||
+            requirements.filter(item => item.trim() !== '').length === 0 ||
+            workEnvironment.filter(item => item.trim() !== '').length === 0 ||
+            benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '').length === 0
+        ) {
+            setApiError('Please fill in all required job details, including at least one entry for all list fields.');
             setLoading(false);
             return;
         }
 
-        const jobData = {
-            // The `addHeading` input field's value is sent to the `addHeading` schema field
-            addHeading: addHeading.trim() || undefined, // Send the value from addHeading input if present
-            // The `title` selected from the dropdown is sent to the `title` schema field
-            title: title, // This is the selected value from the dropdown
-            location,
-            department,
-            jobDescription,
-            experience,
-            jobType,
-            salary,
-            // Convert date string from input to Date object for backend storage
-            applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : new Date(),
-            qualification,
-            openingType,
-            // Filter out empty strings from array fields before sending to avoid saving empty elements
+        // Construct jobData ensuring all required fields are present
+        const jobData: Omit<Job, '_id' | 'isDeleted' | 'createdAt' | 'updatedAt' | '__v'> = {
+            addHeading: addHeading.trim() || undefined,
+            title: title.trim(),
+            location: location.trim(),
+            department: department.trim(),
+            jobDescription: jobDescription.trim(),
+            experience: experience.trim(),
+            jobType: jobType.trim(),
+            salary: salary.trim(),
+            // Pass as Date object to match the Job interface and backend model
+            applicationDeadline: new Date(applicationDeadline),
+            qualification: qualification.trim(),
+            openingType: openingType.trim(),
             keyResponsibilities: keyResponsibilities.filter(item => item.trim() !== ''),
+            requiredSkills: requiredSkills.filter(item => item.trim() !== ''),
             requirements: requirements.filter(item => item.trim() !== ''),
             workEnvironment: workEnvironment.filter(item => item.trim() !== ''),
-            benefits: benefits.filter(item => item.trim() !== ''),
-            isDeleted: false, // Default to false for new or updated jobs
+            benefits: benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== ''),
         };
 
         try {
             if (jobIdToEdit) {
                 const cleanId = jobIdToEdit.replace(/^\//, "");
+                // updateJob now expects a `Job` object (or Omit) where all properties are included
                 await updateJob(cleanId, jobData);
-                alert('Job updated successfully!'); // Use custom modal/toast in production
-                router.push('/admin/job-management/Job-List'); // Redirect to job list after update
+                alert('Job updated successfully!');
+                router.push('/job-management/Job-List');
             } else {
+                // addJob also expects a `Job` object (or Omit)
                 await addJob(jobData);
-                alert('Job created successfully!'); // Use custom modal/toast in production
-                clearForm(); // Clear form only on successful new job creation
+                alert('Job created successfully!');
+                clearForm();
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Submission failed:', error);
-            // Check if error.response.data.message exists for more specific API error messages
-            setApiError('An error occurred during submission. Please try again.');
+            if (error && typeof error === 'object' && 'response' in error && 
+                error.response && typeof error.response === 'object' && 'data' in error.response &&
+                error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data &&
+                typeof error.response.data.message === 'string') {
+                setApiError(error.response.data.message);
+            } else if (error instanceof Error) {
+                setApiError(error.message);
+            } else {
+                setApiError('An error occurred during submission. Please try again.');
+            }
         } finally {
-            setLoading(false); // End loading state
+            setLoading(false);
         }
     };
 
     // Function to clear all form fields after successful new job creation
     const clearForm = () => {
-        setAddHeading(''); // Clear the new job title input field
-        setLocalNewHeadings([]); // Clear locally added headings
-        setTitle(''); // Clear the selected job title
+        setAddHeading('');
+        setLocalNewHeadings([]);
+        setTitle('');
         setLocation('');
         setDepartment('');
         setJobDescription('');
@@ -513,38 +257,86 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         setApplicationDeadline('');
         setQualification('');
         setOpeningType('');
-        // Reset array fields to a single empty string to keep one input visible
         setKeyResponsibilities(['']);
+        setRequiredSkills(['']); // ADDED: Clear requiredSkills
         setRequirements(['']);
         setWorkEnvironment(['']);
-        setBenefits(['']);
-        setApiError(null); // Clear form error
+        setBenefits([{ title: '', description: '' }]);
+        setApiError(null);
     };
 
-    // Helper to render dynamic array input fields (e.g., Requirements, Benefits)
-    const renderArrayField = useCallback((label: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => (
+    // Generic render function for array fields (single or dual inputs)
+    const renderFlexibleArrayField = useCallback(<T extends string[] | { title: string; description: string; }[]>(
+        label: string,
+        list: T,
+        setter: React.Dispatch<React.SetStateAction<T>>,
+        isDualField: boolean = false
+    ) => (
         <div className="space-y-2">
             <Label>{label}</Label>
             {list.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
-                    <Input
-                        type="text"
-                        value={item}
-                        onChange={(e) => {
-                            const updatedList = [...list];
-                            updatedList[index] = e.target.value;
-                            setter(updatedList);
-                        }}
-                        placeholder={`Enter ${label.toLowerCase()} item`}
-                        className="flex-grow"
-                        disabled={loading} // Disable inputs during submission
-                    />
-                    {/* Only show remove button if there's more than one item */}
+                <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
+                    {isDualField ? (
+                        <>
+                            <div className="flex-1 min-w-[150px]">
+                                <Label htmlFor={`${label.replace(/\s/g, '')}Title-${index}`} className="text-sm">Title</Label>
+                                <Input
+                                    id={`${label.replace(/\s/g, '')}Title-${index}`}
+                                    type="text"
+                                    // Assert item as the structured type when isDualField is true
+                                    value={(item as { title: string; description: string; }).title}
+                                    onChange={(e) => {
+                                        const updatedList = [...list] as T; // Use generic type T for updatedList
+                                        (updatedList[index] as { title: string; description: string; }).title = e.target.value;
+                                        setter(updatedList);
+                                    }}
+                                    placeholder={`Enter ${label.toLowerCase()} title`}
+                                    className="w-full"
+                                    disabled={loading}
+                                />
+                            </div>
+                            <div className="flex-1 min-w-[150px]">
+                                <Label htmlFor={`${label.replace(/\s/g, '')}Description-${index}`} className="text-sm">Description</Label>
+                                <Input
+                                    id={`${label.replace(/\s/g, '')}Description-${index}`}
+                                    type="text"
+                                    // Assert item as the structured type when isDualField is true
+                                    value={(item as { title: string; description: string; }).description}
+                                    onChange={(e) => {
+                                        const updatedList = [...list] as T; // Use generic type T for updatedList
+                                        (updatedList[index] as { title: string; description: string; }).description = e.target.value;
+                                        setter(updatedList);
+                                    }}
+                                    placeholder={`Enter ${label.toLowerCase()} description`}
+                                    className="w-full"
+                                    disabled={loading}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <Input
+                            type="text"
+                            // Assert item as string when isDualField is false
+                            value={item as string}
+                            onChange={(e) => {
+                                const updatedList = [...list] as T; // Use generic type T for updatedList
+                                updatedList[index] = e.target.value as T[number]; // Cast the element to the item type of T
+                                setter(updatedList);
+                            }}
+                            placeholder={`Enter ${label.toLowerCase()} item`}
+                            className="flex-grow"
+                            disabled={loading}
+                        />
+                    )}
+
                     {list.length > 1 && (
                         <button
                             type="button"
                             className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex-shrink-0"
-                            onClick={() => setter(list.filter((_, i) => i !== index))}
+                            onClick={() => {
+                                // Filter and ensure the type is consistent with T
+                                setter(list.filter((_, i) => i !== index) as T);
+                            }}
                             disabled={loading}
                         >
                             Remove
@@ -555,13 +347,17 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             <button
                 type="button"
                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
-                onClick={() => setter([...list, ''])} // Add a new empty string field
+                onClick={() => {
+                    // Add new item and ensure the type is consistent with T
+                    setter([...list, isDualField ? { title: '', description: '' } : ''] as T);
+                }}
                 disabled={loading}
             >
-                Add New {label.endsWith('s') ? label.slice(0, -1) : label} {/* Handle singular label */}
+                Add New {label.endsWith('s') ? label.slice(0, -1) : label}
             </button>
         </div>
-    ), [loading]); // Depend on loading to disable/enable buttons
+    ), [loading]);
+
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -577,9 +373,9 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                         <Label htmlFor="addHeadingInput">Add New Job Title</Label>
                         <div className="flex items-center gap-2 mt-1">
                             <Input
-                                id="addHeadingInput" // Changed ID for clarity
+                                id="addHeadingInput"
                                 type="text"
-                                value={addHeading} // Controlled by 'addHeading' state
+                                value={addHeading}
                                 onChange={(e) => setAddHeading(e.target.value)}
                                 placeholder="e.g., Senior Software Engineer"
                                 className="flex-grow"
@@ -601,14 +397,13 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                         <Label htmlFor="JobTitleSelect">Job Title</Label>
                         <select
                             id="JobTitleSelect"
-                            value={title} // Controlled by 'title' state (selected job title)
+                            value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1"
                             required
                             disabled={loading}
                         >
                             <option value="">Select Job Title</option>
-                            {/* Render all combined job titles */}
                             {allJobTitles.map((jobTitle, index) => (
                                 <option key={index} value={jobTitle}>
                                     {jobTitle}
@@ -663,17 +458,19 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                     </div>
 
                     {/* Render dynamic array fields using the helper function */}
-                    {renderArrayField('Key Responsibilities', keyResponsibilities, setKeyResponsibilities)}
-                    {renderArrayField('Requirements', requirements, setRequirements)}
-                    {renderArrayField('Work Environment', workEnvironment, setWorkEnvironment)}
-                    {renderArrayField('Benefits', benefits, setBenefits)}
+                    {renderFlexibleArrayField('Key Responsibilities', keyResponsibilities, setKeyResponsibilities)}
+                    {renderFlexibleArrayField('Required Skills', requiredSkills, setRequiredSkills)}
+                    {renderFlexibleArrayField('Requirements', requirements, setRequirements)}
+                    {renderFlexibleArrayField('Work Environment', workEnvironment, setWorkEnvironment)}
+                    {/* Call renderFlexibleArrayField with isDualField = true for Benefits */}
+                    {renderFlexibleArrayField('Benefits', benefits, setBenefits, true)}
 
                     {/* Submit Button */}
                     <div className="pt-6 text-right">
                         <button
                             type="submit"
                             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-md"
-                            disabled={loading} // Disable button while loading
+                            disabled={loading}
                         >
                             {loading ? 'Submitting...' : jobIdToEdit ? 'Update Job' : 'Add Job'}
                         </button>

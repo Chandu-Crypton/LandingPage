@@ -12,9 +12,14 @@ type Job = {
   location: string;
   jobDescription: string;
   keyResponsibilities: string[];
+  requiredSkills: string[];
   requirements: string[];
   workEnvironment: string[];
-  benefits: string[];
+  benefits: 
+    {
+      title: string;
+      description: string;
+  }[];
   salary: string;
   experience: string;
   qualification: string;

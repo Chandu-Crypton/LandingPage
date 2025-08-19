@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import JobModal from "@/models/JobModal";
 import { connectToDatabase } from "@/utils/db";
+import mongoose from "mongoose";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -11,12 +12,13 @@ const corsHeaders = {
 
 interface IJob {
     title?: string;
-    location?: number;
+    location?: string;
     department?: string;
-    keyResponsibilities?: [string];
-    requirements?: [string];
-    workEnvironment?: [string];
-    benefits?: [string];
+    keyResponsibilities?: string[];
+    requiredSkills?: string[];
+    requirements?: string[];
+    workEnvironment?: string[];
+    benefits?: Array<{ title: string; description: string }>;
     jobDescription?: string;
     salary?: string;
     experience?: string;
@@ -24,6 +26,7 @@ interface IJob {
     openingType?: string;
     jobType?: string;
     applicationDeadline?: Date;
+
 }
 
 export async function OPTIONS() {
@@ -59,73 +62,112 @@ export async function GET(req: Request) {
     }
 }
 
+
+
+
 export async function PUT(req: Request) {
     await connectToDatabase();
+
     const url = new URL(req.url);
     const id = url.pathname.split("/").pop();
 
     try {
-        const body = await req.json();
-        const updateData: Partial<IJob> = {};
-
-        if (typeof body.title === 'string') updateData.title = body.title;
-        if (typeof body.location === 'string') updateData.location = body.location;
-        if (typeof body.department === 'string') updateData.department = body.department;
-        if (typeof body.jobDescription === 'string') updateData.jobDescription = body.jobDescription;
-        if (Array.isArray(body.requirements)) updateData.requirements = body.requirements;
-        if (Array.isArray(body.keyResponsibilities)) updateData.keyResponsibilities = body.keyResponsibilities;
-        if (Array.isArray(body.workEnvironment)) updateData.workEnvironment = body.workEnvironment;
-        if (Array.isArray(body.benefits)) updateData.benefits = body.benefits;
-
-        if (typeof body.salary === 'string') updateData.salary = body.salary;
-        if (typeof body.experience === 'string') updateData.experience = body.experience;
-        if (typeof body.openingType === 'string') updateData.openingType = body.openingType;
-        if (typeof body.jobType === 'string') updateData.jobType = body.jobType;
-        if (typeof body.qualification === 'string') updateData.qualification = body.qualification;
-
-        if (body.applicationDeadline) {
-            const parsedDeadline = new Date(body.applicationDeadline);
-            if (!isNaN(parsedDeadline.getTime())) {
-                updateData.applicationDeadline = parsedDeadline;
-            } else {
-                throw new Error('Invalid applicationDeadline format. Expected a valid date string.');
-            }
-        }
-
-        if (Object.keys(updateData).length === 0) {
+        // Validate ID format early
+        if (!id) {
             return NextResponse.json(
-                { success: false, message: 'No valid fields provided for update.' },
+                { success: false, message: 'Job ID is required for update.' },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return NextResponse.json(
+                { success: false, message: 'Invalid Job ID format.' },
                 { status: 400, headers: corsHeaders }
             );
         }
 
-        const updatedDoc = await JobModal.findByIdAndUpdate(
-            id,
-            updateData,
-            { new: true, runValidators: true }
-        );
+        const body = await req.json(); // Assuming JSON body for PUT requests
+        const updateData: Partial<IJob> = {};
 
-        if (!updatedDoc) {
+        // Iterate over incoming body to populate updateData
+        for (const key in body) {
+            if (body.hasOwnProperty(key)) {
+                // Handle specific field types/formats
+                if (key === 'applicationDeadline' && body[key]) {
+                    updateData[key] = new Date(body[key]);
+                } else if (key === 'benefits') {
+                    if (Array.isArray(body[key])) {
+                        // Ensure benefits are structured correctly as per your schema
+                        updateData.benefits = body[key].map((b: { title?: string; description?: string }) => ({
+                            title: String(b.title || '').trim(),
+                            description: String(b.description || '').trim()
+                        })).filter((b) => b.title !== '' || b.description !== ''); // Filter out completely empty benefit objects
+                    } else {
+                        return NextResponse.json(
+                            { success: false, message: 'Invalid format for benefits during update. Must be an array of objects.' },
+                            { status: 400, headers: corsHeaders }
+                        );
+                    }
+                } else if (
+                    ['keyResponsibilities', 'requiredSkills', 'requirements', 'workEnvironment'].includes(key)
+                ) {
+                    const filtered = (body[key] as string[]).filter(
+                        (item: string) => item.trim() !== ''
+                    );
+
+                    updateData[key as Extract<
+                        keyof IJob,
+                        'keyResponsibilities' | 'requiredSkills' | 'requirements' | 'workEnvironment'
+                    >] = filtered;
+                } else if (body[key] !== undefined && key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'isDeleted') {
+                    // Directly assign other fields if they are not undefined and not internal Mongoose fields
+                    updateData[key as keyof IJob] = body[key];
+                }
+            }
+        }
+
+        // If no fields are provided in the update, return an error
+        if (Object.keys(updateData).length === 0) {
             return NextResponse.json(
-                { success: false, message: 'Job data not found for update.' },
+                { success: false, message: 'No fields provided for update.' },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+
+        // Find and update the job document
+        // Use $set to update only the fields present in updateData (partial update)
+        // new: true returns the updated document, runValidators: true ensures schema validations run
+        const updatedJob = await JobModal.findByIdAndUpdate(id, { $set: updateData }, { new: true, runValidators: true }).lean();
+
+        if (!updatedJob) {
+            return NextResponse.json(
+                { success: false, message: 'Job not found for update.' },
                 { status: 404, headers: corsHeaders }
             );
         }
 
         return NextResponse.json(
-            { success: true, data: updatedDoc, message: 'Job updated successfully.' },
+            { success: true, data: updatedJob, message: 'Job updated successfully.' },
             { status: 200, headers: corsHeaders }
         );
 
     } catch (error) {
-        console.error(`PUT /api/job/${id} error:`, error);
+        console.error('PUT /api/job/[id] error:', error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
+        if (error instanceof mongoose.Error.ValidationError) {
+            const errors = Object.values(error.errors).map(err => (err as mongoose.Error.ValidatorError).message);
+            return NextResponse.json(
+                { success: false, message: 'Validation failed: ' + errors.join(', ') },
+                { status: 400, headers: corsHeaders }
+            );
+        }
         return NextResponse.json(
             { success: false, message },
             { status: 500, headers: corsHeaders }
         );
     }
 }
+
 
 
 // DELETE a specific counter by ID

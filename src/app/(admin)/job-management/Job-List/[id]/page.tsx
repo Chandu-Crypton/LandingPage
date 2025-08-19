@@ -7,24 +7,31 @@ import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons';
 
+type Benefit = {
+  title: string;
+  description: string;
+};
+
 type Job = {
   _id: string;
+  addHeading?: string;
   title: string;
   department: string;
   location: string;
   jobDescription: string;
   keyResponsibilities: string[];
+  requiredSkills: string[];
   requirements: string[];
   workEnvironment: string[];
-  benefits: string[];
+  benefits: Benefit[];
   salary: string;
   experience: string;
   qualification: string;
   applicationDeadline: string;
   openingType: string;
   jobType: string;
-  isDeleted: boolean;
-  createdAt: string;
+  isDeleted?: boolean;
+  createdAt?: string;
   updatedAt?: string;
   __v?: number;
 };
@@ -83,7 +90,13 @@ const JobDetailPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-lg">
         <div className="flex justify-between items-start mb-6">
-          <h1 className="text-3xl font-bold">{job.title}</h1>
+          <div>
+            {/* {job.addHeading && (
+              <h2 className="text-xl text-gray-600">{job.addHeading}</h2>
+            )} */}
+            <h1 className="text-3xl font-bold">{job.title}</h1>
+          </div>
+
           <div className="flex space-x-3">
             <Link
               href={`/job-management/Add-Job?page=edit&id=${job._id}`}
@@ -112,6 +125,10 @@ const JobDetailPage: React.FC = () => {
             {renderList(job.keyResponsibilities)}
           </div>
           <div>
+            <strong>Required Skills:</strong>
+            {renderList(job.requiredSkills)}
+          </div>
+          <div>
             <strong>Requirements:</strong>
             {renderList(job.requirements)}
           </div>
@@ -121,7 +138,13 @@ const JobDetailPage: React.FC = () => {
           </div>
           <div>
             <strong>Benefits:</strong>
-            {renderList(job.benefits)}
+            <ul className="list-disc pl-6 space-y-1">
+              {job.benefits.map((b, idx) => (
+                <li key={idx} className="text-gray-800 dark:text-gray-200">
+                  <span className="font-semibold">{b.title}:</span> {b.description}
+                </li>
+              ))}
+            </ul>
           </div>
           <p><strong>Salary:</strong> {job.salary}</p>
           <p><strong>Experience:</strong> {job.experience}</p>
