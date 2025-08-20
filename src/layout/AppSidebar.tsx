@@ -221,7 +221,17 @@ const contactItems: NavItem[] = [
   },
 ];
      
-
+const newsletterItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Newsletter",
+    subItems: [
+      { name: "Add New Newsletter", path: "/newsletter-management/Add-NewsLetter", pro: false },
+      { name: "Newsletter List", path: "/newsletter-management/NewsLetter-List", pro: false },
+    ],
+  },
+];
+     
 
 
 
@@ -266,7 +276,7 @@ const AppSidebar: React.FC = () => {
       { type: "product", items: productItems },
       { type: "contact", items: contactItems },
       { type: "candidate", items: candidateItems },
-     
+      { type: "newsletter", items: newsletterItems },
     ];
 
     // Iterate over all menu types to find a matching submenu
@@ -655,6 +665,21 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(contactItems, "contact")}
             </div>
 
+               <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "NEWSLETTER MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(newsletterItems, "newsletter")}
+            </div>
 
 
          

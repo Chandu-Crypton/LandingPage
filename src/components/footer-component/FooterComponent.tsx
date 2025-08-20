@@ -7,10 +7,10 @@ import ComponentCard from '@/components/common/ComponentCard';
 import { useRouter } from 'next/navigation';
 import { useFooter } from '@/context/FooterContext'; // Import IFooter from context
 
-// Corrected IFooter interface: socialMediaLinks should be string[]
+
 interface IFooter {
     _id?: string;
-    phone: string; // Assuming phone is number based on previous discussion and Mongoose schema
+    phone: string; 
     address: string;
     workinghours: string;
     socialMediaLinks: string[]; 

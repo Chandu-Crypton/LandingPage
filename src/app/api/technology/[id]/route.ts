@@ -57,25 +57,6 @@ export async function GET(req: NextRequest) {
      
 
 
-// // PUT handler to update an existing technology entry
-// export async function PUT(req: NextRequest, { params }: { params: { id: string } }) { // <-- Corrected signature here
-//     await connectToDatabase();
-//     try {
-//         const { id } = params; // Now 'id' will be correctly destructured from 'params'
-
-//         if (!id) {
-//             return NextResponse.json(
-//                 { success: false, message: 'Technology ID is required for update.' },
-//                 { status: 400, headers: corsHeaders }
-//             );
-//         }
-
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return NextResponse.json(
-//                 { success: false, message: 'Invalid Technology ID format.' },
-//                 { status: 400, headers: corsHeaders }
-//             );
-//         }
 
 export async function PUT(req: NextRequest) {
     await connectToDatabase();
