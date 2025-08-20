@@ -2,8 +2,8 @@ import SignUpForm from "@/components/auth/SignUpForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js SignUp Page | BizBooster Dashboard",
-  description: "This is Next.js SignUp Page BizBooster Dashboard",
+  title: "Next.js SignUp Page | FTFL Landing",
+  description: "This is Next.js SignUp Page FTFL Landing",
   // other metadata
 };
 

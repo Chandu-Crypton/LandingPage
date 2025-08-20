@@ -8,9 +8,9 @@ import React from "react";
 
 // Metadata for the page
 export const metadata: Metadata = {
-  title: "Next.js Basic Table | BizBooster Dashboard",
+  title: "FTFL Landing Page",
   description:
-    "This is Next.js Basic Table page for BizBooster Tailwind CSS Admin Dashboard Template",
+    "This is Next.js Basic Table page for FTFL Landing - Next.js Tailwind CSS Admin Dashboard Template",
   // other metadata
 };
 

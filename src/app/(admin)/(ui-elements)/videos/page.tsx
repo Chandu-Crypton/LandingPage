@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Videos | BizBooster Dashboard",
+  title: "Next.js Videos | FTFL Landing",
   description:
-    "This is Next.js Videos page for BizBooster - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Next.js Videos page for FTFL Landing - Next.js Tailwind CSS Admin Dashboard Template",
 };
 
 export default function VideoPage() {

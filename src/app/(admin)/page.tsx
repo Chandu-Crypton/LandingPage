@@ -7,8 +7,8 @@ import RecentOrders from "@/components/ecommerce/RecentOrders";
 
 export const metadata: Metadata = {
   title:
-    "BizBooster Dashboard",
-  description: "This is Next.js Home for BizBooster Dashboard",
+    "FTFL Landing Page",
+  description: "This is Next.js Home for FTFL Landing Page",
 };
 
 export default function Ecommerce() {
