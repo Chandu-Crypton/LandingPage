@@ -149,7 +149,7 @@ const ProductListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                           <StatCard
-                            title="Total Jobs"
+                            title="Total Products"
                             value={filteredProducts.length}
                             icon={UserIcon}
                             badgeColor="success"

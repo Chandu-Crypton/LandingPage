@@ -15,12 +15,14 @@ interface Job {
     _id: string;
     addHeading?: string;
     title: string;
+    about: string;
     department: string;
     location: string;
     keyResponsibilities: string[];
-    requiredSkills: string[];
+    // requiredSkills: string[];
+    requiredSkills: Array<{ title: string; level: string; }>;
     requirements: string[];
-    jobDescription: string;
+    jobDescription: string[];
     experience: string;
     jobType: string;
     salary: string;
@@ -43,11 +45,11 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
     // State for the currently selected job title from the dropdown.
     const [title, setTitle] = useState('');
-
+    const [about, setAbout] = useState('');
     // States for other job fields
     const [location, setLocation] = useState('');
     const [department, setDepartment] = useState('');
-    const [jobDescription, setJobDescription] = useState('');
+    const [jobDescription, setJobDescription] = useState<string[]>(['']);
     const [experience, setExperience] = useState('');
     const [jobType, setJobType] = useState('');
     const [salary, setSalary] = useState('');
@@ -58,7 +60,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     // States for dynamic array fields (initialized with a single empty string for an initial input field)
     const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>(['']);
     // ADDED: State for requiredSkills
-    const [requiredSkills, setRequiredSkills] = useState<string[]>(['']);
+    const [requiredSkills, setRequiredSkills] = useState<{ title: string; level: string; }[]>([{ title: '', level: '' }]);
     const [requirements, setRequirements] = useState<string[]>(['']);
     const [workEnvironment, setWorkEnvironment] = useState<string[]>(['']);
     // Benefits state is now an array of objects
@@ -91,6 +93,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
             if (jobToEdit) {
                 setTitle(jobToEdit.title || '');
+                setAbout(jobToEdit.about || '');
                 setAddHeading(jobToEdit.addHeading || '');
                 setLocation(jobToEdit.location || '');
                 setDepartment(jobToEdit.department || '');
@@ -105,12 +108,17 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
                 setKeyResponsibilities(jobToEdit.keyResponsibilities?.length > 0 ? jobToEdit.keyResponsibilities : ['']);
                 // ADDED: Populate requiredSkills
-                setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ? jobToEdit.requiredSkills : ['']);
+                // setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ? jobToEdit.requiredSkills.map(skill => skill.title,skill.level) : ['']);
                 setRequirements(jobToEdit.requirements?.length > 0 ? jobToEdit.requirements : ['']);
                 setWorkEnvironment(jobToEdit.workEnvironment?.length > 0 ? jobToEdit.workEnvironment : ['']);
-
-                // Populate benefits, ensuring each item has title and description
-                // Handle cases where benefits might be an old string[] format or undefined
+                setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ?
+                    (typeof jobToEdit.requiredSkills[0] === 'object' && 'title' in jobToEdit.requiredSkills[0] ?
+                        jobToEdit.requiredSkills.map((b: {title: string; level: string}) => ({ title: b.title || '', level: b.level || '' })) :
+                       
+                        (jobToEdit.requiredSkills as unknown as string[]).map((b: string) => ({ title: b, level: '' }))
+                    ) :
+                    [{ title: '', level: '' }]
+                );
                 setBenefits(jobToEdit.benefits?.length > 0 ?
                     // Check if the first benefit item is an object with 'title' (to detect structured format)
                     (typeof jobToEdit.benefits[0] === 'object' && 'title' in jobToEdit.benefits[0] ?
@@ -174,7 +182,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             !title.trim() ||
             !department.trim() ||
             !location.trim() ||
-            !jobDescription.trim() ||
+            jobDescription.filter(item => item.trim() !== '').length === 0 ||
             !experience.trim() ||
             !jobType.trim() ||
             !salary.trim() ||
@@ -182,7 +190,9 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             !qualification.trim() ||
             !openingType.trim() ||
             keyResponsibilities.filter(item => item.trim() !== '').length === 0 || // Ensure arrays are not empty
-            requiredSkills.filter(item => item.trim() !== '').length === 0 ||
+            // requiredSkills.filter(item => item.trim() !== '').length === 0 ||
+           requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== '').length === 0 ||
+
             requirements.filter(item => item.trim() !== '').length === 0 ||
             workEnvironment.filter(item => item.trim() !== '').length === 0 ||
             benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '').length === 0
@@ -196,9 +206,10 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         const jobData: Omit<Job, '_id' | 'isDeleted' | 'createdAt' | 'updatedAt' | '__v'> = {
             addHeading: addHeading.trim() || undefined,
             title: title.trim(),
+            about: about.trim(),
             location: location.trim(),
             department: department.trim(),
-            jobDescription: jobDescription.trim(),
+            jobDescription: jobDescription.filter(item => item.trim() !== ''),
             experience: experience.trim(),
             jobType: jobType.trim(),
             salary: salary.trim(),
@@ -207,7 +218,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             qualification: qualification.trim(),
             openingType: openingType.trim(),
             keyResponsibilities: keyResponsibilities.filter(item => item.trim() !== ''),
-            requiredSkills: requiredSkills.filter(item => item.trim() !== ''),
+            requiredSkills: requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== ''),
             requirements: requirements.filter(item => item.trim() !== ''),
             workEnvironment: workEnvironment.filter(item => item.trim() !== ''),
             benefits: benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== ''),
@@ -248,9 +259,10 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         setAddHeading('');
         setLocalNewHeadings([]);
         setTitle('');
+        setAbout('');
         setLocation('');
         setDepartment('');
-        setJobDescription('');
+        setJobDescription(['']);
         setExperience('');
         setJobType('');
         setSalary('');
@@ -258,7 +270,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         setQualification('');
         setOpeningType('');
         setKeyResponsibilities(['']);
-        setRequiredSkills(['']); // ADDED: Clear requiredSkills
+        setRequiredSkills([{ title: '', level: '' }]); // ADDED: Clear requiredSkills
+        setBenefits([{ title: '', description: '' }]);
         setRequirements(['']);
         setWorkEnvironment(['']);
         setBenefits([{ title: '', description: '' }]);
@@ -266,97 +279,225 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     };
 
     // Generic render function for array fields (single or dual inputs)
-    const renderFlexibleArrayField = useCallback(<T extends string[] | { title: string; description: string; }[]>(
-        label: string,
-        list: T,
-        setter: React.Dispatch<React.SetStateAction<T>>,
-        isDualField: boolean = false
-    ) => (
-        <div className="space-y-2">
-            <Label>{label}</Label>
-            {list.map((item, index) => (
-                <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
-                    {isDualField ? (
-                        <>
-                            <div className="flex-1 min-w-[150px]">
-                                <Label htmlFor={`${label.replace(/\s/g, '')}Title-${index}`} className="text-sm">Title</Label>
-                                <Input
-                                    id={`${label.replace(/\s/g, '')}Title-${index}`}
-                                    type="text"
-                                    // Assert item as the structured type when isDualField is true
-                                    value={(item as { title: string; description: string; }).title}
-                                    onChange={(e) => {
-                                        const updatedList = [...list] as T; // Use generic type T for updatedList
-                                        (updatedList[index] as { title: string; description: string; }).title = e.target.value;
-                                        setter(updatedList);
-                                    }}
-                                    placeholder={`Enter ${label.toLowerCase()} title`}
-                                    className="w-full"
-                                    disabled={loading}
-                                />
-                            </div>
-                            <div className="flex-1 min-w-[150px]">
-                                <Label htmlFor={`${label.replace(/\s/g, '')}Description-${index}`} className="text-sm">Description</Label>
-                                <Input
-                                    id={`${label.replace(/\s/g, '')}Description-${index}`}
-                                    type="text"
-                                    // Assert item as the structured type when isDualField is true
-                                    value={(item as { title: string; description: string; }).description}
-                                    onChange={(e) => {
-                                        const updatedList = [...list] as T; // Use generic type T for updatedList
-                                        (updatedList[index] as { title: string; description: string; }).description = e.target.value;
-                                        setter(updatedList);
-                                    }}
-                                    placeholder={`Enter ${label.toLowerCase()} description`}
-                                    className="w-full"
-                                    disabled={loading}
-                                />
-                            </div>
-                        </>
-                    ) : (
-                        <Input
-                            type="text"
-                            // Assert item as string when isDualField is false
-                            value={item as string}
-                            onChange={(e) => {
-                                const updatedList = [...list] as T; // Use generic type T for updatedList
-                                updatedList[index] = e.target.value as T[number]; // Cast the element to the item type of T
-                                setter(updatedList);
-                            }}
-                            placeholder={`Enter ${label.toLowerCase()} item`}
-                            className="flex-grow"
-                            disabled={loading}
-                        />
-                    )}
+    // const renderFlexibleArrayField = useCallback(<T extends string[] | { title: string; description: string; }[]>(
+    //     label: string,
+    //     list: T,
+    //     setter: React.Dispatch<React.SetStateAction<T>>,
+    //     isDualField: boolean = false
+    // ) => (
+    //     <div className="space-y-2">
+    //         <Label>{label}</Label>
+    //         {list.map((item, index) => (
+    //             <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
+    //                 {isDualField ? (
+    //                     <>
+    //                         <div className="flex-1 min-w-[150px]">
+    //                             <Label htmlFor={`${label.replace(/\s/g, '')}Title-${index}`} className="text-sm">Title</Label>
+    //                             <Input
+    //                                 id={`${label.replace(/\s/g, '')}Title-${index}`}
+    //                                 type="text"
+    //                                 // Assert item as the structured type when isDualField is true
+    //                                 value={(item as { title: string; description: string; }).title}
+    //                                 onChange={(e) => {
+    //                                     const updatedList = [...list] as T; // Use generic type T for updatedList
+    //                                     (updatedList[index] as { title: string; description: string; }).title = e.target.value;
+    //                                     setter(updatedList);
+    //                                 }}
+    //                                 placeholder={`Enter ${label.toLowerCase()} title`}
+    //                                 className="w-full"
+    //                                 disabled={loading}
+    //                             />
+    //                         </div>
+    //                         <div className="flex-1 min-w-[150px]">
+    //                             <Label htmlFor={`${label.replace(/\s/g, '')}Description-${index}`} className="text-sm">Description</Label>
+    //                             <Input
+    //                                 id={`${label.replace(/\s/g, '')}Description-${index}`}
+    //                                 type="text"
+    //                                 // Assert item as the structured type when isDualField is true
+    //                                 value={(item as { title: string; description: string; }).description}
+    //                                 onChange={(e) => {
+    //                                     const updatedList = [...list] as T; // Use generic type T for updatedList
+    //                                     (updatedList[index] as { title: string; description: string; }).description = e.target.value;
+    //                                     setter(updatedList);
+    //                                 }}
+    //                                 placeholder={`Enter ${label.toLowerCase()} description`}
+    //                                 className="w-full"
+    //                                 disabled={loading}
+    //                             />
+    //                         </div>
+    //                     </>
+    //                 ) : (
+    //                     <Input
+    //                         type="text"
+    //                         // Assert item as string when isDualField is false
+    //                         value={item as string}
+    //                         onChange={(e) => {
+    //                             const updatedList = [...list] as T; // Use generic type T for updatedList
+    //                             updatedList[index] = e.target.value as T[number]; // Cast the element to the item type of T
+    //                             setter(updatedList);
+    //                         }}
+    //                         placeholder={`Enter ${label.toLowerCase()} item`}
+    //                         className="flex-grow"
+    //                         disabled={loading}
+    //                     />
+    //                 )}
 
-                    {list.length > 1 && (
-                        <button
-                            type="button"
-                            className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex-shrink-0"
-                            onClick={() => {
-                                // Filter and ensure the type is consistent with T
-                                setter(list.filter((_, i) => i !== index) as T);
-                            }}
-                            disabled={loading}
-                        >
-                            Remove
-                        </button>
-                    )}
-                </div>
-            ))}
-            <button
-                type="button"
-                className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
-                onClick={() => {
-                    // Add new item and ensure the type is consistent with T
-                    setter([...list, isDualField ? { title: '', description: '' } : ''] as T);
-                }}
-                disabled={loading}
-            >
-                Add New {label.endsWith('s') ? label.slice(0, -1) : label}
-            </button>
-        </div>
-    ), [loading]);
+    //                 {list.length > 1 && (
+    //                     <button
+    //                         type="button"
+    //                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex-shrink-0"
+    //                         onClick={() => {
+    //                             // Filter and ensure the type is consistent with T
+    //                             setter(list.filter((_, i) => i !== index) as T);
+    //                         }}
+    //                         disabled={loading}
+    //                     >
+    //                         Remove
+    //                     </button>
+    //                 )}
+    //             </div>
+    //         ))}
+    //         <button
+    //             type="button"
+    //             className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+    //             onClick={() => {
+    //                 // Add new item and ensure the type is consistent with T
+    //                 setter([...list, isDualField ? { title: '', description: '' } : ''] as T);
+    //             }}
+    //             disabled={loading}
+    //         >
+    //             Add New {label.endsWith('s') ? label.slice(0, -1) : label}
+    //         </button>
+    //     </div>
+    // ), [loading]);
+
+
+
+    // Updated generic render function
+const renderFlexibleArrayField = useCallback(<T extends string[] | { title: string; description: string; }[] | { title: string; level: string; }[]>(
+
+    label: string,
+    list: T,
+    setter: React.Dispatch<React.SetStateAction<T>>,
+    isDualField: boolean = false,
+    isSkillField: boolean = false
+) => (
+    <div className="space-y-2">
+        <Label>{label}</Label>
+        {list.map((item, index) => (
+            <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
+                {isDualField ? (
+                    // case: Benefits (title + description)
+                    <>
+                        <div className="flex-1 min-w-[150px]">
+                            <Label className="text-sm">Title</Label>
+                            <Input
+                                type="text"
+                                value={(item as { title: string; description: string; }).title}
+                                onChange={(e) => {
+                                    const updated = [...list] as T;
+                                    (updated[index] as { title: string; description: string }).title = e.target.value;
+                                    setter(updated);
+                                }}
+                                placeholder="Enter benefit title"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="flex-1 min-w-[150px]">
+                            <Label className="text-sm">Description</Label>
+                            <Input
+                                type="text"
+                                value={(item as { title: string; description: string; }).description}
+                                onChange={(e) => {
+                                    const updated = [...list] as T;
+                                    (updated[index] as { title: string; description: string }).description = e.target.value;
+                                    setter(updated);
+                                }}
+                                placeholder="Enter benefit description"
+                                disabled={loading}
+                            />
+                        </div>
+                    </>
+                ) : isSkillField ? (
+                    // case: Required Skills (title + level)
+                    <>
+                        <div className="flex-1 min-w-[150px]">
+                            <Label className="text-sm">Skill</Label>
+                            <Input
+                                type="text"
+                                value={(item as { title: string; level: string }).title}
+                                onChange={(e) => {
+                                    const updated = [...list] as T;
+                                    (updated[index] as { title: string; level: string }).title = e.target.value;
+                                    setter(updated);
+                                }}
+                                placeholder="Enter skill name"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="flex-1 min-w-[150px]">
+                            <Label className="text-sm">Level</Label>
+                            <select
+                                value={(item as { title: string; level: string }).level}
+                                onChange={(e) => {
+                                    const updated = [...list] as T;
+                                    (updated[index] as { title: string; level: string }).level = e.target.value;
+                                    setter(updated);
+                                }}
+                                className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
+                                disabled={loading}
+                            >
+                                <option value="">Select level</option>
+                                <option value="Basic">Basic</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                    </>
+                ) : (
+                    // case: simple string list
+                    <Input
+                        type="text"
+                        value={item as string}
+                        onChange={(e) => {
+                            const updated = [...list] as T;
+                            updated[index] = e.target.value as T[number];
+                            setter(updated);
+                        }}
+                        placeholder={`Enter ${label.toLowerCase()} item`}
+                        disabled={loading}
+                    />
+                )}
+
+                {list.length > 1 && (
+                    <button
+                        type="button"
+                        className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                        onClick={() => setter(list.filter((_, i) => i !== index) as T)}
+                        disabled={loading}
+                    >
+                        Remove
+                    </button>
+                )}
+            </div>
+        ))}
+        <button
+            type="button"
+            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            onClick={() => {
+                setter([
+                    ...list,
+                    isDualField ? { title: '', description: '' } :
+                    isSkillField ? { title: '', level: '' } :
+                    ''
+                ] as T);
+            }}
+            disabled={loading}
+        >
+            Add New {label.endsWith('s') ? label.slice(0, -1) : label}
+        </button>
+    </div>
+), [loading]);
 
 
     return (
@@ -413,12 +554,13 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                     </div>
 
                     {/* Other Job Fields */}
+                    <div><Label htmlFor="about">About</Label><Input id="about" value={about} required onChange={(e) => setAbout(e.target.value)} disabled={loading} className="mt-1" /></div>
                     <div><Label htmlFor="department">Department</Label><Input id="department" value={department} required onChange={(e) => setDepartment(e.target.value)} disabled={loading} className="mt-1" /></div>
                     <div><Label htmlFor="location">Location</Label><Input id="location" value={location} required onChange={(e) => setLocation(e.target.value)} disabled={loading} className="mt-1" /></div>
-                    <div>
+                    {/* <div>
                         <Label htmlFor="jobDescription">Job Description</Label>
                         <textarea id="jobDescription" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={6} className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" required disabled={loading} />
-                    </div>
+                    </div> */}
                     <div><Label htmlFor="experience">Experience</Label><Input id="experience" value={experience} required onChange={(e) => setExperience(e.target.value)} disabled={loading} className="mt-1" /></div>
                     <div>
                         <Label htmlFor="jobType">Job Type</Label>
@@ -459,7 +601,9 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
                     {/* Render dynamic array fields using the helper function */}
                     {renderFlexibleArrayField('Key Responsibilities', keyResponsibilities, setKeyResponsibilities)}
-                    {renderFlexibleArrayField('Required Skills', requiredSkills, setRequiredSkills)}
+                    {renderFlexibleArrayField('Job Description', jobDescription, setJobDescription)}
+                    {renderFlexibleArrayField('Required Skills', requiredSkills, setRequiredSkills, false, true)}
+               
                     {renderFlexibleArrayField('Requirements', requirements, setRequirements)}
                     {renderFlexibleArrayField('Work Environment', workEnvironment, setWorkEnvironment)}
                     {/* Call renderFlexibleArrayField with isDualField = true for Benefits */}

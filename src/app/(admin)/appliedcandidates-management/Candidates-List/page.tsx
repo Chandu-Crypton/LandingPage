@@ -114,7 +114,7 @@ const AppliedCandidatesListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                     <StatCard
-                        title="Total Candidates"
+                        title="Total Candidate Entries"
                         value={appliedcandidates.length}
                         icon={UserIcon}
                         badgeColor="success"

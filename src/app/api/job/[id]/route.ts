@@ -15,11 +15,11 @@ interface IJob {
     location?: string;
     department?: string;
     keyResponsibilities?: string[];
-    requiredSkills?: string[];
+    requiredSkills?: Array<{ title: string; level: string }>;
     requirements?: string[];
     workEnvironment?: string[];
     benefits?: Array<{ title: string; description: string }>;
-    jobDescription?: string;
+    jobDescription?: string[];
     salary?: string;
     experience?: string;
     qualification?: string;
@@ -108,8 +108,21 @@ export async function PUT(req: Request) {
                             { status: 400, headers: corsHeaders }
                         );
                     }
-                } else if (
-                    ['keyResponsibilities', 'requiredSkills', 'requirements', 'workEnvironment'].includes(key)
+                }  else if (key === 'requiredSkills') {
+                    if (Array.isArray(body[key])) {
+                        // Ensure requiredSkills are structured correctly as per your schema
+                        updateData.requiredSkills = body[key].map((b: { title?: string; level?: string }) => ({
+                            title: String(b.title || '').trim(),
+                            level: String(b.level || '').trim()
+                        })).filter((b) => b.title !== '' || b.level !== ''); // Filter out completely empty benefit objects
+                    } else {
+                        return NextResponse.json(
+                            { success: false, message: 'Invalid format for requiredSkills during update. Must be an array of objects.' },
+                            { status: 400, headers: corsHeaders }
+                        );
+                    }
+                }  else if (
+                    ['keyResponsibilities',  'requirements', 'workEnvironment', 'jobDescription'].includes(key)
                 ) {
                     const filtered = (body[key] as string[]).filter(
                         (item: string) => item.trim() !== ''
@@ -117,7 +130,7 @@ export async function PUT(req: Request) {
 
                     updateData[key as Extract<
                         keyof IJob,
-                        'keyResponsibilities' | 'requiredSkills' | 'requirements' | 'workEnvironment'
+                        'keyResponsibilities'  | 'requirements' | 'workEnvironment' | 'jobDescription'
                     >] = filtered;
                 } else if (body[key] !== undefined && key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'isDeleted') {
                     // Directly assign other fields if they are not undefined and not internal Mongoose fields

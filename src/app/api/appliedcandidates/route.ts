@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
     const title = formData.get('title') as string;
     const fullName = formData.get('fullName') as string;
     const location = formData.get('location') as string;
+    const department = formData.get('department') as string;
     const email = formData.get('email') as string;
     const phone = formData.get('phone') as string; // Will need to be converted to a number
     const workplacetype = formData.get('workplacetype') as string;
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
     const resume = formData.get('resume') as File | null;
 
     // --- Validation ---
-    if (!title || !fullName || !location || !email || !phone || !workplacetype || !employmenttype || !background || !resume) {
+    if (!title || !fullName || !location  || !email || !phone || !workplacetype || !employmenttype || !background || !resume) {
       return NextResponse.json(
         { success: false, message: 'Missing required form data fields.' },
         { status: 400, headers: corsHeaders }
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
       title,
       fullName,
       location,
+      department,
       email,
       phone: phoneAsNumber,
       workplacetype,

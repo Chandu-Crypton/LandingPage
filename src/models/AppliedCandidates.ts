@@ -7,6 +7,7 @@ export interface IAppliedCandidates extends Document {
     email: string,
     phone: number,
     location: string,
+    department?: string,
     workplacetype: string,
     employmenttype: string,
     background: string,
@@ -40,7 +41,12 @@ const appliedCandidatesSchema: Schema = new Schema ({
         type: String,
         required: true
     },
-    
+
+    department: {
+        type: String,
+        required: false
+    },
+
     workplacetype:{
         type: String,
         required: true

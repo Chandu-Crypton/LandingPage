@@ -112,7 +112,7 @@ const JobListPage: React.FC = () => {
 
         <div className="w-full lg:w-1/4">
           <StatCard
-            title="Total Jobs"
+            title="Total Job Entries"
             value={jobs.length}
             icon={UserIcon}
             badgeColor="success"

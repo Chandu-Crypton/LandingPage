@@ -8,11 +8,15 @@ type Job = {
   _id: string;
   addHeading?: string; // Optional field for additional heading
   title: string;
+  about: string;
   department: string;
   location: string;
-  jobDescription: string;
+  jobDescription: string[];
   keyResponsibilities: string[];
-  requiredSkills: string[];
+  requiredSkills: {
+    title: string;
+    level: string;
+  }[];
   requirements: string[];
   workEnvironment: string[];
   benefits: 

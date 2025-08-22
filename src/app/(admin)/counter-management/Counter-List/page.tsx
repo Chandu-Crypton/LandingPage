@@ -94,7 +94,7 @@ const CounterListPage: React.FC = () => {
 
          <div className="w-full lg:w-1/4">
           <StatCard
-            title="Total Offers"
+            title="Total Counter Entries"
             value={offers.length}
             icon={UserIcon}
             badgeColor="success"

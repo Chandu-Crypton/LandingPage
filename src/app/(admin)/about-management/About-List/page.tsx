@@ -93,7 +93,7 @@ const AboutListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                     <StatCard
-                        title="Total Abouts"
+                        title="Total About Entries"
                         value={abouts.length}
                         icon={UserIcon}
                         badgeColor="success"

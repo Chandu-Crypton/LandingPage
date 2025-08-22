@@ -96,7 +96,7 @@ const BlogListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                     <StatCard
-                        title="Total Blogs"
+                        title="Total Blog Entries"
                         value={blogs.length}
                         icon={UserIcon}
                         badgeColor="success"

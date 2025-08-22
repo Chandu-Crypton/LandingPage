@@ -4,12 +4,16 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IJob extends Document {
     addHeading?: string; // This field is now part of the Job document
     title: string;
+    about: string;
     department: string;
     location: string;
     keyResponsibilities: string[];
-    requiredSkills: string[];
+    requiredSkills: {
+        title: string;
+        level: string;
+    }[]
     requirements: string[];
-    jobDescription: string;
+    jobDescription: string[];
     experience: string;
     jobType: string;
     salary: string;
@@ -29,12 +33,16 @@ export interface IJob extends Document {
 
 
 const jobSchema: Schema = new Schema({
-    addHeading: { 
+    addHeading: {
         type: String,
-        required: false, 
+        required: false,
         trim: true,
     },
     title: {
+        type: String,
+        required: true,
+    },
+    about: {
         type: String,
         required: true,
     },
@@ -51,15 +59,18 @@ const jobSchema: Schema = new Schema({
         required: true
     },
     requiredSkills: {
-        type: [String],
+        type: [{
+            title: { type: String, required: true },
+            level: { type: String, required: true }
+        }],
         required: true
     },
     requirements: {
         type: [String],
         required: true
-    },  
+    },
     jobDescription: {
-        type: String,
+        type: [String],
         required: true
     },
     experience: {
@@ -90,15 +101,15 @@ const jobSchema: Schema = new Schema({
         type: [String],
         required: true
     },
-    benefits: [{ 
+    benefits: [{
         title: { type: String, required: true, trim: true },
         description: { type: String, required: true, trim: true }
     }],
-    isDeleted: { 
+    isDeleted: {
         type: Boolean,
         default: false,
     }
-}, { timestamps: true }); 
+}, { timestamps: true });
 
 
 const JobModal = mongoose.models.JobModal || mongoose.model<IJob>("JobModal", jobSchema);

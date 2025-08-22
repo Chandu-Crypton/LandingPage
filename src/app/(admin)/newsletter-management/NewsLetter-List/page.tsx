@@ -96,7 +96,7 @@ const NewsLetterListPage: React.FC = () => {
 
         <div className="w-full lg:w-1/4">
           <StatCard
-            title="Total Newsletters"
+            title="Total Newsletter Entries"
             value={newsletters.length}
             icon={UserIcon}
             badgeColor="success"
@@ -106,8 +106,8 @@ const NewsLetterListPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Jobs Table */}
-      <ComponentCard title="All Jobs">
+      {/* Newsletters Table */}
+      <ComponentCard title="All NewsLetters">
         {!loading ? (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">

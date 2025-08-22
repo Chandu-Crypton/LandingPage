@@ -7,6 +7,11 @@ import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons';
 
+type RequiredSkill = {
+  title: string;
+  level: string;
+};
+
 type Benefit = {
   title: string;
   description: string;
@@ -18,9 +23,10 @@ type Job = {
   title: string;
   department: string;
   location: string;
-  jobDescription: string;
+  about: string;
+  jobDescription: string[]; // ✅ array now
   keyResponsibilities: string[];
-  requiredSkills: string[];
+  requiredSkills: RequiredSkill[]; // ✅ array of objects
   requirements: string[];
   workEnvironment: string[];
   benefits: Benefit[];
@@ -114,20 +120,37 @@ const JobDetailPage: React.FC = () => {
         </div>
 
         <div className="space-y-6">
+          <p><strong>About:</strong> {job.about}</p>
           <p><strong>Department:</strong> {job.department}</p>
           <p><strong>Location:</strong> {job.location}</p>
           <div>
             <strong>Job Description:</strong>
-            <p className="mt-1">{job.jobDescription}</p>
+            <ul className="list-disc pl-6 space-y-1 mt-1">
+              {job.jobDescription.map((desc, idx) => (
+                <li key={idx} className="text-gray-800 dark:text-gray-200">
+                  {desc}
+                </li>
+              ))}
+            </ul>
           </div>
+
+
           <div>
             <strong>Key Responsibilities:</strong>
             {renderList(job.keyResponsibilities)}
           </div>
+
           <div>
             <strong>Required Skills:</strong>
-            {renderList(job.requiredSkills)}
+            <ul className="list-disc pl-6 space-y-1">
+              {job.requiredSkills.map((skill, idx) => (
+                <li key={idx} className="text-gray-800 dark:text-gray-200">
+                  <span className="font-semibold">{skill.title}</span> – {skill.level}
+                </li>
+              ))}
+            </ul>
           </div>
+
           <div>
             <strong>Requirements:</strong>
             {renderList(job.requirements)}
