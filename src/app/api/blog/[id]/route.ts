@@ -47,7 +47,6 @@ export async function GET(req: Request) {
 }
 
 
-
 export async function PUT(req: NextRequest) {
     await connectToDatabase();
 
@@ -56,134 +55,159 @@ export async function PUT(req: NextRequest) {
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
-            { success: false, message: 'Invalid or missing Blog ID.' },
+            { success: false, message: "Invalid or missing Blog ID." },
             { status: 400, headers: corsHeaders }
         );
     }
 
     try {
         const formData = await req.formData();
-        const updateData: Partial<IBlog> = {}; // Using Partial<IBlog> for type safety
+        const updateData: Partial<IBlog> = {}; // Partial<IBlog>
 
-        // Get values from FormData
-        const blogHeading = formData.get('blogHeading');    
-        const title = formData.get('title');
-        const mainImageFile = formData.get('mainImage');
-        const headingImageFile = formData.get('headingImage');
-        const description = formData.get('description');
-        const items = formData.get('items');
+        // --- Text Fields ---
+        const addHeading = formData.get("addHeading")?.toString();
+        const blogHeading = formData.get("blogHeading")?.toString();
+        const title = formData.get("title")?.toString();
+        const description = formData.get("description")?.toString();
+        const readtime = formData.get("readtime")?.toString();
+        const featured = formData.get("featured") === 'true';
+        const category = formData.get("category")?.toString();
+        const bestQuote = formData.get("bestQuote")?.toString();
 
-        // --- Text Field Validation and Assignment ---
-        if (blogHeading !== null && typeof blogHeading === 'string' && blogHeading.trim()) {
-            updateData.blogHeading = blogHeading;
-        }
-        if (title !== null && typeof title === 'string' && title.trim()) {
-            updateData.title = title;
-        }
-        if (description !== null && typeof description === 'string' && description.trim()) {
-            updateData.description = description;
-        }
+        if (addHeading !== undefined) updateData.addHeading = addHeading;
+        if (blogHeading) updateData.blogHeading = blogHeading;
+        if (title) updateData.title = title;
+        if(featured) updateData.featured = featured;
+        if (description) updateData.description = description;
+        if (readtime) updateData.readtime = readtime;
+        if (category) updateData.category = category;
+        if (bestQuote) updateData.bestQuote = bestQuote;
 
-        // --- Corrected Items Parsing and Validation ---
-        if (items !== null && typeof items === 'string' && items.trim()) {
+        // --- Tags ---
+        const tagsString = formData.get("tags")?.toString();
+        if (tagsString) {
             try {
-                // Asserting 'items' as string before parsing
-                const parsedItems: { itemTitle: string; itemDescription: string; }[] = JSON.parse(items as string);
-
-                // Validate parsedItems structure
-                if (Array.isArray(parsedItems) && parsedItems.every(item =>
-                    typeof item === 'object' && item !== null &&
-                    'itemTitle' in item && typeof item.itemTitle === 'string' && // No 'as any' needed
-                    'itemDescription' in item && typeof item.itemDescription === 'string' // No 'as any' needed
-                )) {
-                    updateData.items = parsedItems;
+                const parsedTags = JSON.parse(tagsString);
+                if (Array.isArray(parsedTags)) {
+                    updateData.tags = parsedTags.map((t: string) => t.trim()).filter(Boolean);
                 } else {
                     return NextResponse.json(
-                        { success: false, message: 'Invalid format for "items" field. Expected a JSON array of objects with itemTitle and itemDescription properties.' },
+                        { success: false, message: "Tags should be a JSON array of strings." },
                         { status: 400, headers: corsHeaders }
                     );
                 }
-            } catch (jsonError) {
-                console.error('JSON parsing error for "items":', jsonError);
-                const message = jsonError instanceof Error ? jsonError.message : 'Invalid JSON format for "items" field.';
+            } catch {
                 return NextResponse.json(
-                    { success: false, message },
+                    { success: false, message: "Invalid JSON format for tags." },
                     { status: 400, headers: corsHeaders }
                 );
             }
         }
 
-        // --- Main Image File Upload Logic ---
+        // --- Items ---
+        const itemsString = formData.get("items")?.toString();
+        if (itemsString) {
+            try {
+                const parsedItems = JSON.parse(itemsString);
+                if (Array.isArray(parsedItems)) {
+                    updateData.items = parsedItems.map((item: { itemTitle?: string; itemDescription?: string | string[] }) => ({
+                        itemTitle: item.itemTitle?.toString().trim() || "",
+                        itemDescription: Array.isArray(item.itemDescription)
+                            ? item.itemDescription.map((d: string) => d.trim())
+                            : [item.itemDescription?.toString().trim() || ""],
+                    })).filter(it => it.itemTitle || it.itemDescription.length);
+                } else {
+                    return NextResponse.json(
+                        { success: false, message: "Items should be a JSON array of objects." },
+                        { status: 400, headers: corsHeaders }
+                    );
+                }
+            } catch {
+                return NextResponse.json(
+                    { success: false, message: "Invalid JSON format for items." },
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+        }
+
+        // --- Key Technologies ---
+        const keyTechString = formData.get("keyTechnologies")?.toString();
+        if (keyTechString) {
+            try {
+                const parsed = JSON.parse(keyTechString);
+                const parsedArray = Array.isArray(parsed) ? parsed : [parsed];
+                updateData.keyTechnologies = parsedArray.map((item: { itemTitle?: string; itemDescription?: string; itemPoints?: string[] }) => ({
+                    itemTitle: item.itemTitle?.toString().trim() || "",
+                    itemDescription: item.itemDescription?.toString().trim() || "",
+                    itemPoints: Array.isArray(item.itemPoints)
+                        ? item.itemPoints.map((p: string) => p.trim())
+                        : [],
+                }));
+            } catch {
+                return NextResponse.json(
+                    { success: false, message: "Invalid JSON format for keyTechnologies." },
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+        }
+
+        // --- Main Image ---
+        const mainImageFile = formData.get("mainImage");
         if (mainImageFile instanceof File && mainImageFile.size > 0) {
             const buffer = Buffer.from(await mainImageFile.arrayBuffer());
-            const uploadResponse = await imagekit.upload({
+            const uploadRes = await imagekit.upload({
                 file: buffer,
                 fileName: `${uuidv4()}-${mainImageFile.name}`,
-                folder: '/blog-main-images',
+                folder: "/blog-main-images",
             });
-
-            if (uploadResponse.url) {
-                updateData.mainImage = uploadResponse.url;
-            } else {
-                return NextResponse.json(
-                    { success: false, message: 'Failed to upload new main image file.' },
-                    { status: 500, headers: corsHeaders }
-                );
-            }
-        } else if (mainImageFile === 'null' || mainImageFile === '') {
-            updateData.mainImage = ''; // Use empty string for string type in Mongoose
+            updateData.mainImage = uploadRes.url;
+        } else if (mainImageFile === "null" || mainImageFile === "") {
+            updateData.mainImage = "";
         }
 
-        // --- Heading Image File Upload Logic ---
+        // --- Heading Image ---
+        const headingImageFile = formData.get("headingImage");
         if (headingImageFile instanceof File && headingImageFile.size > 0) {
             const buffer = Buffer.from(await headingImageFile.arrayBuffer());
-            const uploadResponse = await imagekit.upload({
+            const uploadRes = await imagekit.upload({
                 file: buffer,
                 fileName: `${uuidv4()}-${headingImageFile.name}`,
-                folder: '/blog-heading-images',
+                folder: "/blog-heading-images",
             });
-
-            if (uploadResponse.url) {
-                updateData.headingImage = uploadResponse.url; // Corrected casing: HeadingImage
-            } else {
-                return NextResponse.json(
-                    { success: false, message: 'Failed to upload new heading image file.' },
-                    { status: 500, headers: corsHeaders }
-                );
-            }
-        } else if (headingImageFile === 'null' || headingImageFile === '') {
-            updateData.headingImage = ''; 
+            updateData.headingImage = uploadRes.url;
+        } else if (headingImageFile === "null" || headingImageFile === "") {
+            updateData.headingImage = "";
         }
 
-        // Check if any update data is provided
+        // --- Check if anything to update ---
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json(
-                { success: false, message: 'No valid fields provided for update.' },
+                { success: false, message: "No valid fields provided for update." },
                 { status: 400, headers: corsHeaders }
             );
         }
 
-        const updatedDoc = await Blog.findByIdAndUpdate(
+        const updatedBlog = await Blog.findByIdAndUpdate(
             id,
             { $set: updateData },
             { new: true, runValidators: true }
         );
 
-        if (!updatedDoc) {
+        if (!updatedBlog) {
             return NextResponse.json(
-                { success: false, message: 'Blog entry not found for update.' },
+                { success: false, message: "Blog entry not found for update." },
                 { status: 404, headers: corsHeaders }
             );
         }
 
         return NextResponse.json(
-            { success: true, data: updatedDoc, message: 'Blog entry updated successfully.' },
+            { success: true, data: updatedBlog, message: "Blog entry updated successfully." },
             { status: 200, headers: corsHeaders }
         );
 
     } catch (error) {
         console.error(`PUT /api/blog/${id} error:`, error);
-        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        const message = error instanceof Error ? error.message : "Internal Server Error";
         return NextResponse.json(
             { success: false, message },
             { status: 500, headers: corsHeaders }

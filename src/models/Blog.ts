@@ -13,6 +13,16 @@ export interface IBlog extends Document {
     headingImage?: string;
     items: {
         itemTitle: string;
+        itemDescription: string[];
+    }[];
+    readtime: string;
+    category: string;
+    featured: boolean;
+    tags: string[];
+    bestQuote: string;
+     keyTechnologies: {
+        itemTitle: string;
+        itemPoints: string[];
         itemDescription: string;
     }[];
     isDeleted?: boolean;
@@ -42,6 +52,46 @@ const BlogSchema: Schema = new Schema({
         required: true,
         trim: true,
     },
+    readtime: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    featured: {
+        type: Boolean,
+        default: false,
+    },
+    category: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+     keyTechnologies: [{
+            itemTitle: {
+                type: String,
+                required: true,
+                trim: true,
+            },
+            itemPoints: {
+                type: [String],
+                required: true,
+                trim: true,
+            },
+            itemDescription: {
+                type: String,
+                required: true,
+                trim: true,
+            },
+        }],
+    tags: {
+        type: [String],
+        required: true,
+    },
+    bestQuote: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     mainImage: {
         type: String,
         required: false, // Optional field
@@ -57,7 +107,7 @@ const BlogSchema: Schema = new Schema({
             trim: true,
         },
         itemDescription: {
-            type: String,
+            type: [String],
             required: true,
             trim: true,
         },

@@ -163,14 +163,50 @@ export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-
+        console.log("Received form data:", formData);
         const addHeading = formData.get('addHeading')?.toString() || undefined; // Optional
         const blogHeading = formData.get('blogHeading')?.toString();
         const title = formData.get('title')?.toString();
         const description = formData.get('description')?.toString();
+        const bestQuote = formData.get('bestQuote')?.toString();
+        const category = formData.get('category')?.toString();
+        const featured = formData.get('featured')?.toString() === 'true';
+        const readtime = formData.get('readtime')?.toString();
+        const tagsString = formData.get('tags')?.toString();
+        const keyTechnologiesString = formData.get('keyTechnologies')?.toString();
         const mainImageFile = formData.get('mainImage') as File | null;
         const headingImageFile = formData.get('headingImage') as File | null;
         const itemsString = formData.get('items')?.toString();
+   
+        const tags: string[] = tagsString ? JSON.parse(tagsString) : [];
+
+
+        let keyTechnologies: { itemTitle: string; itemPoints: string[]; itemDescription: string }[] = [];
+        if (keyTechnologiesString) {
+            try {
+                const parsed = JSON.parse(keyTechnologiesString);
+
+                // Always normalize to array
+                const parsedArray = Array.isArray(parsed) ? parsed : [parsed];
+
+                keyTechnologies = parsedArray.map(item => ({
+                    itemTitle: item.itemTitle ? String(item.itemTitle).trim() : '',
+                    itemPoints: Array.isArray(item.itemPoints)
+                        ? item.itemPoints.map((point: string) => String(point).trim())
+                        : [],
+                    itemDescription: item.itemDescription ? String(item.itemDescription).trim() : '',
+                })).filter(item => item.itemTitle !== '' || item.itemDescription !== '');
+            } catch (jsonError) {
+                console.error("Failed to parse keyTechnologies JSON:", jsonError);
+                return NextResponse.json(
+                    { success: false, message: 'Invalid format for keyTechnologies.' },
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+        }
+
+
+
 
         let items: { itemTitle: string; itemDescription: string }[] = [];
         if (itemsString) {
@@ -192,9 +228,9 @@ export async function POST(req: NextRequest) {
         }
 
         // Basic validation for REQUIRED fields
-        if (!blogHeading || !title || !description || items.length === 0) {
+        if (!blogHeading || !title || !description || !category ||  tags.length === 0 || !readtime || !bestQuote || (keyTechnologies.length === 0) || (items.length === 0)) {
             return NextResponse.json(
-                { success: false, message: 'Missing required fields (blogHeading, title, description, or items).' },
+                { success: false, message: 'Missing required fields (blogHeading, title, description, category, tags, keyTechnologies, or items).' },
                 { status: 400, headers: corsHeaders }
             );
         }
@@ -225,6 +261,12 @@ export async function POST(req: NextRequest) {
             addHeading,
             blogHeading,
             title,
+            tags,
+            featured,
+            readtime,
+            bestQuote,
+            keyTechnologies,
+            category,
             description,
             mainImage: mainImageUrl,
             headingImage: headingImageUrl,
