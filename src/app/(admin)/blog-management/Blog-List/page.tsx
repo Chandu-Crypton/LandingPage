@@ -59,11 +59,11 @@ const BlogListPage: React.FC = () => {
         const lowercasedSearchTerm = searchTerm.toLowerCase();
         return blogs.filter((blog) =>
             blog.title.toLowerCase().includes(lowercasedSearchTerm) ||
-            blog.description.toLowerCase().includes(lowercasedSearchTerm) ||
-            blog.items.some(item =>
-                item.itemTitle.toLowerCase().includes(lowercasedSearchTerm) ||
-                item.itemDescription.toLowerCase().includes(lowercasedSearchTerm)
-            )
+            blog.description.toLowerCase().includes(lowercasedSearchTerm) 
+            // blog.items.some(item =>
+            //     item.itemTitle.toLowerCase().includes(lowercasedSearchTerm) ||
+            //     item.itemDescription.toLowerCase().includes(lowercasedSearchTerm)
+            // )
         );
     }, [blogs, searchTerm]);
 
