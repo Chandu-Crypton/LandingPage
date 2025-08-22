@@ -52,20 +52,39 @@ const BlogListPage: React.FC = () => {
 
 
 
+    // const filteredBlogs = useMemo(() => {
+    //     if (!searchTerm.trim()) {
+    //         return blogs;
+    //     }
+    //     const lowercasedSearchTerm = searchTerm.toLowerCase();
+    //     return blogs.filter((blog) =>
+    //         blog.title.toLowerCase().includes(lowercasedSearchTerm) ||
+    //         blog.description.toLowerCase().includes(lowercasedSearchTerm) 
+    //     );
+    // }, [blogs, searchTerm]);
+
+
     const filteredBlogs = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return blogs;
-        }
-        const lowercasedSearchTerm = searchTerm.toLowerCase();
-        return blogs.filter((blog) =>
-            blog.title.toLowerCase().includes(lowercasedSearchTerm) ||
-            blog.description.toLowerCase().includes(lowercasedSearchTerm) 
-            // blog.items.some(item =>
-            //     item.itemTitle.toLowerCase().includes(lowercasedSearchTerm) ||
-            //     item.itemDescription.toLowerCase().includes(lowercasedSearchTerm)
-            // )
-        );
-    }, [blogs, searchTerm]);
+    if (!searchTerm.trim()) return blogs;
+
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
+
+    return blogs.filter((blog) => {
+        // check title and description
+        if (blog.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
+        if (blog.description.toLowerCase().includes(lowercasedSearchTerm)) return true;
+
+        // check inside items.itemDescription array
+        if (blog.items.some(item =>
+            item.itemDescription.some(desc =>
+                desc.toLowerCase().includes(lowercasedSearchTerm)
+            )
+        )) return true;
+
+        return false;
+    });
+}, [blogs, searchTerm]);
+
 
     return (
         <div className="container mx-auto px-4 py-8">
