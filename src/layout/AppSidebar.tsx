@@ -210,6 +210,18 @@ const productItems: NavItem[] = [
   },
 ];
 
+
+const internshipItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Internship",
+    subItems: [
+      { name: "Add New Internship", path: "/internship-management/Add-Internship", pro: false },
+      { name: "Internship List", path: "/internship-management/Internship-List", pro: false },
+    ],
+  },
+];
+
 const contactItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -228,6 +240,18 @@ const newsletterItems: NavItem[] = [
     subItems: [
       { name: "Add New Newsletter", path: "/newsletter-management/Add-NewsLetter", pro: false },
       { name: "Newsletter List", path: "/newsletter-management/NewsLetter-List", pro: false },
+    ],
+  },
+];
+     
+
+const policyItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Policy",
+    subItems: [
+      { name: "Privacy Policy", path: "/policy-management/privacy-policy", pro: false },
+      { name: "Terms and Conditions", path: "/policy-management/termsconditions", pro: false },
     ],
   },
 ];
@@ -274,9 +298,11 @@ const AppSidebar: React.FC = () => {
       { type: "about", items: aboutItems },
       { type: "technology", items: technologyItems },
       { type: "product", items: productItems },
+      { type: "internship", items: internshipItems },
       { type: "contact", items: contactItems },
       { type: "candidate", items: candidateItems },
       { type: "newsletter", items: newsletterItems },
+      { type: "policy", items: policyItems },
     ];
 
     // Iterate over all menu types to find a matching submenu
@@ -649,6 +675,23 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(productItems, "product")}
             </div>
 
+
+               <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "INTERNSHIP MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(internshipItems, "internship")}
+            </div>
+
               <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
@@ -681,8 +724,22 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(newsletterItems, "newsletter")}
             </div>
 
+             <div>
+               <h2
+                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                   ? "lg:justify-center"
+                   : "justify-start"
+                   }`}
+               >
+                 {isExpanded || isHovered || isMobileOpen ? (
+                   "POLICY MANAGEMENT"
+                 ) : (
+                   <HorizontaLDots />
+                 )}
+               </h2>
+               {renderMenuItems(policyItems, "policy")}
+             </div>
 
-         
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

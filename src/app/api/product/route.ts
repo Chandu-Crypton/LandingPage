@@ -252,10 +252,17 @@ export interface IProductCore {
     title: string; // Assuming 'subHeading' from frontend maps to 'titleB' on backend
     subHeading: string;
     description: string;
+    tags: string[];
+    category: string;
     videoFile: string;
     franchiseData: string;
     efficiency: string;
     rating: string;
+    googleStoreLink: string;
+    appleStoreLink: string;
+    deployLink: string;
+    emailLink: string;
+    contact: string;
     productControls: {
         productTitle: string;
         productIcon: string; // This will now be the ImageKit URL
@@ -277,7 +284,7 @@ export interface IProductCore {
 
 
 // Helper function to process array fields from FormData
-async function processArrayField<T extends { [key: string]:string | string[] }>(
+export async function processArrayField<T extends { [key: string]:string | string[] }>(
     formData: FormData,
     prefix: string, // e.g., 'productControls', 'keyFeatures', 'screenshot'
     fileFieldName: string | null, // e.g., 'productIcon', 'featureIcon', 'file'. Use null if no file field.
@@ -435,6 +442,7 @@ export async function GET() {
     }
 }
 
+
 export async function POST(req: NextRequest) {
     await connectToDatabase();
 
@@ -446,10 +454,19 @@ export async function POST(req: NextRequest) {
         const title = formData.get('title');
         const subHeading = formData.get('subHeading');
         const description = formData.get('description');
+        const category = formData.get('category');
+        const googleStoreLink = formData?.get('googleStoreLink');
+        const appleStoreLink = formData?.get('appleStoreLink');
+        const deployLink = formData?.get('deployLink');
+        const emailLink = formData?.get('emailLink');
+        const contact = formData?.get('contact');
+        const tagsString = formData.get('tags')?.toString();
         const franchiseData = formData.get('franchiseData');
         const efficiency = formData.get('efficiency');
         const rating = formData.get('rating');
+  
 
+        const tags: string[] = tagsString ? JSON.parse(tagsString) : [];
         // Extracting file field for video (handled similar to before)
         const videoFile = formData.get('videoFile');
 
@@ -458,6 +475,12 @@ export async function POST(req: NextRequest) {
             typeof title !== 'string' || !title.trim() ||
             typeof heading !== 'string' || !heading.trim() ||
             typeof subHeading !== 'string' || !subHeading.trim() ||
+            typeof category !== 'string' || !category.trim() ||
+            typeof googleStoreLink !== 'string' || !googleStoreLink.trim() ||
+            typeof appleStoreLink !== 'string' || !appleStoreLink.trim() ||
+            typeof deployLink !== 'string' || !deployLink.trim() ||
+            typeof emailLink !== 'string' || !emailLink.trim() ||
+            typeof contact !== 'string' || !contact.trim() ||
             typeof description !== 'string' || !description.trim() ||
             typeof franchiseData !== 'string' || !franchiseData.trim() ||
             typeof efficiency !== 'string' || !efficiency.trim() ||
@@ -468,6 +491,24 @@ export async function POST(req: NextRequest) {
                 { status: 400, headers: corsHeaders }
             );
         }
+ 
+        
+            const phoneAsNumber = Number(contact);
+            if (isNaN(phoneAsNumber)) {
+              return NextResponse.json(
+                { success: false, message: 'Phone number must be a valid number.' },
+                { status: 400, headers: corsHeaders }
+              );
+            }
+            
+            const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+            if (!emailRegex.test(emailLink)) {
+              return NextResponse.json(
+                { success: false, message: 'Please enter a valid email address.' },
+                { status: 400, headers: corsHeaders }
+              );
+            }
+            
 
         // Handle video file/URL upload
         let videoFileUrl = '';
@@ -554,6 +595,13 @@ export async function POST(req: NextRequest) {
             videoFile: videoFileUrl,
             franchiseData: franchiseData as string,
             efficiency: efficiency as string,
+            tags: tags,
+            googleStoreLink: googleStoreLink as string,
+            appleStoreLink: appleStoreLink as string,
+            deployLink: deployLink as string,
+            emailLink,
+            contact: phoneAsNumber,
+            category: category as string,
             rating: rating as string,
             productControls: parsedProductControls,
             keyFeatures: parsedKeyFeatures,

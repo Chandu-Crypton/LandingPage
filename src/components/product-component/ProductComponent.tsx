@@ -877,6 +877,13 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
     const [franchiseData, setFranchiseData] = useState('');
     const [efficiency, setEfficiency] = useState('');
     const [rating, setRating] = useState('');
+    const [tags, setTags] = useState<string[]>([]);
+    const [category, setCategory] = useState('');
+    const [googleStoreLink, setGoogleStoreLink] = useState('');
+    const [appleStoreLink, setAppleStoreLink] = useState('');
+    const [deployLink, setDeployLink] = useState('');
+    const [emailLink, setEmailLink] = useState('');
+    const [contact, setContact] = useState('');
 
     // State for video file/URL handling
     const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -929,6 +936,13 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
             setTitle(productData.title || '');
             setSubHeading(productData.subHeading || '');
             setDescription(productData.description || '');
+            setGoogleStoreLink(productData.googleStoreLink || '');
+            setAppleStoreLink(productData.appleStoreLink || '');
+            setDeployLink(productData.deployLink || '');
+            setEmailLink(productData.emailLink || '');
+            setContact(productData.contact || '');
+            setTags(productData.tags || []);
+            setCategory(productData.category || '');
             setVideoUrl(productData.videoFile || ''); // Set video URL if it exists
             setFranchiseData(productData.franchiseData || '');
             setEfficiency(productData.efficiency || '');
@@ -1107,6 +1121,13 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
         formData.append('title', title);
         formData.append('subHeading', subHeading);
         formData.append('description', description);
+        formData.append('tags', JSON.stringify(tags));
+        formData.append('googleStoreLink', googleStoreLink);
+        formData.append('appleStoreLink', appleStoreLink);
+        formData.append('deployLink', deployLink);
+        formData.append('emailLink', emailLink);
+        formData.append('contact', contact);
+        formData.append('category', category);
         formData.append('franchiseData', franchiseData);
         formData.append('efficiency', efficiency);
         formData.append('rating', rating);
@@ -1200,6 +1221,13 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
         setTitle('');
         setSubHeading('');
         setDescription('');
+        setTags([]);
+        setGoogleStoreLink('');
+        setAppleStoreLink('');
+        setDeployLink('');
+        setEmailLink('');
+        setContact('');
+        setCategory('');
         setVideoFile(null);
         setVideoUrl('');
         setFranchiseData('');
@@ -1263,6 +1291,120 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Enter Description"
+                            required
+                        />
+                    </div>
+
+                    {/* Tags */}
+                      <div>
+                                          <Label>Tags</Label>
+                                          <div className="space-y-2">
+                                              {tags.map((tag, index) => (
+                                                  <div key={index} className="flex gap-2 items-center">
+                                                      <Input
+                                                          type="text"
+                                                          value={tag}
+                                                          onChange={(e) => {
+                                                              const newTags = [...tags];
+                                                              newTags[index] = e.target.value;
+                                                              setTags(newTags);
+                                                          }}
+                                                          placeholder={`Tag ${index + 1}`}
+                                                          disabled={loading}
+                                                      />
+                                                      <button
+                                                          type="button"
+                                                          onClick={() => setTags(tags.filter((_, i) => i !== index))}
+                                                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                                          disabled={loading}
+                                                      >
+                                                          Remove
+                                                      </button>
+                                                  </div>
+                                              ))}
+                                              <button
+                                                  type="button"
+                                                  onClick={() => setTags([...tags, ""])}
+                                                  className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                                  disabled={loading}
+                                              >
+                                                  Add New Tag
+                                              </button>
+                                          </div>
+                                      </div>
+                  
+
+                    {/* Category */}
+                    <div>
+                        <Label htmlFor="category">Category</Label>
+                        <Input
+                            id="category"
+                            type="text"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            placeholder="Enter Category"
+                            required
+                        />
+                    </div>
+
+                    {/* Google Play Store Link */}
+                    <div>
+                        <Label htmlFor="googleStoreLink">Google Play Store Link</Label>
+                        <Input
+                            id="googleStoreLink"
+                            type="text"
+                            value={googleStoreLink}
+                            onChange={(e) => setGoogleStoreLink(e.target.value)}
+                            placeholder="Enter Google Play Store Link"
+                            required
+                        />
+                    </div>
+
+                    {/* Apple App Store Link */}
+                    <div>
+                        <Label htmlFor="appleStoreLink">Apple App Store Link</Label>
+                        <Input
+                            id="appleStoreLink"
+                            type="text"
+                            value={appleStoreLink}
+                            onChange={(e) => setAppleStoreLink(e.target.value)}
+                            placeholder="Enter Apple App Store Link"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="deployLink">Deploy Link</Label>
+                        <Input
+                            id="deployLink"
+                            type="text"
+                            value={deployLink}
+                            onChange={(e) => setDeployLink(e.target.value)}
+                            placeholder="Enter Deploy Link"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="emailLink">Email Link</Label>
+                        <Input
+                            id="emailLink"
+                            type="text"
+                            value={emailLink}
+                            onChange={(e) => setEmailLink(e.target.value)}
+                            placeholder="Enter Email Link"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="contact">Contact</Label>
+                        <Input
+                            id="contact"
+                            type="text"
+                            value={contact}
+                            onChange={(e) => setContact(e.target.value)}
+                            placeholder="Enter Contact"
                             required
                         />
                     </div>

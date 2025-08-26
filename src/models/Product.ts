@@ -1,4 +1,4 @@
-import mongoose, {Document,Schema} from 'mongoose'
+import mongoose, { Document, Schema } from 'mongoose'
 
 
 export interface IProduct extends Document {
@@ -6,58 +6,74 @@ export interface IProduct extends Document {
     title: string,
     subHeading: string,
     description: string,
+    tags: string[],
+    category: string,
     videoFile: string,
     franchiseData: string,
     efficiency: string,
     rating: string,
+    googleStoreLink?: string,
+    appleStoreLink?: string,
+    deployLink?: string,
+    emailLink?: string,
+    contact?: string,
     productControls: {
         productTitle: string,
         productIcon: string,
         productDescription: string,
-    }[], 
+    }[],
     keyFeatures: {
         featureTitle: string,
         featureIcon: string,
         featureDescription: string
-    }[], 
+    }[],
     screenshot: {
         screenshotImage: string,
-    }[], 
+    }[],
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
     __v?: number;
 }
 
-const productSchema: Schema = new Schema ({
+const productSchema: Schema = new Schema({
 
     heading: {
-        type : String,
-        required : true
-    },
-
-    title: {
-        type : String,
-        required : true
-    },
-
-    subHeading: {
-        type : String,
-        required : true
-    },
-
-    description: {
-        type: String,
-        required : true
-    },
-
-    
-    videoFile:{
         type: String,
         required: true
     },
 
-    franchiseData:{
+    title: {
+        type: String,
+        required: true
+    },
+
+    subHeading: {
+        type: String,
+        required: true
+    },
+
+    description: {
+        type: String,
+        required: true
+    },
+
+    tags: {
+        type: [String],
+        required: true
+    },
+
+    category: {
+        type: String,
+        required: true
+    },
+
+    videoFile: {
+        type: String,
+        required: true
+    },
+
+    franchiseData: {
         type: String,
         required: true
     },
@@ -72,7 +88,31 @@ const productSchema: Schema = new Schema ({
         required: true
     },
 
+    googleStoreLink: {
+        type: String,
+        required: false
+    },
+    appleStoreLink: {
+        type: String,
+        required: false
+    },
+    deployLink: {
+        type: String,
+        required: false
+    },
+
+    emailLink: {
+        type: String,
+        required: false
+    },
+
+    contact: {
+        type: String,
+        required: false
+    },
+
     // Mongoose schema syntax for arrays of sub-documents:
+
     productControls: [
         {
             productTitle: {
