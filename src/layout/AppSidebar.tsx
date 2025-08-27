@@ -211,6 +211,17 @@ const productItems: NavItem[] = [
 ];
 
 
+const boardItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Board",
+    subItems: [
+      { name: "Add New Board", path: "/board-management/Add-Board", pro: false },
+      { name: "Board List", path: "/board-management/Board-List", pro: false },
+    ],
+  },
+];
+
 const internshipItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -227,7 +238,7 @@ const contactItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Contact",
     subItems: [
-      // { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
+      { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
       { name: "Contact List", path: "/contact-management/Contact-List", pro: false },
     ],
   },
@@ -298,6 +309,7 @@ const AppSidebar: React.FC = () => {
       { type: "about", items: aboutItems },
       { type: "technology", items: technologyItems },
       { type: "product", items: productItems },
+      { type: "board", items: boardItems },
       { type: "internship", items: internshipItems },
       { type: "contact", items: contactItems },
       { type: "candidate", items: candidateItems },
@@ -675,6 +687,22 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(productItems, "product")}
             </div>
 
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "BOARD MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(boardItems, "board")}
+            </div>
 
                <div>
               <h2

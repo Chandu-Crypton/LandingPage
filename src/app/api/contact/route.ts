@@ -55,25 +55,50 @@ export async function POST(req: NextRequest) {
 
         const {
             fullName,
-            email,
-            phoneNumber,
+            hremail,
+            salesemail,
+            companyemail,
+            hrNumber,
+            salesNumber,
+            companyNumber,
             message
         } = body;
 
 
         if (!fullName || typeof fullName !== 'string' ||
-            !email || typeof email !== 'string' ||
+            !hremail || typeof hremail !== 'string' ||
+            !salesemail || typeof salesemail !== 'string' ||
+            !companyemail || typeof companyemail !== 'string' ||
+            !hrNumber || typeof hrNumber !== 'string' ||
+            !salesNumber || typeof salesNumber !== 'string' ||
+            !companyNumber || typeof companyNumber !== 'string' ||
             !message || typeof message !== 'string') {
             return NextResponse.json(
                 { success: false, message: 'Contact information is required.' },
                 { status: 400, headers: corsHeaders }
             );
         }
-     
-         const phoneAsNumber = Number(phoneNumber);
-            if (isNaN(phoneAsNumber)) {
+
+         const hrNumberAsNumber = Number(hrNumber);
+            if (isNaN(hrNumberAsNumber)) {
               return NextResponse.json(
-                { success: false, message: 'Phone number must be a valid number.' },
+                { success: false, message: 'HR number must be a valid number.' },
+                { status: 400, headers: corsHeaders }
+              );
+            }
+
+         const salesNumberAsNumber = Number(salesNumber);
+            if (isNaN(salesNumberAsNumber)) {
+              return NextResponse.json(
+                { success: false, message: 'Sales number must be a valid number.' },
+                { status: 400, headers: corsHeaders }
+              );
+            }
+
+         const companyNumberAsNumber = Number(companyNumber);
+            if (isNaN(companyNumberAsNumber)) {
+              return NextResponse.json(
+                { success: false, message: 'Company number must be a valid number.' },
                 { status: 400, headers: corsHeaders }
               );
             }
@@ -81,8 +106,12 @@ export async function POST(req: NextRequest) {
        // If no document exists, create a new one
        const newEntry = await Contact.create({
            fullName,
-           email,
-           phoneNumber: phoneAsNumber,
+           hremail,
+           hrNumber: hrNumberAsNumber,
+           salesemail,
+           salesNumber: salesNumberAsNumber,
+           companyemail,
+           companyNumber: companyNumberAsNumber,
            message
        });
        
@@ -99,3 +128,5 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+    

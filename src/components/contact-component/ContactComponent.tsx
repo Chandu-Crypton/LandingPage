@@ -13,11 +13,15 @@ interface ContactFormProps {
 }
 
 const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
-    const [phoneNumber, setPhoneNumber] = useState(''); // State should also match number | ''
-    const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
     const [message, setMessage] = useState('');
-    
+    const [hrNumber, setHrNumber] = useState('');
+    const [salesNumber, setSalesNumber] = useState('');
+    const [companyNumber, setCompanyNumber] = useState('');
+    const [hremail, setHremail] = useState('');
+    const [salesemail, setSalesemail] = useState('');
+    const [companyemail, setCompanyemail] = useState('');
+
     const { addContact, updateContact, contacts } = useContact();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -33,8 +37,13 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
             console.log("contact data to edit :", contactToEdit);
 
             if (contactToEdit) {
-                setPhoneNumber(contactToEdit.phoneNumber);
-                setEmail(contactToEdit.email);
+               
+                setHrNumber(contactToEdit.hrNumber);
+                setSalesNumber(contactToEdit.salesNumber);
+                setCompanyNumber(contactToEdit.companyNumber);
+                setHremail(contactToEdit.hremail);
+                setSalesemail(contactToEdit.salesemail);
+                setCompanyemail(contactToEdit.companyemail);
                 setFullName(contactToEdit.fullName);
                 setMessage(contactToEdit.message);
             } else {
@@ -45,8 +54,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                         const data = await res.json();
                         if (res.ok && data.success && data.data) {
                             const fetchedContact: IContact = data.data;
-                            setPhoneNumber(fetchedContact.phoneNumber);
-                            setEmail(fetchedContact.email);
+                            setHrNumber(fetchedContact.hrNumber);
+                            setSalesNumber(fetchedContact.salesNumber);
+                            setCompanyNumber(fetchedContact.companyNumber);
+                            setHremail(fetchedContact.hremail);
+                            setSalesemail(fetchedContact.salesemail);
+                            setCompanyemail(fetchedContact.companyemail);
                             setFullName(fetchedContact.fullName);
                             setMessage(fetchedContact.message);
                         } else {
@@ -72,8 +85,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
         
 
         const contactData = {
-            phoneNumber,
-            email,
+            hrNumber,
+            salesNumber,
+            companyNumber,
+            hremail,
+            salesemail,
+            companyemail,
             fullName,
             message,
         };
@@ -98,8 +115,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
     };
 
     const clearForm = () => {
-        setPhoneNumber('');
-        setEmail('');
+        setHrNumber('');
+        setSalesNumber('');
+        setCompanyNumber('');
+        setHremail('');
+        setSalesemail('');
+        setCompanyemail('');
         setFullName('');
         setMessage('');
     };
@@ -114,17 +135,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
             <ComponentCard title={contactIdToEdit ? 'Edit Contact Details' : 'Add New Contact Details'}>
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                            id="phone"
-                            type="number"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            placeholder="Enter phone number"
-                           
-                        />
-                    </div>
+                 
 
                     <div>
                         <Label htmlFor="fullName">Full Name</Label>
@@ -138,15 +149,73 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                         />
                     </div>
 
+                 
                     <div>
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="hremail">HR Email</Label>
                         <Input
-                            id="email"
+                            id="hremail"
                             type="text"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="e.g., nemo@example.com"
+                            value={hremail}
+                            onChange={(e) => setHremail(e.target.value)}
+                            placeholder="e.g., hr@example.com"
 
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="salesemail">Sales Email</Label>
+                        <Input
+                            id="salesemail"
+                            type="text"
+                            value={salesemail}
+                            onChange={(e) => setSalesemail(e.target.value)}
+                            placeholder="e.g., sales@example.com"
+
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="companyemail">Company Email</Label>
+                        <Input
+                            id="companyemail"
+                            type="text"
+                            value={companyemail}
+                            onChange={(e) => setCompanyemail(e.target.value)}
+                            placeholder="e.g., company@example.com"
+
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="hrNumber">HR Number</Label>
+                        <Input
+                            id="hrNumber"
+                            type="text"
+                            value={hrNumber}
+                            onChange={(e) => setHrNumber(e.target.value)}
+                            placeholder="Enter HR number"
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="salesNumber">Sales Number</Label>
+                        <Input
+                            id="salesNumber"
+                            type="text"
+                            value={salesNumber}
+                            onChange={(e) => setSalesNumber(e.target.value)}
+                            placeholder="Enter Sales number"
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="companyNumber">Company Number</Label>
+                        <Input
+                            id="companyNumber"
+                            type="text"
+                            value={companyNumber}
+                            onChange={(e) => setCompanyNumber(e.target.value)}
+                            placeholder="Enter Company number"
                         />
                     </div>
 

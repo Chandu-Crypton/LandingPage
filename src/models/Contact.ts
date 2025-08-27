@@ -3,8 +3,12 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 export interface IContact extends Document {
     fullName: string,
-    email: string,
-    phoneNumber: string,
+    hremail: string,
+    salesemail: string,
+    companyemail: string,
+    hrNumber: string,
+    salesNumber: string,
+    companyNumber: string,
     message: string,
     isDeleted?: boolean;
     createdAt?: string;
@@ -19,12 +23,32 @@ const contactSchema: Schema = new Schema ({
         required : true
       },
 
-    email: {
+    hremail: {
         type : String,
         required : true
     },
 
-    phoneNumber: {
+    salesemail: {
+        type: String,
+        required: true
+    },
+
+    companyemail: {
+        type: String,
+        required: true
+    },
+
+    hrNumber: {
+        type: String,
+        required : true
+    },
+     
+    salesNumber: {
+        type: String,
+        required : true
+    },
+
+    companyNumber: {
         type: String,
         required : true
     },

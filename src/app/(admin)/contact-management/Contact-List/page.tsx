@@ -11,11 +11,19 @@ import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 
 interface IContact {
-  _id: string;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  message: string;
+  _id: string,
+  fullName: string,
+  hremail: string,
+  salesemail: string,
+  companyemail: string,
+  hrNumber: string,
+  salesNumber: string,
+  companyNumber: string,
+  message: string,
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 const ContactListPage: React.FC = () => {
@@ -63,14 +71,21 @@ const ContactListPage: React.FC = () => {
   const filteredContacts = useMemo(() => {
     if (!searchTerm.trim()) return contactData;
     const lower = searchTerm.toLowerCase();
-    return contactData.filter(
-      (c) =>
-        c.fullName.toLowerCase().includes(lower) ||
-        c.email.toLowerCase().includes(lower) ||
-        c.phoneNumber.toLowerCase().includes(lower) ||
-        c.message.toLowerCase().includes(lower)
-    );
+
+    return contactData.filter((c) => {
+      return (
+        (c.fullName?.toLowerCase() || "").includes(lower) ||
+        (c.hremail?.toLowerCase() || "").includes(lower) ||
+        (c.salesemail?.toLowerCase() || "").includes(lower) ||
+        (c.companyemail?.toLowerCase() || "").includes(lower) ||
+        (c.hrNumber?.toLowerCase() || "").includes(lower) ||
+        (c.salesNumber?.toLowerCase() || "").includes(lower) ||
+        (c.companyNumber?.toLowerCase() || "").includes(lower) ||
+        (c.message?.toLowerCase() || "").includes(lower)
+      );
+    });
   }, [contactData, searchTerm]);
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -117,9 +132,13 @@ const ContactListPage: React.FC = () => {
             <table className="min-w-full border border-gray-200 rounded-lg text-sm">
               <thead className="bg-gray-100 text-gray-700 text-left">
                 <tr>
-                  <th className="px-5 py-3">Phone</th>
                   <th className="px-5 py-3">Full Name</th>
-                  <th className="px-5 py-3">Email</th>
+                  <th className="px-5 py-3">HrEmail</th>
+                  <th className="px-5 py-3">SalesEmail</th>
+                  <th className="px-5 py-3">CompanyEmail</th>
+                  <th className="px-5 py-3">HR Number</th>
+                  <th className="px-5 py-3">Sales Number</th>
+                  <th className="px-5 py-3">Company Number</th>
                   <th className="px-5 py-3">Message</th>
                   <th className="px-5 py-3 text-center">Actions</th>
                 </tr>
@@ -129,15 +148,25 @@ const ContactListPage: React.FC = () => {
                   filteredContacts.map((entry, idx) => (
                     <tr
                       key={entry._id}
-                      className={`transition ${
-                        idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                      } hover:bg-gray-100`}
+                      className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
                     >
-                      <td className="px-5 py-3 font-medium">{entry.phoneNumber}</td>
-                      <td className="px-5 py-3">{entry.fullName}</td>
-                      <td className="px-5 py-3">{entry.email}</td>
-                      <td className="px-5 py-3">{entry.message}</td>
-                      <td className="px-5 py-3">
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.fullName}</td>
+
+                      {/* Emails - allow wrapping with max width */}
+                      <td className="px-4 py-3 break-words max-w-[150px]">{entry.hremail}</td>
+                      <td className="px-4 py-3 break-words max-w-[150px]">{entry.salesemail}</td>
+                      <td className="px-4 py-3 break-words max-w-[150px]">{entry.companyemail}</td>
+
+                      {/* Numbers - keep nowrap */}
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.hrNumber}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.salesNumber}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.companyNumber}</td>
+
+                      {/* Message already wrapping */}
+                      <td className="px-4 py-3 break-words max-w-[200px]">{entry.message}</td>
+
+                      {/* Actions - sticky */}
+                      <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
                         <div className="flex justify-center gap-2">
                           <Link
                             href={`/contact-management/Contact-List/${entry._id}`}
@@ -163,6 +192,8 @@ const ContactListPage: React.FC = () => {
                         </div>
                       </td>
                     </tr>
+
+
                   ))
                 ) : (
                   <tr>

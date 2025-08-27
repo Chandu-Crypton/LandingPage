@@ -11,8 +11,12 @@ const corsHeaders = {
 
 interface IContact {
     fullName?: string;
-    email?: string;
-    phoneNumber?: number;
+    hremail?: string;
+    salesemail?: string;
+    companyemail?: string;
+    hrNumber?: number;
+    salesNumber?: number;
+    companyNumber?: number;
     message?: string;
 }
 
@@ -67,18 +71,44 @@ export async function PUT(req: Request) {
         const body = await req.json();
         const updateData: Partial<IContact> = {};
         // Validate and assign fields if present in the request body
-        if (body.phoneNumber !== undefined) {
-            const phoneAsNumber = Number(body.phoneNumber);
-            if (isNaN(phoneAsNumber) || typeof phoneAsNumber !== 'number') {
+        if (body.hrNumber !== undefined) {
+            const hrNumberAsNumber = Number(body.hrNumber);
+            if (isNaN(hrNumberAsNumber) || typeof hrNumberAsNumber !== 'number') {
                 return NextResponse.json(
-                    { success: false, message: 'Phone number must be a valid number.' },
+                    { success: false, message: 'HR number must be a valid number.' },
                     { status: 400, headers: corsHeaders }
                 );
             }
-            updateData.phoneNumber = phoneAsNumber;
+            updateData.hrNumber = hrNumberAsNumber;
         }
-        if (body.email !== undefined && typeof body.email === 'string') {
-            updateData.email = body.email;
+        if (body.salesNumber !== undefined) {
+            const salesNumberAsNumber = Number(body.salesNumber);
+            if (isNaN(salesNumberAsNumber) || typeof salesNumberAsNumber !== 'number') {
+                return NextResponse.json(
+                    { success: false, message: 'Sales number must be a valid number.' },
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+            updateData.salesNumber = salesNumberAsNumber;
+        }
+        if (body.companyNumber !== undefined) {
+            const companyNumberAsNumber = Number(body.companyNumber);
+            if (isNaN(companyNumberAsNumber) || typeof companyNumberAsNumber !== 'number') {
+                return NextResponse.json(
+                    { success: false, message: 'Company number must be a valid number.' },
+                    { status: 400, headers: corsHeaders }
+                );
+            }
+            updateData.companyNumber = companyNumberAsNumber;
+        }
+        if (body.hremail !== undefined && typeof body.hremail === 'string') {
+            updateData.hremail = body.hremail;
+        }
+        if (body.salesemail !== undefined && typeof body.salesemail === 'string') {
+            updateData.salesemail = body.salesemail;
+        }
+        if (body.companyemail !== undefined && typeof body.companyemail === 'string') {
+            updateData.companyemail = body.companyemail;
         }
         if (body.message !== undefined && typeof body.message === 'string') {
             updateData.message = body.message;

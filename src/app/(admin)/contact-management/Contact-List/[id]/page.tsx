@@ -9,16 +9,20 @@ import { TrashBinIcon } from '@/icons';
 
 
 interface IContact {
-    _id: string;
-    phoneNumber: string;
-    fullName: string;
-    email: string;
-    message: string;
-    createdAt?: string; // Assuming createdAt might be part of the document
-    updatedAt?: string; // Assuming updatedAt might be part of the document
-    __v?: number;
+  _id: string,
+  fullName: string,
+  hremail: string,
+  salesemail: string,
+  companyemail: string,
+  hrNumber: string,
+  salesNumber: string,
+  companyNumber: string,
+  message: string,
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
-
 
 const ContactDetailPage: React.FC = () => {
     const { id } = useParams();
@@ -107,25 +111,44 @@ const ContactDetailPage: React.FC = () => {
                 <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Contact Information</h2>
                     <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                        <div>
-                            <p className="font-medium">Phone Number</p>
-                            <p className="text-gray-600 dark:text-gray-400">{contact.phoneNumber}</p>
-                        </div>
-                        <div>
+                                                <div>
                             <p className="font-medium">Full Name</p>
                             <p className="text-gray-600 dark:text-gray-400">{contact.fullName}</p>
                         </div>
                         <div>
-                            <p className="font-medium">Email Address</p>
-                            <p className="text-gray-600 dark:text-gray-400">{contact.email}</p>
+                            <p className="font-medium">HR Phone Number</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.hrNumber}</p>
                         </div>
+                        <div>
+                            <p className="font-medium">Sales Phone Number</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.salesNumber}</p>
+                        <div>
+                            <div>
+                            <p className="font-medium">Company Phone Number</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.companyNumber}</p>
+                        </div>
+                            <div>
+                            <p className="font-medium">Company Email</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.companyemail}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">HR Email</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.hremail}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Sales Email</p>
+                            <p className="text-gray-600 dark:text-gray-400">{contact.salesemail}</p>
+                        </div>
+
+                     
                         <div>
                             <p className="font-medium">Message</p>
                             <p className="text-gray-600 dark:text-gray-400">{contact.message}</p>
                         </div>
                     </div>
                 </div>
-
+                </div>
+        </div>
 
             </div>
 

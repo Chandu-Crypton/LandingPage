@@ -5,16 +5,20 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
 type Contact = {
-  _id: string;
-  phoneNumber: string;
-  fullName: string;
-  email: string;
-  message: string;
-  isDeleted: boolean;
-  createdAt: string;
+  _id: string,
+  fullName: string,
+  hremail: string,
+  salesemail: string,
+  companyemail: string,
+  hrNumber: string,
+  salesNumber: string,
+  companyNumber: string,
+  message: string,
+  isDeleted?: boolean;
+  createdAt?: string;
   updatedAt?: string;
   __v?: number;
-};
+}
 
 
 // Context type
