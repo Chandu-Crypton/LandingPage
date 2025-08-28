@@ -134,7 +134,8 @@ const AppliedCandidatesListPage: React.FC = () => {
                                     <th className="px-5 py-3 text-left">Full Name</th>
                                     <th className="px-5 py-3 text-left">Job Title</th>
                                     <th className="px-5 py-3 text-left">Email</th>
-                                    <th className="px-5 py-3 text-left">Phone</th>
+                                    {/* <th className="px-5 py-3 text-left">Phone</th> */}
+                                    <th className="px-5 py-3 text-left">Applied On</th>
                                     <th className="px-5 py-3 text-left">Location</th>
                                     <th className="px-5 py-3 text-left">Workplace Type</th>
                                     <th className="px-5 py-3 text-left">Employment Type</th>
@@ -148,7 +149,8 @@ const AppliedCandidatesListPage: React.FC = () => {
                                         <td className="px-5 py-3 font-semibold">{candidate.fullName}</td>
                                         <td className="px-5 py-3">{candidate.title}</td>
                                         <td className="px-5 py-3">{candidate.email}</td>
-                                        <td className="px-5 py-3">{candidate.phone}</td>
+                                        {/* <td className="px-5 py-3">{candidate.phone}</td> */}
+                                        <td className="px-5 py-3">  {candidate.createdAt ? new Date(candidate.createdAt).toLocaleDateString() : "—"}</td>
                                         <td className="px-5 py-3">{candidate.location}</td>
                                         <td className="px-5 py-3">{candidate.workplacetype}</td>
                                         <td className="px-5 py-3">{candidate.employmenttype}</td>
