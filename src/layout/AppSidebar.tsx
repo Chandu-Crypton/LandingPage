@@ -243,7 +243,7 @@ const contactItems: NavItem[] = [
     ],
   },
 ];
-     
+
 const newsletterItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -254,7 +254,7 @@ const newsletterItems: NavItem[] = [
     ],
   },
 ];
-     
+
 
 const policyItems: NavItem[] = [
   {
@@ -266,19 +266,33 @@ const policyItems: NavItem[] = [
     ],
   },
 ];
-     
+
 
 const fcontactItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "FContact",
     subItems: [
-      { name: "Add New FContact", path: "/fcontact-management/Add-FContact", pro: false },
+      // { name: "Add New FContact", path: "/fcontact-management/Add-FContact", pro: false },
       { name: "FContact List", path: "/fcontact-management/FContact-List", pro: false },
     ],
   },
 ];
-     
+
+
+const fservicesItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "FServices",
+    subItems: [
+      { name: "Add New FServices", path: "/fservices-management/Add-FServices", pro: false },
+      { name: "FServices List", path: "/fservices-management/FServices-List", pro: false },
+    ],
+  },
+];
+
+
+
 
 
 
@@ -328,6 +342,7 @@ const AppSidebar: React.FC = () => {
       { type: "newsletter", items: newsletterItems },
       { type: "policy", items: policyItems },
       { type: "fcontact", items: fcontactItems },
+      { type: "fservices", items: fservicesItems },
     ];
 
     // Iterate over all menu types to find a matching submenu
@@ -347,7 +362,7 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [pathname, isActive,  ]);
+  }, [pathname, isActive,]);
 
 
   useEffect(() => {
@@ -524,7 +539,7 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
 
 
-             <div>
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
                   }`}
@@ -666,7 +681,7 @@ const AppSidebar: React.FC = () => {
             </div>
 
 
-               <div>
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -699,7 +714,7 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(boardItems, "board")}
             </div>
 
-               <div>
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -715,7 +730,7 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(internshipItems, "internship")}
             </div>
 
-              <div>
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -731,7 +746,7 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(contactItems, "contact")}
             </div>
 
-               <div>
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -747,39 +762,55 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(newsletterItems, "newsletter")}
             </div>
 
-             <div>
-               <h2
-                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                   ? "lg:justify-center"
-                   : "justify-start"
-                   }`}
-               >
-                 {isExpanded || isHovered || isMobileOpen ? (
-                   "POLICY MANAGEMENT"
-                 ) : (
-                   <HorizontaLDots />
-                 )}
-               </h2>
-               {renderMenuItems(policyItems, "policy")}
-             </div>
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "POLICY MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(policyItems, "policy")}
+            </div>
 
 
- <div>
-               <h2
-                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                   ? "lg:justify-center"
-                   : "justify-start"
-                   }`}
-               >
-                 {isExpanded || isHovered || isMobileOpen ? (
-                   "FCONTACT MANAGEMENT"
-                 ) : (
-                   <HorizontaLDots />
-                 )}
-               </h2>
-               {renderMenuItems(fcontactItems, "fcontact")}
-             </div>
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "FCONTACT MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(fcontactItems, "fcontact")}
+            </div>
 
+
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "FSERVICES MANAGEMENT"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(fservicesItems, "fservices")}
+            </div>
 
           </div>
         </nav>

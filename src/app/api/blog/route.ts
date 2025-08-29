@@ -70,6 +70,8 @@ export async function POST(req: NextRequest) {
    
         const tags: string[] = tagsString ? JSON.parse(tagsString) : [];
 
+        // const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
+
 
         let keyTechnologies: { itemTitle: string; itemPoints: string[]; itemDescription: string }[] = [];
         if (keyTechnologiesString) {
