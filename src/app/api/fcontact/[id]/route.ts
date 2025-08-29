@@ -52,6 +52,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
+
 export async function PUT(req: Request) {
     await connectToDatabase();
     const url = new URL(req.url);
@@ -67,6 +68,7 @@ export async function PUT(req: Request) {
 
     try {
         const body = await req.json();
+        console.log("PUT /api/fcontact body:", body);
         const updateData: Partial<IFContact> = {};
         // Validate and assign fields if present in the request body
         if (body.phoneNumber !== undefined) {
@@ -87,10 +89,11 @@ export async function PUT(req: Request) {
             updateData.message = body.message;
         }
 
-        if (body.interested !== undefined && typeof body.interested === 'string') {
-            updateData.interested = body.interested;
+        if (body.interested !== undefined) {
+            if (Array.isArray(body.interested)) {
+                updateData.interested = body.interested;
+            } 
         }
-
         if (body.firstName !== undefined && typeof body.firstName === 'string') {
             updateData.firstName = body.firstName;
         }
@@ -108,7 +111,7 @@ export async function PUT(req: Request) {
         const updatedDoc = await FContact.findByIdAndUpdate(
             id,
             updateData,
-            { new: true, runValidators: true } 
+            { new: true, runValidators: true }
         );
 
         if (!updatedDoc) {
@@ -142,7 +145,7 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.pathname.split("/").pop();
 
-    
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
             { success: false, message: 'Invalid or missing ID.' },

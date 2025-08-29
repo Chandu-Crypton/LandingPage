@@ -16,7 +16,7 @@ interface IContact {
   lastName: string;
   email: string;
   phoneNumber: string;
-  interested: string;
+  interested: string[];
   message: string;
   isDeleted?: boolean;
   createdAt?: string;
@@ -117,7 +117,7 @@ const ContactListPage: React.FC = () => {
         (c.lastName?.toLowerCase() || '').includes(lower) ||
         (c.email?.toLowerCase() || '').includes(lower) ||
         (c.phoneNumber?.toLowerCase() || '').includes(lower) ||
-        (c.interested?.toLowerCase() || '').includes(lower) ||
+        // (c.interested?.toLowerCase() || '').includes(lower) ||
         (c.message?.toLowerCase() || '').includes(lower)
       );
     });
@@ -139,7 +139,7 @@ const ContactListPage: React.FC = () => {
         <div className="lg:col-span-3">
           <ComponentCard title="Search & Filters">
             <div className="py-3">
-              <Label>Search by Name, Email, Phone, Interest, or Message</Label>
+              <Label>Search by Name, Email, Phone or Message</Label>
               <Input
                 type="text"
                 placeholder="Type to filter contacts..."
@@ -214,7 +214,7 @@ const ContactListPage: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap">{entry.lastName}</td>
                       <td className="px-4 py-3 break-words max-w-[150px]">{entry.email}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{entry.phoneNumber}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{entry.interested}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.interested.join(', ')}</td>
                       <td className="px-4 py-3 break-words max-w-[200px]">{entry.message}</td>
                       <td className="px-5 py-3">
                         {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : '—'}
@@ -229,7 +229,7 @@ const ContactListPage: React.FC = () => {
                             <EyeIcon size={16} />
                           </Link>
                           <Link
-                            href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
+                            href={`/fcontact-management/Add-FContact?page=edit&id=${entry._id}`}
                             className="p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
                             title="Edit"
                           >
