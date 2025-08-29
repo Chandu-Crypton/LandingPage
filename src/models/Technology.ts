@@ -2,6 +2,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 
 export interface ITechnology extends Document {
+    addFieldName?: string,
     fieldName: string,
     technologyName: {
         title: string;
@@ -14,6 +15,11 @@ export interface ITechnology extends Document {
 }
 
 const technologySchema: Schema = new Schema ({
+
+    addFieldName: {
+        type: String,
+        required: false
+    },
 
       fieldName: {
         type : String,

@@ -45,53 +45,6 @@ export async function GET() {
 }
 
 
-// export async function POST(req: NextRequest) {
-//     await connectToDatabase();
-
-//     try {
-//         const formData = await req.formData();
-
-//         const fieldName = formData.get('fieldName');
-//         const technologyName = formData.get('technologyName');
-      
-
-//         if (typeof fieldName !== 'string' || !fieldName.trim() ||
-//             typeof technologyName !== 'string' || !technologyName.trim() ||
-//             !Array.isArray(technologyName) || technologyName.length === 0 ||
-//             technologyName.some(item => typeof item.title !== 'string' || !item.title.trim() ||
-//                 typeof item.iconImage !== 'string' || !item.iconImage.trim())
-//         ) {
-//             return NextResponse.json(
-//                 { success: false, message: 'Missing or invalid data for fieldName, technologyname, or iconImage.' },
-//                 { status: 400, headers: corsHeaders }
-//             );
-//         }
-
-//         const technologyNameArray = Array.isArray(technologyName) ? technologyName : [technologyName];
-
-//         const newEntry = await Technology.create({
-//             fieldName: fieldName as string,
-//             technologyName: technologyNameArray.map(item => ({
-//                 title: item.title,
-//                 iconImage: item.iconImage
-//             }))
-//         });
-
-//         return NextResponse.json(
-//             { success: true, data: newEntry, message: 'Technology entry created successfully.' },
-//             { status: 201, headers: corsHeaders }
-//         );
-
-//     } catch (error) {
-//         console.error('POST /api/technology error:', error);
-//         const message = error instanceof Error ? error.message : 'Internal Server Error';
-//         return NextResponse.json(
-//             { success: false, message },
-//             { status: 500, headers: corsHeaders }
-//         );
-//     }
-// }
-
 
 
 
@@ -101,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-
+        const addFieldName = formData.get('addFieldName')?.toString();
         const fieldName = formData.get('fieldName')?.toString();
         // Expect JSON string for array of technology items
         const technologyNameJson = formData.get('technologyNameJson')?.toString(); 
@@ -194,6 +147,7 @@ export async function POST(req: NextRequest) {
         }
 
         const newEntry = await Technology.create({
+            addFieldName: addFieldName?.trim(),
             fieldName: fieldName.trim(),
             technologyName: processedTechnologyName,
         });
