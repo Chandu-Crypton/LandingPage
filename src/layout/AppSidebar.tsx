@@ -268,6 +268,18 @@ const policyItems: NavItem[] = [
 ];
      
 
+const fcontactItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "FContact",
+    subItems: [
+      { name: "Add New FContact", path: "/fcontact-management/Add-FContact", pro: false },
+      { name: "FContact List", path: "/fcontact-management/FContact-List", pro: false },
+    ],
+  },
+];
+     
+
 
 
 
@@ -315,6 +327,7 @@ const AppSidebar: React.FC = () => {
       { type: "candidate", items: candidateItems },
       { type: "newsletter", items: newsletterItems },
       { type: "policy", items: policyItems },
+      { type: "fcontact", items: fcontactItems },
     ];
 
     // Iterate over all menu types to find a matching submenu
@@ -520,7 +533,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-            
+
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
@@ -749,6 +762,24 @@ const AppSidebar: React.FC = () => {
                </h2>
                {renderMenuItems(policyItems, "policy")}
              </div>
+
+
+ <div>
+               <h2
+                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                   ? "lg:justify-center"
+                   : "justify-start"
+                   }`}
+               >
+                 {isExpanded || isHovered || isMobileOpen ? (
+                   "FCONTACT MANAGEMENT"
+                 ) : (
+                   <HorizontaLDots />
+                 )}
+               </h2>
+               {renderMenuItems(fcontactItems, "fcontact")}
+             </div>
+
 
           </div>
         </nav>
