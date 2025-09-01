@@ -145,7 +145,7 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter blog title"
+                            placeholder="Enter fservices title"
                             required
                         />
                     </div>
@@ -158,7 +158,7 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
                             type="text"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Enter blog description"
+                            placeholder="Enter fservices description"
                             required
                         />
                     </div>
