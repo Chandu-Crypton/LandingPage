@@ -536,7 +536,7 @@ const FServiceDetailPage: React.FC = () => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{fservice.title}</h1>
                     <div className="flex space-x-3">
                         <Link
-                            href={`/fservices-management/Add-FService?page=edit&id=${fservice._id as string}`}
+                            href={`/fservices-management/Add-FServices?page=edit&id=${fservice._id as string}`}
                             className="text-yellow-600 border border-yellow-600 rounded-md p-2 hover:bg-yellow-600 hover:text-white transition-colors flex items-center justify-center"
                             title="Edit FService"
                         >

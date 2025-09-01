@@ -23,6 +23,7 @@ import { InternshipProvider } from '@/context/InternshipContext';
 import { BoardProvider } from '@/context/BoardContext';
 import { FContactProvider } from '@/context/FContactContext';
 import { FServicesProvider } from '@/context/FServicesContext';
+import { FBlogProvider } from '@/context/FBlogContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -54,17 +55,19 @@ export default function RootLayout({
                                     <BoardProvider>
                                       <FContactProvider>
                                         <FServicesProvider>
-                                          <AuthProvider>
-                                            <UserProvider>
-                                              <WhyChooseProvider>
-                                                <ZoneProvider>
+                                          <FBlogProvider>
+                                            <AuthProvider>
+                                              <UserProvider>
+                                                <WhyChooseProvider>
+                                                  <ZoneProvider>
 
-                                                  {children}
+                                                    {children}
 
-                                                </ZoneProvider>
-                                              </WhyChooseProvider>
-                                            </UserProvider>
-                                          </AuthProvider>
+                                                  </ZoneProvider>
+                                                </WhyChooseProvider>
+                                              </UserProvider>
+                                            </AuthProvider>
+                                          </FBlogProvider>
                                         </FServicesProvider>
                                       </FContactProvider>
                                     </BoardProvider>

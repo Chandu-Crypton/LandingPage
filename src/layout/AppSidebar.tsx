@@ -298,84 +298,84 @@
 
 
 // const AppSidebar: React.FC = () => {
-  // const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-  // const pathname = usePathname();
+// const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+// const pathname = usePathname();
 
-  // const [openSubmenu, setOpenSubmenu] = useState<{
-  //   type: string;
-  //   index: number;
-  // } | null>(null);
-  // const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
-  // const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+// const [openSubmenu, setOpenSubmenu] = useState<{
+//   type: string;
+//   index: number;
+// } | null>(null);
+// const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
+// const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = useCallback((path: string): boolean => path === pathname, [pathname]);
+// const isActive = useCallback((path: string): boolean => path === pathname, [pathname]);
 
-  // const handleSubmenuToggle = (index: number, menuType: string) => {
-  //   setOpenSubmenu((prevOpenSubmenu) => {
-  //     if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
-  //       return null;
-  //     }
-  //     return { type: menuType, index };
-  //   });
-  // };
+// const handleSubmenuToggle = (index: number, menuType: string) => {
+//   setOpenSubmenu((prevOpenSubmenu) => {
+//     if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
+//       return null;
+//     }
+//     return { type: menuType, index };
+//   });
+// };
 
-  // useEffect(() => {
-  //   let submenuMatched = false;
-  //   const allMenuTypes = [
-  //     { type: "main", items: navItems },
-  //     { type: "customer", items: customerItems },
-  //     { type: "module", items: moduleItems },
-  //     { type: "provider", items: providerItems },
-  //     { type: "service", items: serviceItems },
-  //     { type: "counter", items: counterItems },
-  //     { type: "job", items: jobItems },
-  //     { type: "footer", items: footerItems },
-  //     { type: "testimonial", items: testimonialItems },
-  //     { type: "blog", items: blogItems },
-  //     { type: "about", items: aboutItems },
-  //     { type: "technology", items: technologyItems },
-  //     { type: "product", items: productItems },
-  //     { type: "board", items: boardItems },
-  //     { type: "internship", items: internshipItems },
-  //     { type: "contact", items: contactItems },
-  //     { type: "candidate", items: candidateItems },
-  //     { type: "newsletter", items: newsletterItems },
-  //     { type: "policy", items: policyItems },
-  //     { type: "fcontact", items: fcontactItems },
-  //     { type: "fservices", items: fservicesItems },
-  //   ];
+// useEffect(() => {
+//   let submenuMatched = false;
+//   const allMenuTypes = [
+//     { type: "main", items: navItems },
+//     { type: "customer", items: customerItems },
+//     { type: "module", items: moduleItems },
+//     { type: "provider", items: providerItems },
+//     { type: "service", items: serviceItems },
+//     { type: "counter", items: counterItems },
+//     { type: "job", items: jobItems },
+//     { type: "footer", items: footerItems },
+//     { type: "testimonial", items: testimonialItems },
+//     { type: "blog", items: blogItems },
+//     { type: "about", items: aboutItems },
+//     { type: "technology", items: technologyItems },
+//     { type: "product", items: productItems },
+//     { type: "board", items: boardItems },
+//     { type: "internship", items: internshipItems },
+//     { type: "contact", items: contactItems },
+//     { type: "candidate", items: candidateItems },
+//     { type: "newsletter", items: newsletterItems },
+//     { type: "policy", items: policyItems },
+//     { type: "fcontact", items: fcontactItems },
+//     { type: "fservices", items: fservicesItems },
+//   ];
 
-  //   // Iterate over all menu types to find a matching submenu
-  //   allMenuTypes.forEach(({ type, items }) => {
-  //     items.forEach((nav, index) => {
-  //       if (nav.subItems) {
-  //         nav.subItems.forEach((subItem) => {
-  //           if (isActive(subItem.path)) {
-  //             setOpenSubmenu({ type, index });
-  //             submenuMatched = true;
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
+//   // Iterate over all menu types to find a matching submenu
+//   allMenuTypes.forEach(({ type, items }) => {
+//     items.forEach((nav, index) => {
+//       if (nav.subItems) {
+//         nav.subItems.forEach((subItem) => {
+//           if (isActive(subItem.path)) {
+//             setOpenSubmenu({ type, index });
+//             submenuMatched = true;
+//           }
+//         });
+//       }
+//     });
+//   });
 
-  //   if (!submenuMatched) {
-  //     setOpenSubmenu(null);
-  //   }
-  // }, [pathname, isActive,]);
+//   if (!submenuMatched) {
+//     setOpenSubmenu(null);
+//   }
+// }, [pathname, isActive,]);
 
 
-  // useEffect(() => {
-  //   if (openSubmenu !== null) {
-  //     const key = `${openSubmenu.type}-${openSubmenu.index}`;
-  //     if (subMenuRefs.current[key]) {
-  //       setSubMenuHeight((prevHeights) => ({
-  //         ...prevHeights,
-  //         [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-  //       }));
-  //     }
-  //   }
-  // }, [openSubmenu]);
+// useEffect(() => {
+//   if (openSubmenu !== null) {
+//     const key = `${openSubmenu.type}-${openSubmenu.index}`;
+//     if (subMenuRefs.current[key]) {
+//       setSubMenuHeight((prevHeights) => ({
+//         ...prevHeights,
+//         [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+//       }));
+//     }
+//   }
+// }, [openSubmenu]);
 
 //   const renderMenuItems = (
 //     navItems: NavItem[],
@@ -539,244 +539,244 @@
 //           <div className="flex flex-col gap-4">
 
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
-            //   </h2>
-            //   {renderMenuItems(navItems, "main")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
+//   </h2>
+//   {renderMenuItems(navItems, "main")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "COUNTER MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(counterItems, "counter")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "COUNTER MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(counterItems, "counter")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "JOB MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(jobItems, "job")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "JOB MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(jobItems, "job")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "CANDIDATE MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(candidateItems, "candidate")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "CANDIDATE MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(candidateItems, "candidate")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "FOOTER MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(footerItems, "footer")}
-            // </div>
-
-
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "TESTIMONIAL MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(testimonialItems, "testimonial")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "FOOTER MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(footerItems, "footer")}
+// </div>
 
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "BLOG MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(blogItems, "blog")}
-            // </div>
-
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "ABOUT MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(aboutItems, "about")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "TESTIMONIAL MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(testimonialItems, "testimonial")}
+// </div>
 
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "TECHNOLOGY MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(technologyItems, "technology")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "BLOG MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(blogItems, "blog")}
+// </div>
+
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "ABOUT MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(aboutItems, "about")}
+// </div>
 
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "PRODUCT MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(productItems, "product")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "TECHNOLOGY MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(technologyItems, "technology")}
+// </div>
 
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "BOARD MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(boardItems, "board")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "PRODUCT MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(productItems, "product")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "INTERNSHIP MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(internshipItems, "internship")}
-            // </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "CONTACT MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(contactItems, "contact")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "BOARD MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(boardItems, "board")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "NEWSLETTER MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(newsletterItems, "newsletter")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "INTERNSHIP MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(internshipItems, "internship")}
+// </div>
 
-            // <div>
-            //   <h2
-            //     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-            //       ? "lg:justify-center"
-            //       : "justify-start"
-            //       }`}
-            //   >
-            //     {isExpanded || isHovered || isMobileOpen ? (
-            //       "POLICY MANAGEMENT"
-            //     ) : (
-            //       <HorizontaLDots />
-            //     )}
-            //   </h2>
-            //   {renderMenuItems(policyItems, "policy")}
-            // </div>
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "CONTACT MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(contactItems, "contact")}
+// </div>
+
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "NEWSLETTER MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(newsletterItems, "newsletter")}
+// </div>
+
+// <div>
+//   <h2
+//     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+//       ? "lg:justify-center"
+//       : "justify-start"
+//       }`}
+//   >
+//     {isExpanded || isHovered || isMobileOpen ? (
+//       "POLICY MANAGEMENT"
+//     ) : (
+//       <HorizontaLDots />
+//     )}
+//   </h2>
+//   {renderMenuItems(policyItems, "policy")}
+// </div>
 
 
 //             <div>
@@ -831,8 +831,6 @@
 
 
 
-
-
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
@@ -858,6 +856,8 @@ type NavItem = {
   isSpecialSection?: boolean;
 };
 
+
+
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
@@ -866,7 +866,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-// ... other menu items remain the same (moduleItems, customerItems, etc.) ...
+
 
 
 const moduleItems: NavItem[] = [
@@ -1128,6 +1128,19 @@ const fservicesItems: NavItem[] = [
   },
 ];
 
+const fblogItems: NavItem[] = [
+  {
+    icon: <PieChartIcon className="text-blue-500" />,
+    name: "FBlog",
+    subItems: [
+      { name: "Add New FBlog", path: "/fblog-management/Add-FBlog", pro: false },
+      { name: "FBlog List", path: "/fblog-management/FBlog-List", pro: false },
+    ],
+    isSpecialSection: true,
+  },
+];
+
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
@@ -1138,8 +1151,16 @@ const AppSidebar: React.FC = () => {
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [activeView, setActiveView] = useState<'all' | 'fetchTrue'>('all'); // New state for toggle
 
   const isActive = useCallback((path: string): boolean => path === pathname, [pathname]);
+
+  const handleLogoClick = (e: React.MouseEvent, viewType: 'all' | 'fetchTrue') => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveView(viewType);
+  };
+
 
   const handleSubmenuToggle = (index: number, menuType: string) => {
     setOpenSubmenu((prevOpenSubmenu) => {
@@ -1174,6 +1195,7 @@ const AppSidebar: React.FC = () => {
       { type: "policy", items: policyItems },
       { type: "fcontact", items: fcontactItems },
       { type: "fservices", items: fservicesItems },
+      { type: "fblog", items: fblogItems },
     ];
 
     allMenuTypes.forEach(({ type, items }) => {
@@ -1217,8 +1239,8 @@ const AppSidebar: React.FC = () => {
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                ? "menu-item-active"
+                : "menu-item-inactive"
                 } cursor-pointer ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
@@ -1226,8 +1248,8 @@ const AppSidebar: React.FC = () => {
             >
               <span
                 className={`${openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
                   } ${nav.isSpecialSection ? "text-blue-500" : ""}`}
               >
                 {nav.icon}
@@ -1256,8 +1278,8 @@ const AppSidebar: React.FC = () => {
               >
                 <span
                   className={`${isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
+                    ? "menu-item-icon-active"
+                    : "menu-item-icon-inactive"
                     } ${nav.isSpecialSection ? "text-blue-500" : ""}`}
                 >
                   {nav.icon}
@@ -1289,8 +1311,8 @@ const AppSidebar: React.FC = () => {
                     <Link
                       href={subItem.path}
                       className={`menu-dropdown-item ${isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
+                        ? "menu-dropdown-item-active"
+                        : "menu-dropdown-item-inactive"
                         } ${nav.isSpecialSection ? "border-l-2 border-blue-500" : ""}`}
                     >
                       {subItem.name}
@@ -1298,8 +1320,8 @@ const AppSidebar: React.FC = () => {
                         {subItem.new && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             new
@@ -1308,8 +1330,8 @@ const AppSidebar: React.FC = () => {
                         {subItem.pro && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             pro
@@ -1337,312 +1359,298 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`pb-8 pt-3 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-        <Link href="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <Image
-              className="dark:hidden"
-              src="/images/icons/ftfllogo.jpeg"
-              alt="Logo"
-              width={150}
-              height={40}
-            />
-          ) : (
+        <div className="flex flex-col gap-2">
+          {/* First Logo - Shows all sections except special ones */}
+          <button
+            onClick={(e) => handleLogoClick(e, 'all')}
+            className={`p-1 rounded-md transition-colors ${activeView === 'all' ? 'bg-gray-200 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+            title="Show all sections"
+          >
             <Image
               src="/images/icons/ftfllogo.jpeg"
-              alt="Logo"
-              width={32}
-              height={32}
+              alt="Main Logo"
+              width={isExpanded || isHovered || isMobileOpen ? 150 : 32}
+              height={isExpanded || isHovered || isMobileOpen ? 40 : 32}
             />
-          )}
-        </Link>
+          </button>
+
+          {/* Second Logo - Shows only Fetch True sections */}
+          <button
+            onClick={(e) => handleLogoClick(e, 'fetchTrue')}
+            className={`p-1 rounded-md transition-colors ${activeView === 'fetchTrue' ? 'bg-blue-100 dark:bg-blue-900' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+            title="Show Fetch True sections only"
+          >
+            <Image
+              src="/images/logo/final-logo.png"
+              alt="Fetch True Logo"
+              width={isExpanded || isHovered || isMobileOpen ? 120 : 32}
+              height={isExpanded || isHovered || isMobileOpen ? 40 : 32}
+            />
+          </button>
+        </div>
       </div>
+
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            
-            {/* ... other menu sections ... */}
-                        <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(navItems, "main")}
-            </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "COUNTER MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(counterItems, "counter")}
-            </div>
+            {/* Show regular sections only when activeView is 'all' */}
+            {activeView === 'all' && (
+              <>
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
+                  </h2>
+                  {renderMenuItems(navItems, "main")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "JOB MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(jobItems, "job")}
-            </div>
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "COUNTER MANAGEMENT" : <HorizontaLDots />}
+                  </h2>
+                  {renderMenuItems(counterItems, "counter")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "CANDIDATE MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(candidateItems, "candidate")}
-            </div>
+                {/* ... Repeat for all other regular sections ... */}
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "JOB MANAGEMENT" : <HorizontaLDots />}
+                  </h2>
+                  {renderMenuItems(jobItems, "job")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "FOOTER MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(footerItems, "footer")}
-            </div>
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "CANDIDATE MANAGEMENT" : <HorizontaLDots />}
+                  </h2>
+                  {renderMenuItems(candidateItems, "candidate")}
+                </div>
 
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "TESTIMONIAL MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(testimonialItems, "testimonial")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "FOOTER MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(footerItems, "footer")}
+                </div>
 
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "BLOG MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(blogItems, "blog")}
-            </div>
-
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "ABOUT MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(aboutItems, "about")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "TESTIMONIAL MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(testimonialItems, "testimonial")}
+                </div>
 
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "TECHNOLOGY MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(technologyItems, "technology")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "BLOG MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(blogItems, "blog")}
+                </div>
+
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "ABOUT MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(aboutItems, "about")}
+                </div>
 
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "PRODUCT MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(productItems, "product")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "TECHNOLOGY MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(technologyItems, "technology")}
+                </div>
 
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "BOARD MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(boardItems, "board")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "PRODUCT MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(productItems, "product")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "INTERNSHIP MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(internshipItems, "internship")}
-            </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "CONTACT MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(contactItems, "contact")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "BOARD MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(boardItems, "board")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "NEWSLETTER MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(newsletterItems, "newsletter")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "INTERNSHIP MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(internshipItems, "internship")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "POLICY MANAGEMENT"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(policyItems, "policy")}
-            </div>
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "CONTACT MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(contactItems, "contact")}
+                </div>
 
-            {/* Add a separator before special sections */}
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "NEWSLETTER MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(newsletterItems, "newsletter")}
+                </div>
+
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "POLICY MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(policyItems, "policy")}
+                </div>
+
+                {/* Continue with all other regular sections... */}
+              </>
+            )}
+
+            {/* Show special sections only when activeView is 'fetchTrue' OR always show but conditionally render based on activeView */}
+            {(activeView === 'fetchTrue' || activeView === 'all') && (
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                </div>
+                {/* <div className="relative flex justify-center">
+                  <span className="bg-white dark:bg-gray-900 px-3 text-xs text-gray-500 dark:text-gray-400">
+                    Fetch True Sections
+                  </span>
+                </div> */}
               </div>
-              <div className="relative flex justify-center">
-                <span className="bg-white dark:bg-gray-900 px-3 text-xs text-gray-500 dark:text-gray-400">
-                  Fetch True Sections
-                </span>
-              </div>
-            </div>
+            )}
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "FCONTACT MANAGEMENT"
-                ) : (
-                  <PieChartIcon className="text-blue-500" />
-                )}
-              </h2>
-              {renderMenuItems(fcontactItems, "fcontact")}
-            </div>
+            {/* Always show special sections but conditionally based on activeView */}
+            {(activeView === 'fetchTrue') && (
+              <>
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "FCONTACT MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(fcontactItems, "fcontact")}
+                </div>
 
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "FSERVICES MANAGEMENT"
-                ) : (
-                  <PieChartIcon className="text-blue-500" />
-                )}
-              </h2>
-              {renderMenuItems(fservicesItems, "fservices")}
-            </div>
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "FSERVICES MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(fservicesItems, "fservices")}
+                </div>
+
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "FBLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(fblogItems, "fblog")}
+                </div>
+              </>
+            )}
 
           </div>
         </nav>

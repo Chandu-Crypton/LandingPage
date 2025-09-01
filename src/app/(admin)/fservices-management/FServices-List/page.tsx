@@ -148,7 +148,7 @@ const FServicesListPage: React.FC = () => {
                                                     <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
-                                                    href={`/fservices-management/Add-FService?page=edit&id=${fservice._id as string}`}
+                                                    href={`/fservices-management/Add-FServices?page=edit&id=${fservice._id as string}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                                                     title="Edit FService"
                                                 >
