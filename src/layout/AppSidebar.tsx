@@ -1108,9 +1108,9 @@ const policyItems: NavItem[] = [
 const fcontactItems: NavItem[] = [
   {
     icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
-    name: "FContact",
+    name: "Contact",
     subItems: [
-      { name: "FContact List", path: "/fcontact-management/FContact-List", pro: false },
+      { name: "Contact List", path: "/fcontact-management/FContact-List", pro: false },
     ],
     isSpecialSection: true,
   },
@@ -1119,10 +1119,10 @@ const fcontactItems: NavItem[] = [
 const fservicesItems: NavItem[] = [
   {
     icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
-    name: "FServices",
+    name: "Services",
     subItems: [
-      { name: "Add New FServices", path: "/fservices-management/Add-FServices", pro: false },
-      { name: "FServices List", path: "/fservices-management/FServices-List", pro: false },
+      { name: "Add New Services", path: "/fservices-management/Add-FServices", pro: false },
+      { name: "Services List", path: "/fservices-management/FServices-List", pro: false },
     ],
     isSpecialSection: true,
   },
@@ -1131,10 +1131,10 @@ const fservicesItems: NavItem[] = [
 const fblogItems: NavItem[] = [
   {
     icon: <PieChartIcon className="text-blue-500" />,
-    name: "FBlog",
+    name: "Blog",
     subItems: [
-      { name: "Add New FBlog", path: "/fblog-management/Add-FBlog", pro: false },
-      { name: "FBlog List", path: "/fblog-management/FBlog-List", pro: false },
+      { name: "Add New Blog", path: "/fblog-management/Add-FBlog", pro: false },
+      { name: "Blog List", path: "/fblog-management/FBlog-List", pro: false },
     ],
     isSpecialSection: true,
   },
@@ -1193,9 +1193,9 @@ const AppSidebar: React.FC = () => {
       { type: "candidate", items: candidateItems },
       { type: "newsletter", items: newsletterItems },
       { type: "policy", items: policyItems },
-      { type: "fcontact", items: fcontactItems },
-      { type: "fservices", items: fservicesItems },
-      { type: "fblog", items: fblogItems },
+      { type: "contact", items: fcontactItems },
+      { type: "services", items: fservicesItems },
+      { type: "blog", items: fblogItems },
     ];
 
     allMenuTypes.forEach(({ type, items }) => {
@@ -1631,23 +1631,23 @@ const AppSidebar: React.FC = () => {
               <>
                 <div>
                   <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                    {isExpanded || isHovered || isMobileOpen ? "FCONTACT MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                    {isExpanded || isHovered || isMobileOpen ? "CONTACT MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
-                  {renderMenuItems(fcontactItems, "fcontact")}
+                  {renderMenuItems(fcontactItems, "contact")}
                 </div>
 
                 <div>
                   <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                    {isExpanded || isHovered || isMobileOpen ? "FSERVICES MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                    {isExpanded || isHovered || isMobileOpen ? "SERVICES MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
-                  {renderMenuItems(fservicesItems, "fservices")}
+                  {renderMenuItems(fservicesItems, "services")}
                 </div>
 
                 <div>
                   <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                    {isExpanded || isHovered || isMobileOpen ? "FBLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                    {isExpanded || isHovered || isMobileOpen ? "BLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
-                  {renderMenuItems(fblogItems, "fblog")}
+                  {renderMenuItems(fblogItems, "blog")}
                 </div>
               </>
             )}

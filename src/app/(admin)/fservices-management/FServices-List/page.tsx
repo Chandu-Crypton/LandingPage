@@ -36,13 +36,13 @@ const FServicesListPage: React.FC = () => {
             await deleteFServices(id);
             setError(null);
         } catch (err) {
-            console.error('Error deleting fservices:', err);
+            console.error('Error deleting services:', err);
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || 'Failed to delete fservices. Please try again.');
+                setError(err.response?.data?.message || 'Failed to delete services. Please try again.');
             } else if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError('Failed to delete fservices. An unknown error occurred.');
+                setError('Failed to delete services. An unknown error occurred.');
             }
         } finally {
             setLoading(false);
@@ -64,7 +64,7 @@ const FServicesListPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6 text-center">FServices List</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">Services List</h1>
 
             {error && (
                 <p className="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded">
@@ -102,9 +102,9 @@ const FServicesListPage: React.FC = () => {
             </div>
 
             {/* FServices Table */}
-            <ComponentCard title="All FServices">
+            <ComponentCard title="All Services">
                 {loading ? (
-                    <p className="text-gray-600">Loading fservices...</p>
+                    <p className="text-gray-600">Loading Services...</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm">
@@ -150,14 +150,14 @@ const FServicesListPage: React.FC = () => {
                                                 <Link
                                                     href={`/fservices-management/Add-FServices?page=edit&id=${fservice._id as string}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
-                                                    title="Edit FService"
+                                                    title="Edit Service"
                                                 >
                                                     <PencilIcon size={16} />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(fservice._id as string)}
                                                     className="text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white"
-                                                    title="Delete FService"
+                                                    title="Delete Service"
                                                 >
                                                     <TrashBinIcon />
                                                 </button>

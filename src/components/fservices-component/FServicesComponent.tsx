@@ -14,11 +14,10 @@ interface FServicesFormProps {
       fservicesIdToEdit?: string;
 }
 
-// Define the expected structure of the API response for a single blog
-// This correctly types the wrapper object the API returns.
+
 interface SingleFServicesApiResponse {
     success: boolean;
-    data?: IFServices; // The actual fservices data is nested under 'data', and it's of type IFServices
+    data?: IFServices;
     message?: string;
 }
 
@@ -134,18 +133,18 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <ComponentCard title={fservicesIdToEdit ? 'Edit FServices Entry' : 'Add New FServices Entry'}>
+            <ComponentCard title={fservicesIdToEdit ? 'Edit Services Entry' : 'Add New Services Entry'}>
                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Title */}
                     <div>
-                        <Label htmlFor="title">FServices Title</Label>
+                        <Label htmlFor="title">Services Title</Label>
                         <Input
                             id="title"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter fservices title"
+                            placeholder="Enter services title"
                             required
                         />
                     </div>
@@ -158,7 +157,7 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
                             type="text"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Enter fservices description"
+                            placeholder="Enter services description"
                             required
                         />
                     </div>
@@ -181,7 +180,7 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
                             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
-                            {loading ? 'Submitting...' : fservicesIdToEdit ? 'Update FServices' : 'Add FServices'}
+                            {loading ? 'Submitting...' : fservicesIdToEdit ? 'Update Services' : 'Add Services'}
                         </button>
                     </div>
                 </form>
