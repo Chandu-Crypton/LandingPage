@@ -1105,6 +1105,19 @@ const policyItems: NavItem[] = [
 ];
 
 
+const servicesItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Services",
+    subItems: [
+      { name: "Add New Services", path: "/service-management/Add-Service", pro: false },
+      { name: "Services List", path: "/service-management/Service-List", pro: false },
+    ],
+  },
+];
+    
+
+
 const fcontactItems: NavItem[] = [
   {
     icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
@@ -1193,6 +1206,7 @@ const AppSidebar: React.FC = () => {
       { type: "candidate", items: candidateItems },
       { type: "newsletter", items: newsletterItems },
       { type: "policy", items: policyItems },
+      { type: "service", items: servicesItems },
       { type: "contact", items: fcontactItems },
       { type: "services", items: fservicesItems },
       { type: "blog", items: fblogItems },
@@ -1608,7 +1622,23 @@ const AppSidebar: React.FC = () => {
                   {renderMenuItems(policyItems, "policy")}
                 </div>
 
-                {/* Continue with all other regular sections... */}
+               
+                 <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "SERVICES MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(servicesItems, "services")}
+                </div>
+
               </>
             )}
 

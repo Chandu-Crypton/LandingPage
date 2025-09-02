@@ -10,39 +10,40 @@ import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
-import { IFServices } from '@/models/FServices';
-import { useFServices } from '@/context/FServicesContext';
+import { useService } from '@/context/ServiceContext';
+import { IService } from '@/models/Service';
+import NextImage from 'next/image'; // Aliased Image to NextImage to avoid conflicts
 
-const FServicesListPage: React.FC = () => {
-    const { fservices, deleteFServices } = useFServices();
+const ServiceListPage: React.FC = () => {
+    const { services, deleteService } = useService();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        if (fservices.length > 0) {
+        if (services.length > 0) {
             setLoading(false);
         } else {
             setLoading(false);
         }
-    }, [fservices]);
+    }, [services]);
 
     const handleDelete = async (id: string) => {
-        console.warn("Deletion initiated for fservice ID:", id);
+        console.warn("Deletion initiated for service ID:", id);
 
         try {
             setLoading(true);
-            await deleteFServices(id);
+            await deleteService(id);
             setError(null);
         } catch (err) {
-            console.error('Error deleting services:', err);
+            console.error('Error deleting service:', err);
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || 'Failed to delete services. Please try again.');
+                setError(err.response?.data?.message || 'Failed to delete service. Please try again.');
             } else if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError('Failed to delete services. An unknown error occurred.');
+                setError('Failed to delete blog. An unknown error occurred.');
             }
         } finally {
             setLoading(false);
@@ -51,16 +52,36 @@ const FServicesListPage: React.FC = () => {
 
 
 
-    const filteredFServices = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return fservices;
-        }
-        const lowercasedSearchTerm = searchTerm.toLowerCase();
-        return fservices.filter((fservice) =>
-            fservice.title.toLowerCase().includes(lowercasedSearchTerm) ||
-            fservice.description.toLowerCase().includes(lowercasedSearchTerm) 
-        );
-    }, [fservices, searchTerm]);
+    // const filteredServices = useMemo(() => {
+    //     if (!searchTerm.trim()) {
+    //         return blogs;
+    //     }
+    //     const lowercasedSearchTerm = searchTerm.toLowerCase();
+    //     return blogs.filter((blog) =>
+    //         blog.title.toLowerCase().includes(lowercasedSearchTerm) ||
+    //         blog.description.toLowerCase().includes(lowercasedSearchTerm) 
+    //     );
+    // }, [blogs, searchTerm]);
+
+
+    const filteredServices = useMemo(() => {
+    if (!searchTerm.trim()) return services;
+
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
+
+    return services.filter((service) => {
+        // check title and description
+        if (service.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
+        if (service.description.some(desc => desc.toLowerCase().includes(lowercasedSearchTerm))) return true;
+
+       
+        return false;
+    });
+}, [services, searchTerm]);
+
+
+   
+
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -77,9 +98,9 @@ const FServicesListPage: React.FC = () => {
                 <div className="w-full lg:w-3/4">
                     <ComponentCard title="Search Filter">
                         <div className="py-3">
-                            <Label htmlFor="searchAbout">Search by Title or Description</Label>
+                            <Label htmlFor="searchServices">Search by Title or Description</Label>
                             <Input
-                                id="searchAbout"
+                                id="searchServices"
                                 type="text"
                                 placeholder="Enter keyword"
                                 value={searchTerm}
@@ -91,8 +112,8 @@ const FServicesListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                     <StatCard
-                        title="Total About Entries"
-                        value={fservices.length}
+                        title="Total Service Entries"
+                        value={services.length}
                         icon={UserIcon}
                         badgeColor="success"
                         badgeValue="0.00%"
@@ -101,10 +122,10 @@ const FServicesListPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* FServices Table */}
+            {/* Blogs Table */}
             <ComponentCard title="All Services">
                 {loading ? (
-                    <p className="text-gray-600">Loading Services...</p>
+                    <p className="text-gray-600">Loading services...</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm">
@@ -112,50 +133,50 @@ const FServicesListPage: React.FC = () => {
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Title</th>
                                     <th className="px-5 py-3 text-left">Description</th>
-                                    <th className="px-5 py-3 text-left">Videos</th> 
-                                    <th className="px-5 py-3 text-left">Created At</th>
+                                    <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredFServices.map((fservice: IFServices) => (
-                                    <tr key={fservice._id as string} className="border-t hover:bg-gray-50 transition">
-                                        <td className="px-5 py-3 font-semibold">{fservice.title}</td>
-                                        <td className="px-5 py-3 max-w-[200px] truncate">{fservice.description}</td>
-                                         <td className="px-5 py-3">
-                                            <a
-                                                href={fservice.videoLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-500 hover:underline"
-                                                download
-                                            >
-                                                View Video
-                                            </a>
-                                        </td>
-                                            
-
+                                {filteredServices.map((service: IService) => (
+                                    <tr key={service._id as string} className="border-t hover:bg-gray-50 transition">
+                                        <td className="px-5 py-3 font-semibold">{service.title}</td>
+                                        <td className="px-5 py-3">{service.description.join(", ")}</td>
                                         <td className="px-5 py-3">
-                                            {fservice.createdAt ? new Date(fservice.createdAt).toLocaleDateString() : 'N/A'}
+                                            {service.mainImage ? (
+                                                <NextImage
+                                                    src={service.mainImage}
+                                                    alt="Main Service Image"
+                                                    width={80}
+                                                    height={60}
+                                                    className="rounded-md object-cover"
+                                                    unoptimized={true}
+                                                />
+                                            ) : (
+                                                <span className="text-gray-400">N/A</span>
+                                            )}
                                         </td>
+                                       
+                                     
+                                       
                                         <td className="px-5 py-3">
                                             <div className="flex justify-center gap-2">
                                                 <Link
-                                                    href={`/fservices-management/FServices-List/${fservice._id as string}`}
+                                                    href={`/service-management/Service-List/${service._id as string}`}
                                                     className="text-blue-500 border border-blue-500 rounded-md p-2 hover:bg-blue-500 hover:text-white"
                                                     title="View Service"
                                                 >
                                                     <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
-                                                    href={`/fservices-management/Add-FServices?page=edit&id=${fservice._id as string}`}
+                                                     href={`/service-management/Add-Service?page=edit&id=${service._id as string}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                                                     title="Edit Service"
                                                 >
                                                     <PencilIcon size={16} />
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(fservice._id as string)}
+                                                    onClick={() => handleDelete(service._id as string)}
                                                     className="text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white"
                                                     title="Delete Service"
                                                 >
@@ -165,7 +186,7 @@ const FServicesListPage: React.FC = () => {
                                         </td>
                                     </tr>
                                 ))}
-                                {filteredFServices.length === 0 && (
+                                {filteredServices.length === 0 && (
                                     <tr>
                                         <td colSpan={7} className="px-5 py-10 text-center text-gray-500">
                                             No services found.
@@ -181,4 +202,4 @@ const FServicesListPage: React.FC = () => {
     );
 };
 
-export default FServicesListPage;
+export default ServiceListPage;

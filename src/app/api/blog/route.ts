@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-        console.log("Received form data:", formData);
+      
         const addHeading = formData.get('addHeading')?.toString() || undefined; // Optional
         const blogHeading = formData.get('blogHeading')?.toString();
         const title = formData.get('title')?.toString();

@@ -24,6 +24,7 @@ import { BoardProvider } from '@/context/BoardContext';
 import { FContactProvider } from '@/context/FContactContext';
 import { FServicesProvider } from '@/context/FServicesContext';
 import { FBlogProvider } from '@/context/FBlogContext';
+import { ServiceProvider } from '@/context/ServiceContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -57,15 +58,17 @@ export default function RootLayout({
                                         <FServicesProvider>
                                           <FBlogProvider>
                                             <AuthProvider>
-                                              <UserProvider>
-                                                <WhyChooseProvider>
-                                                  <ZoneProvider>
+                                              <ServiceProvider>
+                                                <UserProvider>
+                                                  <WhyChooseProvider>
+                                                    <ZoneProvider>
 
-                                                    {children}
+                                                      {children}
 
-                                                  </ZoneProvider>
-                                                </WhyChooseProvider>
-                                              </UserProvider>
+                                                    </ZoneProvider>
+                                                  </WhyChooseProvider>
+                                                </UserProvider>
+                                              </ServiceProvider>
                                             </AuthProvider>
                                           </FBlogProvider>
                                         </FServicesProvider>
