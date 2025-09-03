@@ -23,7 +23,7 @@ interface SingleServiceApiResponse {
 const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) => {
     
 
-    // States for other blog fields
+    // States for other service fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState<string[]>([]);
    
@@ -45,7 +45,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
     // 
 
-    // Effect to populate form fields when editing an existing blog
+    // Effect to populate form fields when editing an existing service
     useEffect(() => {
         const populateForm = (serviceData: IService) => {
             setTitle(serviceData.title || '');
@@ -174,7 +174,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter blog title"
+                            placeholder="Enter service title"
                             required
                             disabled={loading}
                         />
