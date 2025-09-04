@@ -13,6 +13,7 @@ export async function OPTIONS() {
     return NextResponse.json({}, { status: 200, headers: corsHeaders });
 }
 
+
 export async function GET(req: Request) {
     await connectToDatabase();
 
@@ -37,13 +38,22 @@ export async function GET(req: Request) {
             // Search by ID
             doc = await Blog.findById(identifier);
         } else {
+            // Convert URL slug back to title format for proper matching
+            const titleFromSlug = identifier
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            
+            console.log('Searching for title:', titleFromSlug); // Debug log
+            
             // Search by title - CASE INSENSITIVE
             doc = await Blog.findOne({ 
-                title: { $regex: new RegExp(`^${identifier}$`, 'i') } 
+                title: { $regex: new RegExp(`^${titleFromSlug}$`, 'i') } 
             });
         }
 
         if (!doc) {
+            console.log('No document found for:', identifier); // Debug log
             return NextResponse.json(
                 { success: false, message: 'Blog not found.' },
                 { status: 404, headers: corsHeaders }
