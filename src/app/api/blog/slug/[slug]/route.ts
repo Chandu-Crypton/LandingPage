@@ -38,8 +38,8 @@ export async function GET(req: Request) {
             // Search by ID - identifier is now guaranteed to be a string
             doc = await Blog.findById(identifier);
         } else {
-            // Search by slug
-            doc = await Blog.findOne({ slug: identifier });
+            // Search by title
+            doc = await Blog.findOne({ title: identifier });
         }
 
         if (!doc) {
