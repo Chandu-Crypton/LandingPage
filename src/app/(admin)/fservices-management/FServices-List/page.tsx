@@ -12,6 +12,7 @@ import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 import { IFServices } from '@/models/FServices';
 import { useFServices } from '@/context/FServicesContext';
+import NextImage from 'next/image';
 
 const FServicesListPage: React.FC = () => {
     const { fservices, deleteFServices } = useFServices();
@@ -58,7 +59,7 @@ const FServicesListPage: React.FC = () => {
         const lowercasedSearchTerm = searchTerm.toLowerCase();
         return fservices.filter((fservice) =>
             fservice.title.toLowerCase().includes(lowercasedSearchTerm) ||
-            fservice.description.toLowerCase().includes(lowercasedSearchTerm) 
+            fservice.description.toLowerCase().includes(lowercasedSearchTerm)
         );
     }, [fservices, searchTerm]);
 
@@ -111,8 +112,9 @@ const FServicesListPage: React.FC = () => {
                             <thead>
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Title</th>
+                                    <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-left">Description</th>
-                                    <th className="px-5 py-3 text-left">Videos</th> 
+                                    <th className="px-5 py-3 text-left">Videos</th>
                                     <th className="px-5 py-3 text-left">Created At</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
@@ -121,8 +123,22 @@ const FServicesListPage: React.FC = () => {
                                 {filteredFServices.map((fservice: IFServices) => (
                                     <tr key={fservice._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{fservice.title}</td>
+                                        <td className="px-5 py-3">
+                                            {fservice.mainImage ? (
+                                                <NextImage
+                                                    src={fservice.mainImage}
+                                                    alt="Main FService Image"
+                                                    width={80}
+                                                    height={60}
+                                                    className="rounded-md object-cover"
+                                                    unoptimized={true}
+                                                />
+                                            ) : (
+                                                <span className="text-gray-400">N/A</span>
+                                            )}
+                                        </td>
                                         <td className="px-5 py-3 max-w-[200px] truncate">{fservice.description}</td>
-                                         <td className="px-5 py-3">
+                                        <td className="px-5 py-3">
                                             <a
                                                 href={fservice.videoLink}
                                                 target="_blank"
@@ -133,7 +149,7 @@ const FServicesListPage: React.FC = () => {
                                                 View Video
                                             </a>
                                         </td>
-                                            
+
 
                                         <td className="px-5 py-3">
                                             {fservice.createdAt ? new Date(fservice.createdAt).toLocaleDateString() : 'N/A'}

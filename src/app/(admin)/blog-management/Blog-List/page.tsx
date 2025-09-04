@@ -12,7 +12,7 @@ import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 import { useBlog } from '@/context/BlogContext';
 import { IBlog } from '@/models/Blog';
-import NextImage from 'next/image'; // Aliased Image to NextImage to avoid conflicts
+import NextImage from 'next/image'; 
 
 const BlogListPage: React.FC = () => {
     const { blogs, deleteBlog } = useBlog();

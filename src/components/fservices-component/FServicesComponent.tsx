@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useFServices } from '@/context/FServicesContext';
 import { IFServices } from '@/models/FServices';
 import axios from 'axios'; // Import AxiosError for type-safe error handling
+import Image from 'next/image';
 
 
 interface FServicesFormProps {
@@ -26,13 +27,21 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
     const [description, setDescription] = useState('');
     const [videoLink, setVideoLink] = useState('');
 
-   
+    const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+    const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+      
     const router = useRouter();
     // Assuming addFServices and updateFServices in FServicesContext handle IFServices types or FormData correctly
     const { addFServices, updateFServices, fservices } = useFServices();
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
+
+     const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files ? e.target.files[0] : null;
+            setMainImageFile(file);
+            setMainImagePreview(file ? URL.createObjectURL(file) : null);
+        };
    
 
        
@@ -44,6 +53,7 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
         const populateForm = (fservicesData: IFServices) => {
             setTitle(fservicesData.title);
             setDescription(fservicesData.description);
+            setMainImagePreview(fservicesData.mainImage || null);
             setVideoLink(fservicesData.videoLink);
         };
 
@@ -94,7 +104,13 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
         formData.append('title', title);
         formData.append('description', description);
         formData.append('videoLink', videoLink);
-      
+          if (mainImageFile) {
+            formData.append('mainImage', mainImageFile);
+        } else if (mainImagePreview) { // No new file, but there's an existing preview (URL)
+            formData.append('mainImage', mainImagePreview);
+        } else if (fservicesIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
+            formData.append('mainImage', '');
+        }
 
        
        
@@ -128,6 +144,8 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
         setTitle('');
         setDescription('');
         setVideoLink('');
+        setMainImageFile(null);
+        setMainImagePreview(null);
 
     };
 
@@ -148,6 +166,58 @@ const FServicesFormComponent: React.FC<FServicesFormProps> = ({ fservicesIdToEdi
                             required
                         />
                     </div>
+
+                           {/* Main Image */}
+                                        <div>
+                                            <Label htmlFor="mainImage">Main Image</Label>
+                                            {(mainImagePreview && !mainImageFile) && (
+                                                <div className="mb-2">
+                                                    <p className="text-sm text-gray-600">Current Image:</p>
+                                                    <Image
+                                                        src={mainImagePreview}
+                                                        alt="Main Image Preview"
+                                                        width={300}
+                                                        height={200}
+                                                        className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                                        unoptimized={true}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setMainImagePreview(null);
+                                                            setMainImageFile(null);
+                                                        }}
+                                                        className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                                        disabled={loading}
+                                                    >
+                                                        Remove Current Image
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {mainImageFile && (
+                                                <div className="mb-2">
+                                                    <p className="text-sm text-gray-600">New Image Preview:</p>
+                                                    <Image
+                                                        src={URL.createObjectURL(mainImageFile)}
+                                                        alt="New Main Image Preview"
+                                                        width={300}
+                                                        height={200}
+                                                        className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                                        unoptimized={true}
+                                                    />
+                                                    <p className="text-xs text-gray-500 mt-1">Selected: {mainImageFile.name}</p>
+                                                </div>
+                                            )}
+                                            <input
+                                                id="mainImage"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleMainImageChange}
+                                                className="w-full border rounded p-2"
+                                                required={!fservicesIdToEdit || (!mainImagePreview && !mainImageFile)}
+                                                disabled={loading}
+                                            />
+                                        </div>
 
                     {/* Description */}
                     <div>

@@ -231,7 +231,7 @@
 //                     // Extract YouTube video ID
 //                     const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
 //                     const match = link.match(youtubeRegex);
-                    
+
 //                     if (match && match[1]) {
 //                         const videoId = match[1];
 //                         youtubeVideos.push({
@@ -369,7 +369,7 @@
 //                                                 </div>
 //                                             </div>
 //                                         </div>
-                                        
+
 //                                     </div>
 //                                 ))}
 //                             </div>
@@ -401,11 +401,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios'; 
+import axios from 'axios';
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons';
 import { IFServices } from '@/models/FServices';
+import NextImage from 'next/image'; 
 
 interface SingleFServiceApiResponse {
     success: boolean;
@@ -464,7 +465,7 @@ const FServiceDetailPage: React.FC = () => {
                 // Extract YouTube video ID
                 const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
                 const match = videoLink.match(youtubeRegex);
-                
+
                 if (match && match[1]) {
                     const videoId = match[1];
                     setYoutubeThumbnail(`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`);
@@ -559,10 +560,28 @@ const FServiceDetailPage: React.FC = () => {
                         <p>{fservice.description}</p>
                     </div>
 
+                    <div>
+                        <strong>Main Image:</strong>
+                        {fservice.mainImage ? (
+                            <div className="mt-2">
+                                <NextImage
+                                    src={fservice.mainImage}
+                                    alt={`Main image for ${fservice.title}`}
+                                    width={400} // Increased size for detail page
+                                    height={300}
+                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                                    unoptimized={true}
+                                />
+                            </div>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No main image available.</p>
+                        )}
+                    </div>
+
                     {fservice.videoLink && (
                         <div>
                             <strong className="block mb-4">Video:</strong>
-                            <div 
+                            <div
                                 className="cursor-pointer group relative rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow max-w-md"
                                 onClick={handleVideoClick}
                                 title="Click to watch on YouTube"
