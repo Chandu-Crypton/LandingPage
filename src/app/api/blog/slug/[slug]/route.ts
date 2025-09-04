@@ -19,7 +19,6 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const identifier = url.pathname.split("/").pop();
 
-    // Check if identifier is undefined or empty
     if (!identifier) {
         return NextResponse.json(
             { success: false, message: 'Blog identifier is required.' },
@@ -35,11 +34,13 @@ export async function GET(req: Request) {
                           new mongoose.Types.ObjectId(identifier).toString() === identifier;
 
         if (isObjectId) {
-            // Search by ID - identifier is now guaranteed to be a string
+            // Search by ID
             doc = await Blog.findById(identifier);
         } else {
-            // Search by title
-            doc = await Blog.findOne({ title: identifier });
+            // Search by title - CASE INSENSITIVE
+            doc = await Blog.findOne({ 
+                title: { $regex: new RegExp(`^${identifier}$`, 'i') } 
+            });
         }
 
         if (!doc) {
