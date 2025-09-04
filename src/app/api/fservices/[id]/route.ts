@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/utils/db';
 import FServices, {IFServices} from '@/models/FServices';
 import mongoose from 'mongoose';
+import imagekit from '@/utils/imagekit';
+import { v4 as uuidv4 } from 'uuid';
 
 // IMPORTANT: Define or import these as per your project setup
 const corsHeaders = {
@@ -84,6 +86,20 @@ export async function PUT(req: Request) {
         if (title && typeof title === 'string') updateData.title = title;
         if (description && typeof description === 'string') updateData.description = description;
         if (videoLink && typeof videoLink === 'string') updateData.videoLink = videoLink;
+
+        const mainImageFile = formData.get("mainImage");
+                if (mainImageFile instanceof File && mainImageFile.size > 0) {
+                    const buffer = Buffer.from(await mainImageFile.arrayBuffer());
+                    const uploadRes = await imagekit.upload({
+                        file: buffer,
+                        fileName: `${uuidv4()}-${mainImageFile.name}`,
+                        folder: "/fservices_images",
+                    });
+                    updateData.mainImage = uploadRes.url;
+                } else if (mainImageFile === "null" || mainImageFile === "") {
+                    updateData.mainImage = "";
+                }
+        
 
         const updatedFServicesEntry = await FServices.findByIdAndUpdate(
             id,

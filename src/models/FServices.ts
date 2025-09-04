@@ -3,6 +3,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 export interface IFServices extends Document {
     title: string,
+    mainImage: string,
     videoLink: string,
     description: string,
     isDeleted?: boolean;
@@ -17,6 +18,11 @@ const fServicesSchema: Schema = new Schema ({
         type : String,
         required : true
       },
+
+        mainImage: {
+        type : String,
+        required : true
+    },
 
     videoLink: {
         type : String,

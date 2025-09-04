@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import FServices from "@/models/FServices";
 import { connectToDatabase } from "@/utils/db";
+import imagekit from "@/utils/imagekit";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
 
         const title = formData.get('title');
+        const mainImageFile = formData.get('mainImage') as File | null;
         const videoLink = formData.get('videoLink');
         const description = formData.get('description');
 
@@ -64,10 +66,21 @@ export async function POST(req: NextRequest) {
         }
 
 
-
+       let mainImageUrl: string | undefined;
+              if (mainImageFile && mainImageFile.size > 0) {
+                  const buffer = Buffer.from(await mainImageFile.arrayBuffer());
+                  const uploadRes = await imagekit.upload({
+                      file: buffer, // Required
+                      fileName: mainImageFile.name, // Required
+                      folder: '/fservices_images', // Optional, good for organization
+                  });
+                  mainImageUrl = uploadRes.url; // ImageKit public URL
+              }
+      
 
         const newEntry = await FServices.create({
             title: title as string,
+            mainImage: mainImageUrl as string,
             videoLink: videoLink as string,
             description: description as string
         });
