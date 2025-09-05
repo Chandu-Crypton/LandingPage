@@ -1154,6 +1154,19 @@ const fblogItems: NavItem[] = [
 ];
 
 
+const packageItems: NavItem[] = [
+  {
+    icon: <PieChartIcon className="text-blue-500" />,
+    name: "Package",
+    subItems: [
+      { name: "Add New Package", path: "/package-management/Add-Package", pro: false },
+      { name: "Package List", path: "/package-management/PackageList", pro: false },
+    ],
+    isSpecialSection: true,
+  },
+];
+
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
@@ -1210,6 +1223,7 @@ const AppSidebar: React.FC = () => {
       { type: "contact", items: fcontactItems },
       { type: "services", items: fservicesItems },
       { type: "blog", items: fblogItems },
+      { type: "package", items: packageItems },
     ];
 
     allMenuTypes.forEach(({ type, items }) => {
@@ -1678,6 +1692,13 @@ const AppSidebar: React.FC = () => {
                     {isExpanded || isHovered || isMobileOpen ? "BLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(fblogItems, "blog")}
+                </div>
+
+                <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                    {isExpanded || isHovered || isMobileOpen ? "PACKAGE MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(packageItems, "package")}
                 </div>
               </>
             )}

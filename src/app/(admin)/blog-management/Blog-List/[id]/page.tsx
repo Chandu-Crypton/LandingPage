@@ -174,6 +174,35 @@ const BlogDetailPage: React.FC = () => {
                         )}
                     </div>
 
+                                     {/* Blog Key Technology Items */}
+                    <div>
+                        <strong>Blog Key Technology Items:</strong>
+                        {blog.keyTechnologies && blog.keyTechnologies.length > 0 ? (
+                            <ul className="list-decimal pl-6 space-y-3 mt-2">
+                                {blog.keyTechnologies.map((item, idx) => (
+                                    <li key={idx} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow-sm">
+                                        <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                                            {item.itemTitle}
+                                        </p>
+                                        {item.itemPoints.map((point, idx) => (
+                                            <p key={idx} className="mt-1 text-gray-800 dark:text-gray-200">
+                                                {point}
+                                            </p>
+                                        ))}
+                                         <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                                            {item.itemDescription}
+                                        </p>
+
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No additional content sections.</p>
+                        )}
+                    </div>
+
+
+
                     {/* Blog Items */}
                     <div>
                         <strong>Blog Content Sections:</strong>

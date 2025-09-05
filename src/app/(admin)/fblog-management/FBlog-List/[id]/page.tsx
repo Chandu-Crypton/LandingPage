@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios'; // Import AxiosError for type-safe error handling
+import axios from 'axios'; 
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons'; // Assuming TrashBinIcon is correctly imported
@@ -12,12 +12,12 @@ import NextImage from 'next/image'; // Alias Image to NextImage to avoid conflic
 // Define the expected structure of the API response for a single blog
 interface SingleBlogApiResponse {
     success: boolean;
-    data?: IFBlog; // The actual blog data is nested under 'data'
+    data?: IFBlog; 
     message?: string;
 }
 
 const BlogDetailPage: React.FC = () => {
-    // useParams returns a string or string[] or undefined. We expect 'id' to be a string.
+   
     const params = useParams();
     const id = typeof params.id === 'string' ? params.id : undefined;
 
@@ -34,7 +34,7 @@ const BlogDetailPage: React.FC = () => {
                 return;
             }
             try {
-                // Type the axios response directly to the SingleBlogApiResponse interface
+               
                 const res = await axios.get<SingleBlogApiResponse>(`/api/fblog/${id}`);
                 if (res.data.success && res.data.data) {
                     setBlog(res.data.data);
@@ -56,7 +56,7 @@ const BlogDetailPage: React.FC = () => {
         };
 
         fetchBlog();
-    }, [id]); // Depend on 'id' to re-fetch if the ID changes
+    }, [id]); 
 
     if (loading) {
         return (
@@ -89,10 +89,10 @@ const BlogDetailPage: React.FC = () => {
         }
 
         try {
-            setLoading(true); // Indicate loading while deleting
-            await axios.delete(`/api/fblog/${blog._id}`); // Use blog._id directly
+            setLoading(true); 
+            await axios.delete(`/api/fblog/${blog._id}`); 
             alert('Fetch True Blog deleted successfully!');
-            router.push('/fblog-management/FBlog-List'); // Redirect to blog list page
+            router.push('/fblog-management/FBlog-List'); 
         } catch (err) {
             console.error('Error deleting fetch true blog:', err);
             if (axios.isAxiosError(err)) {
@@ -172,6 +172,36 @@ const BlogDetailPage: React.FC = () => {
                             <p className="mt-1 text-gray-500">No heading image available.</p>
                         )}
                     </div>
+                       
+
+                        {/* Blog Key Technology Items */}
+                    <div>
+                        <strong>Blog Key Technology Items:</strong>
+                        {blog.keyTechnologies && blog.keyTechnologies.length > 0 ? (
+                            <ul className="list-decimal pl-6 space-y-3 mt-2">
+                                {blog.keyTechnologies.map((item, idx) => (
+                                    <li key={idx} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md shadow-sm">
+                                        <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                                            {item.itemTitle}
+                                        </p>
+                                        {item.itemPoints.map((point, idx) => (
+                                            <p key={idx} className="mt-1 text-gray-800 dark:text-gray-200">
+                                                {point}
+                                            </p>
+                                        ))}
+                                         <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                                            {item.itemDescription}
+                                        </p>
+
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No additional content sections.</p>
+                        )}
+                    </div>
+
+
 
                     {/* Blog Items */}
                     <div>

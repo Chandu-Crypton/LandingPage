@@ -25,6 +25,7 @@ import { FContactProvider } from '@/context/FContactContext';
 import { FServicesProvider } from '@/context/FServicesContext';
 import { FBlogProvider } from '@/context/FBlogContext';
 import { ServiceProvider } from '@/context/ServiceContext';
+import { PackageProvider } from '@/context/PackageContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default function RootLayout({
                                           <FBlogProvider>
                                             <AuthProvider>
                                               <ServiceProvider>
+                                                <PackageProvider>
                                                 <UserProvider>
                                                   <WhyChooseProvider>
                                                     <ZoneProvider>
@@ -68,6 +70,7 @@ export default function RootLayout({
                                                     </ZoneProvider>
                                                   </WhyChooseProvider>
                                                 </UserProvider>
+                                                </PackageProvider>
                                               </ServiceProvider>
                                             </AuthProvider>
                                           </FBlogProvider>

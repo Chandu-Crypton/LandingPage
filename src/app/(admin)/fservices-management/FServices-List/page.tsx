@@ -78,9 +78,9 @@ const FServicesListPage: React.FC = () => {
                 <div className="w-full lg:w-3/4">
                     <ComponentCard title="Search Filter">
                         <div className="py-3">
-                            <Label htmlFor="searchAbout">Search by Title or Description</Label>
+                            <Label htmlFor="searchServices">Search by Title or Description</Label>
                             <Input
-                                id="searchAbout"
+                                id="searchServices"
                                 type="text"
                                 placeholder="Enter keyword"
                                 value={searchTerm}
@@ -92,7 +92,7 @@ const FServicesListPage: React.FC = () => {
 
                 <div className="w-full lg:w-1/4">
                     <StatCard
-                        title="Total About Entries"
+                        title="Total Service Entries"
                         value={fservices.length}
                         icon={UserIcon}
                         badgeColor="success"
