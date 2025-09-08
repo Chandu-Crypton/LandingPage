@@ -6,12 +6,12 @@ import axios from 'axios';
 
 type Package = {
   _id: string;
-  price: number;
-  discount: number;
-  discountedPrice: number;
-  deposit: number;
-  grandtotal: number;
-  monthlyEarnings: number;
+  price: string;
+  discount: string;
+  discountedPrice: string;
+  deposit: string;
+  grandtotal: string;
+  monthlyEarnings: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt?: string;

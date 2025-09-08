@@ -20,12 +20,12 @@ interface SinglePackageApiResponse {
 }
 
 const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) => {
-  const [price, setPrice] = useState<number>(0);
-  const [discount, setDiscount] = useState<number>(0);
-  const [discountedPrice, setDiscountedPrice] = useState<number>(0);
-  const [deposit, setDeposit] = useState<number>(0);
-  const [grandtotal, setGrandtotal] = useState<number>(0);
-  const [monthlyEarnings, setMonthlyEarnings] = useState<number>(0);
+  const [price, setPrice] = useState<string>('0');
+  const [discount, setDiscount] = useState<string>('0');
+  const [discountedPrice, setDiscountedPrice] = useState<string>('0');
+  const [deposit, setDeposit] = useState<string>('0');
+  const [grandtotal, setGrandtotal] = useState<string>('0');
+  const [monthlyEarnings, setMonthlyEarnings] = useState<string>('0');
 
   const { addPackage, updatePackage, packages } = usePackage();
   const router = useRouter();
@@ -35,9 +35,9 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
 
   // auto-calc discounted price & grand total when price/discount/deposit changes
   useEffect(() => {
-    const discounted = (price * discount) / 100;
-    setDiscountedPrice(discounted);
-    setGrandtotal(price - discounted - deposit);
+    const discounted = (parseFloat(price) * parseFloat(discount)) / 100;
+    setDiscountedPrice(discounted.toString());
+    setGrandtotal((parseFloat(price) - discounted - parseFloat(deposit)).toString());
   }, [price, discount, deposit]);
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
         alert('Package added successfully!');
         clearForm();
       }
-      router.push('/package-management/Package-List');
+      router.push('/package-management/PackageList');
     } catch (err) {
       console.error('Submission failed:', err);
       if (axios.isAxiosError(err)) {
@@ -123,12 +123,12 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
   };
 
   const clearForm = () => {
-    setPrice(0);
-    setDiscount(0);
-    setDiscountedPrice(0);
-    setDeposit(0);
-    setGrandtotal(0);
-    setMonthlyEarnings(0);
+    setPrice('');
+    setDiscount('');
+    setDiscountedPrice('');
+    setDeposit('');
+    setGrandtotal('');
+    setMonthlyEarnings('');
   };
 
   return (
@@ -143,7 +143,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="price"
               type="number"
               value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
+              onChange={(e) => setPrice(e.target.value)}
               required
             />
           </div>
@@ -155,7 +155,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="discount"
               type="number"
               value={discount}
-              onChange={(e) => setDiscount(Number(e.target.value))}
+              onChange={(e) => setDiscount((e.target.value))}
               required
             />
           </div>
@@ -167,7 +167,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="discountedPrice"
               type="number"
               value={discountedPrice}
-              onChange={(e) => setDiscountedPrice(Number(e.target.value))}
+              onChange={(e) => setDiscountedPrice((e.target.value))}
               className="bg-gray-100"
             />
           </div>
@@ -179,7 +179,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="deposit"
               type="number"
               value={deposit}
-              onChange={(e) => setDeposit(Number(e.target.value))}
+              onChange={(e) => setDeposit((e.target.value))}
               required
             />
           </div>
@@ -191,7 +191,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="grandtotal"
               type="number"
               value={grandtotal}
-              onChange={(e) => setGrandtotal(Number(e.target.value))}
+              onChange={(e) => setGrandtotal((e.target.value))}
               required
               className="bg-gray-100"
             />
@@ -204,7 +204,7 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
               id="monthlyEarnings"
               type="number"
               value={monthlyEarnings}
-              onChange={(e) => setMonthlyEarnings(Number(e.target.value))}
+              onChange={(e) => setMonthlyEarnings((e.target.value))}
               required
             />
           </div>

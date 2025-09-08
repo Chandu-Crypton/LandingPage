@@ -2,152 +2,163 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from 'axios'; 
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
-import { TrashBinIcon } from '@/icons';
+import { TrashBinIcon } from '@/icons'; 
 
 
-
-type NewsLetter = {
+interface IPackage {
   _id: string;
-  subject: string;
-  message: string;
+  price: number;
+  discount: number;
+  discountedPrice: number;
+  deposit: number;
+  grandtotal: number;
+  monthlyEarnings: number;
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
-};
+}
 
-const NewsLetterDetailPage: React.FC = () => {
-  const { id } = useParams();
-  const router = useRouter();
-  const [newsletter, setNewsletter] = useState<NewsLetter | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNewsletter = async () => {
-      if (!id) return;
-      try {
-        const res = await axios.get(`/api/newsletter/${id}`);
-        if (res.data.success) {
-          setNewsletter(res.data.data);
+interface SinglePackageApiResponse {
+    success: boolean;
+    data?: IPackage; 
+    message?: string;
+}
+
+const PackageDetailPage: React.FC = () => {
+
+    const params = useParams();
+    const id = typeof params.id === 'string' ? params.id : undefined;
+
+    const router = useRouter();
+    const [packageDetail, setPackageDetail] = useState<IPackage | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPackage = async () => {
+            if (!id) {
+                setLoading(false);
+                setError('Package ID is missing.');
+                return;
+            }
+            try {
+              
+                const res = await axios.get<SinglePackageApiResponse>(`/api/packages/${id}`);
+                if (res.data.success && res.data.data) {
+                    setPackageDetail(res.data.data);
+                } else {
+                    setError(res.data.message || 'Package not found.');
+                }
+            } catch (err) {
+                console.error('Error fetching package details:', err);
+                if (axios.isAxiosError(err)) {
+                    setError(err.response?.data?.message || 'Failed to load package details.');
+                } else if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unexpected error occurred while fetching package details.');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPackage();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-center text-gray-500">Loading package details...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-center text-red-500 bg-red-100 p-4 rounded-md">{error}</p>
+            </div>
+        );
+    }
+
+    if (!packageDetail) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-center text-gray-700">Package not found.</p>
+            </div>
+        );
+    }
+
+    const handleDelete = async () => {
+        // As per guidelines, replacing window.confirm with a simpler alert, or you can implement a custom modal here.
+        if (!confirm('Are you sure you want to delete this package?')) {
+            return;
         }
-      } catch (err) {
-        console.error('Error fetching newsletter details:', err);
-      } finally {
-        setLoading(false);
-      }
+
+        try {
+            setLoading(true); // Indicate loading while deleting
+            await axios.delete(`/api/packages/${packageDetail._id}`); // Use packageDetail._id directly
+            alert('Package deleted successfully!');
+            router.push('/package-management/PackageList'); // Redirect to package list page
+        } catch (err) {
+            console.error('Error deleting package:', err);
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || 'Failed to delete the package. Please try again.');
+            } else if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred during deletion. Please try again.');
+            }
+        } finally {
+            setLoading(false); // Stop loading regardless of success or failure
+        }
     };
 
-    fetchNewsletter();
-  }, [id]);
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+                <div className="flex justify-between items-start mb-6">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Package Data</h1>
+                    <div className="flex space-x-3">
+                        <Link
+                            href={`/package-management/Add-Package?page=edit&id=${packageDetail._id as string}`}
+                            className="text-yellow-600 border border-yellow-600 rounded-md p-2 hover:bg-yellow-600 hover:text-white transition-colors flex items-center justify-center"
+                            title="Edit Package"
+                        >
+                            <PencilIcon size={16} />
+                        </Link>
+                        <button
+                            onClick={handleDelete}
+                            className="text-red-600 border border-red-600 rounded-md p-2 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center"
+                            title="Delete Blog"
+                        >
+                            <TrashBinIcon />
+                        </button>
+                    </div>
+                </div>
 
-  if (loading) return <p className="text-center text-gray-500">Loading newsletter...</p>;
-  if (!newsletter) return <p className="text-center text-red-500">Newsletter not found.</p>;
+                {/* Main Package Details */}
+                <div className="space-y-6 text-gray-700 dark:text-gray-300">
+                    <p><strong>Price:</strong> {packageDetail.price}</p>
 
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this newsletter?')) return;
+                    <p><strong>Discount:</strong> {packageDetail.discount}</p>
+                    <p><strong>Discounted Price:</strong> {packageDetail.discountedPrice}</p>
+                    <p><strong>Deposit:</strong> {packageDetail.deposit}</p>
+                    <p><strong>Grand Total:</strong> {packageDetail.grandtotal}</p>
+                    <p><strong>Monthly Earnings:</strong> {packageDetail.monthlyEarnings}</p>
 
-    try {
-      await axios.delete(`/api/newsletter/${id}`);
-      alert('Newsletter deleted successfully!');
-      router.push('/newsletter-management/NewsLetter-list');
-    } catch (error) {
-      console.error('Error deleting newsletter:', error);
-      alert('Failed to delete the newsletter. Please try again.');
-    }
-  };
-
-
-
-  return (
-    // <div className="container mx-auto px-4 py-8">
-    //   <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-lg">
-    //     <div className="flex justify-between items-start mb-6">
-    //       <div>
-    //         <h1 className="text-3xl font-bold">{newsletter.subject}</h1>
-    //       </div>
-
-    //       <div className="flex space-x-3">
-    //         <Link
-    //           href={`/newsletter-management/Add-NewsLetter?page=edit&id=${newsletter._id}`}
-    //           className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
-    //         >
-    //           <PencilIcon size={16} />
-    //         </Link>
-    //         <button
-    //           onClick={handleDelete}
-    //           className="text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white"
-    //         >
-    //           <TrashBinIcon />
-    //         </button>
-    //       </div>
-    //     </div>
-
-    //   <div className="mt-6">
-    //     <h2 className="text-2xl font-bold">Newsletter Content</h2>
-    //     <div className="mt-4">
-    //       <p><strong>Message:</strong> {newsletter.message}</p>
-    //     </div>
-    //   </div>
-    // </div>
-    // </div>
-
-
-    <div className="container mx-auto px-4 py-10">
-      <div className="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
-                  rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 
-                  transition-all duration-300 hover:shadow-2xl">
-
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-              {newsletter.subject}
-            </h1>
-           
-          </div>
-
-          <div className="flex gap-3">
-            <Link
-              href={`/newsletter-management/Add-NewsLetter?page=edit&id=${newsletter._id}`}
-              className="p-2 rounded-lg border border-yellow-500 text-yellow-500 
-                     hover:bg-yellow-500 hover:text-white 
-                     transition-colors shadow-sm hover:shadow-md"
-              title="Edit"
-            >
-              <PencilIcon size={18} />
-            </Link>
-            <button
-              onClick={handleDelete}
-              className="p-2 rounded-lg border border-red-500 text-red-500 
-                     hover:bg-red-500 hover:text-white 
-                     transition-colors shadow-sm hover:shadow-md"
-              title="Delete"
-            >
-              <TrashBinIcon size={18} />
-            </button>
-          </div>
+                    <p><strong>Created At:</strong> {packageDetail.createdAt ? new Date(packageDetail.createdAt).toLocaleString() : 'N/A'}</p>
+                    <p><strong>Last Updated:</strong> {packageDetail.updatedAt ? new Date(packageDetail.updatedAt).toLocaleString() : 'N/A'}</p>
+                </div>
+            </div>
         </div>
-
-        {/* Content */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">Message</h2>
-          <div
-            className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 
-                   leading-relaxed bg-gray-50 dark:bg-gray-800 
-                   border border-gray-200 dark:border-gray-700 
-                   rounded-lg p-5 shadow-inner"
-          >
-            {newsletter.message}
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  );
+    );
 };
 
-export default NewsLetterDetailPage;
+export default PackageDetailPage;

@@ -1,12 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IPackage {
-  price: number;
-  discount: number;
-  discountedPrice: number;
-  deposit: number;
-  grandtotal: number;
-  monthlyEarnings: number;
+  price: string;
+  discount: string;
+  discountedPrice: string;
+  deposit: string;
+  grandtotal: string;
+  monthlyEarnings: string;
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -18,12 +18,12 @@ export type PackageDocument = IPackage & Document;
 
 const packageSchema: Schema = new Schema(
   {
-    price: { type: Number, required: true },
-    discount: { type: Number, required: true },
-    discountedPrice: { type: Number, required: true },
-    deposit: { type: Number, required: true },
-    grandtotal: { type: Number, required: true },
-    monthlyEarnings: { type: Number, required: true },
+    price: { type: String, required: true },
+    discount: { type: String, required: true },
+    discountedPrice: { type: String, required: true },
+    deposit: { type: String, required: true },
+    grandtotal: { type: String, required: true },
+    monthlyEarnings: { type: String, required: true },
   },
   { timestamps: true }
 );
