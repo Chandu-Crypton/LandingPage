@@ -50,12 +50,12 @@ export async function POST(req: NextRequest) {
     const { price, discount, discountedPrice, deposit, grandtotal, monthlyEarnings } = body;
 
     if (
-      typeof price !== "number" ||
-      typeof discount !== "number" ||
-      typeof discountedPrice !== "number" ||
-      typeof deposit !== "number" ||
-      typeof grandtotal !== "number" ||
-      typeof monthlyEarnings !== "number"
+      typeof price !== "string" ||
+      typeof discount !== "string" ||
+      typeof discountedPrice !== "string" ||
+      typeof deposit !== "string" ||
+      typeof grandtotal !== "string" ||
+      typeof monthlyEarnings !== "string"
     ) {
       return NextResponse.json(
         { success: false, message: "All fields must be valid numbers." },
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       { status: 201, headers: corsHeaders }
     );
   } catch (error) {
-    console.error("POST /api/package error:", error);
+    console.error("POST /api/packages error:", error);
     const message = error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json(
       { success: false, message },
