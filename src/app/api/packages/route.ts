@@ -49,27 +49,21 @@ export async function POST(req: NextRequest) {
 
     const { price, discount, discountedPrice, deposit, grandtotal, monthlyEarnings } = body;
 
-    if (
-      typeof price !== "string" ||
-      typeof discount !== "string" ||
-      typeof discountedPrice !== "string" ||
-      typeof deposit !== "string" ||
-      typeof grandtotal !== "string" ||
-      typeof monthlyEarnings !== "string"
-    ) {
-      return NextResponse.json(
-        { success: false, message: "All fields must be valid numbers." },
-        { status: 400, headers: corsHeaders }
-      );
-    }
+    // helper to convert "10,000" → 10000
+    const parseNumber = (val: string | number) => {
+      if (typeof val === "string") {
+        return parseFloat(val.replace(/,/g, ""));
+      }
+      return Number(val);
+    };
 
     const newPackage = await Package.create({
-      price,
-      discount,
-      discountedPrice,
-      deposit,
-      grandtotal,
-      monthlyEarnings,
+      price: parseNumber(price),
+      discount: parseNumber(discount),
+      discountedPrice: parseNumber(discountedPrice),
+      deposit: parseNumber(deposit),
+      grandtotal: parseNumber(grandtotal),
+      monthlyEarnings: parseNumber(monthlyEarnings),
     });
 
     return NextResponse.json(

@@ -5,7 +5,7 @@ import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import ComponentCard from '@/components/common/ComponentCard';
 import { useRouter } from 'next/navigation';
-import { usePackage } from '@/context/PackageContext'; 
+import { usePackage } from '@/context/PackageContext';
 import { IPackage } from '@/models/Packages';
 import axios from 'axios';
 
@@ -34,11 +34,34 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
   const [formError, setFormError] = useState<string | null>(null);
 
   // auto-calc discounted price & grand total when price/discount/deposit changes
+  // useEffect(() => {
+  //   const discounted = (parseFloat(price) * parseFloat(discount)) / 100;
+  //   setDiscountedPrice(discounted.toString());
+  //   setGrandtotal((parseFloat(price) - discounted - parseFloat(deposit)).toString());
+  // }, [price, discount, deposit]);
+
+      const formatNumber = (value: string) => {
+      if (!value) return "";
+      return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    // helper to strip commas
+    const unformatNumber = (value: string) => {
+      return value.replace(/,/g, "");
+    };
+
   useEffect(() => {
-    const discounted = (parseFloat(price) * parseFloat(discount)) / 100;
-    setDiscountedPrice(discounted.toString());
-    setGrandtotal((parseFloat(price) - discounted - parseFloat(deposit)).toString());
+    const priceNum = parseFloat(unformatNumber(price)) || 0;
+    const discountNum = parseFloat(unformatNumber(discount)) || 0;
+    const depositNum = parseFloat(unformatNumber(deposit)) || 0;
+
+    const discounted = (priceNum * discountNum) / 100;
+    setDiscountedPrice(formatNumber(discounted.toFixed(2)));
+
+    const grand = priceNum - discounted - depositNum;
+    setGrandtotal(formatNumber(grand.toFixed(2)));
   }, [price, discount, deposit]);
+
 
   useEffect(() => {
     const populateForm = (pkg: IPackage) => {
@@ -49,6 +72,9 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
       setGrandtotal(pkg.grandtotal);
       setMonthlyEarnings(pkg.monthlyEarnings);
     };
+
+    // helper to add commas
+
 
     if (packageIdToEdit) {
       const cleanId = packageIdToEdit.replace(/^\//, '');
@@ -137,13 +163,15 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
         {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Price */}
+
+
           <div>
             <Label htmlFor="price">Price</Label>
             <Input
               id="price"
-              type="number"
+              type="text"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => setPrice(formatNumber(unformatNumber(e.target.value)))}
               required
             />
           </div>
@@ -151,13 +179,13 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
           {/* Discount */}
           <div>
             <Label htmlFor="discount">Discount (%)</Label>
-            <Input
-              id="discount"
-              type="number"
-              value={discount}
-              onChange={(e) => setDiscount((e.target.value))}
-              required
-            />
+             <Input
+            id="discount"
+            type="text"
+            value={discount}
+            onChange={(e) => setDiscount(formatNumber(unformatNumber(e.target.value)))}
+            required
+          />
           </div>
 
           {/* Discounted Price */}
@@ -165,9 +193,9 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
             <Label htmlFor="discountedPrice">Discounted Price</Label>
             <Input
               id="discountedPrice"
-              type="number"
+              type="text"
               value={discountedPrice}
-              onChange={(e) => setDiscountedPrice((e.target.value))}
+              onChange={(e) => setDiscountedPrice(formatNumber(unformatNumber(e.target.value)))}
               className="bg-gray-100"
             />
           </div>
@@ -175,13 +203,13 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
           {/* Deposit */}
           <div>
             <Label htmlFor="deposit">Deposit</Label>
-            <Input
-              id="deposit"
-              type="number"
-              value={deposit}
-              onChange={(e) => setDeposit((e.target.value))}
-              required
-            />
+           <Input
+            id="deposit"
+            type="text"
+            value={deposit}
+            onChange={(e) => setDeposit(formatNumber(unformatNumber(e.target.value)))}
+            required
+          />
           </div>
 
           {/* Grand Total */}
@@ -189,9 +217,9 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
             <Label htmlFor="grandtotal">Grand Total</Label>
             <Input
               id="grandtotal"
-              type="number"
+              type="text"
               value={grandtotal}
-              onChange={(e) => setGrandtotal((e.target.value))}
+              onChange={(e) => setGrandtotal(formatNumber(unformatNumber(e.target.value)))}
               required
               className="bg-gray-100"
             />
@@ -200,13 +228,13 @@ const PackageFormComponent: React.FC<PackageFormProps> = ({ packageIdToEdit }) =
           {/* Monthly Earnings */}
           <div>
             <Label htmlFor="monthlyEarnings">Monthly Earnings</Label>
-            <Input
-              id="monthlyEarnings"
-              type="number"
-              value={monthlyEarnings}
-              onChange={(e) => setMonthlyEarnings((e.target.value))}
-              required
-            />
+           <Input
+            id="monthlyEarnings"
+            type="text"
+            value={monthlyEarnings}
+            onChange={(e) => setMonthlyEarnings(formatNumber(unformatNumber(e.target.value)))}
+            required
+          />
           </div>
 
           <div className="pt-4 flex justify-end">
