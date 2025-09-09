@@ -606,28 +606,26 @@ const ContactListPage: React.FC = () => {
                       setDateFilter(filter as DateFilter);
                       setShowCalendarFilter(false);
                     }}
-                    className={`px-3 py-1.5 rounded-md border text-sm transition ${
-                      dateFilter === filter && dateFilter !== 'custom'
+                    className={`px-3 py-1.5 rounded-md border text-sm transition ${dateFilter === filter && dateFilter !== 'custom'
                         ? "bg-blue-500 text-white border-blue-500"
                         : "border-gray-300 text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {filter === "all"
                       ? "All"
                       : filter === "today"
-                      ? "Today"
-                      : filter === "week"
-                      ? "This Week"
-                      : "This Month"}
+                        ? "Today"
+                        : filter === "week"
+                          ? "This Week"
+                          : "This Month"}
                   </button>
                 ))}
                 <button
                   onClick={() => setShowCalendarFilter(!showCalendarFilter)}
-                  className={`px-3 py-1.5 rounded-md border text-sm transition flex items-center gap-1.5 ${
-                    dateFilter === 'custom'
+                  className={`px-3 py-1.5 rounded-md border text-sm transition flex items-center gap-1.5 ${dateFilter === 'custom'
                       ? 'bg-blue-500 text-white border-blue-500'
                       : 'border-gray-300 text-gray-600 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <CalendarIcon size={14} />
                   Custom
@@ -716,9 +714,13 @@ const ContactListPage: React.FC = () => {
             <div
               ref={tableContainerRef}
               className="overflow-x-auto w-full border rounded-lg"
-              style={{ maxHeight: "65vh" }}
+              style={{
+                maxHeight: "70vh",
+                scrollbarWidth: "thin",
+                WebkitOverflowScrolling: "touch", // smooth scroll on iOS
+              }}
             >
-              <table className="min-w-[900px] lg:min-w-[1200px] text-sm">
+               <table className="min-w-[1400px] text-sm">
                 <thead className="bg-gray-100 sticky top-0 z-10">
                   <tr>
                     <th className="px-4 py-3 sticky left-0 bg-gray-100 z-10">Full Name</th>
