@@ -8,6 +8,7 @@ export interface IBlog extends Document {
     description: string;
     mainImage?: string;
     headingImage?: string;
+    bannerImage?: string;
     items: {
         itemTitle: string;
         itemDescription: string[];
@@ -94,6 +95,10 @@ const BlogSchema: Schema = new Schema({
         required: false, // Optional field
     },
     headingImage: {
+        type: String,
+        required: false, // Optional field
+    },
+    bannerImage: {
         type: String,
         required: false, // Optional field
     },

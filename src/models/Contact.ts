@@ -10,6 +10,7 @@ export interface IContact extends Document {
     salesNumber: string,
     companyNumber: string,
     message: string,
+    bannerImage?: string,
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -57,6 +58,12 @@ const contactSchema: Schema = new Schema ({
         type: String,
         required: true
     },
+    
+      bannerImage:{
+        type: String,
+        required: false
+    },
+    
 
 
 }, { timestamps: true });

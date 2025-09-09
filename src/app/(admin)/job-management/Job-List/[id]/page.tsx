@@ -31,6 +31,7 @@ type Job = {
   workEnvironment: string[];
   benefits: Benefit[];
   salary: string;
+  bannerImage?: string;
   experience: string;
   qualification: string;
   applicationDeadline: string;
@@ -118,6 +119,16 @@ const JobDetailPage: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {job.bannerImage && (
+          <div className="mb-6">
+            <img  
+              src={job.bannerImage}
+              alt={job.title}
+              className="w-full h-50 object-fit rounded-sm"
+            />
+          </div>
+        )}
 
         <div className="space-y-6">
           <p><strong>About:</strong> {job.about}</p>

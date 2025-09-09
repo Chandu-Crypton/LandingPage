@@ -2,66 +2,67 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios'; // Import AxiosError for type-safe error handling
+import axios from 'axios'; 
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons'; // Assuming TrashBinIcon is correctly imported
-import { IService } from '@/models/Service';
+
+import { IBanner } from '@/models/Banner'; // Import IBlog for type definitions
 import NextImage from 'next/image'; // Alias Image to NextImage to avoid conflicts
 
-// Define the expected structure of the API response for a single service
-interface SingleServiceApiResponse {
+// Define the expected structure of the API response for a single about
+interface SingleAboutApiResponse {
     success: boolean;
-    data?: IService; // The actual service data is nested under 'data'
+    data?: IBanner; // The actual about data is nested under 'data'
     message?: string;
 }
 
-const ServiceDetailPage: React.FC = () => {
+const BannerDetailPage: React.FC = () => {
     // useParams returns a string or string[] or undefined. We expect 'id' to be a string.
     const params = useParams();
     const id = typeof params.id === 'string' ? params.id : undefined;
 
     const router = useRouter();
-    const [service, setService] = useState<IService | null>(null);
+    const [banner, setBanner] = useState<IBanner | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchService = async () => {
+        const fetchBanner = async () => {
             if (!id) {
                 setLoading(false);
-                setError('Service ID is missing.');
+                setError('About ID is missing.');
                 return;
             }
             try {
-                // Type the axios response directly to the SingleServiceApiResponse interface
-                const res = await axios.get<SingleServiceApiResponse>(`/api/service/${id}`);
+                // Type the axios response directly to the SingleAboutApiResponse interface
+                const res = await axios.get<SingleAboutApiResponse>(`/api/banner/${id}`);
                 if (res.data.success && res.data.data) {
-                    setService(res.data.data);
+                    setBanner(res.data.data);
                 } else {
-                    setError(res.data.message || 'Service not found.');
+                    setError(res.data.message || 'Banner not found.');
                 }
             } catch (err) {
-                console.error('Error fetching service details:', err);
+                console.error('Error fetching banner details:', err);
                 if (axios.isAxiosError(err)) {
-                    setError(err.response?.data?.message || 'Failed to load service details.');
+                    setError(err.response?.data?.message || 'Failed to load banner details.');
                 } else if (err instanceof Error) {
                     setError(err.message);
                 } else {
-                    setError('An unexpected error occurred while fetching service details.');
+                    setError('An unexpected error occurred while fetching banner details.');
                 }
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchService();
+        fetchBanner();
     }, [id]); // Depend on 'id' to re-fetch if the ID changes
 
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <p className="text-center text-gray-500">Loading service details...</p>
+                <p className="text-center text-gray-500">Loading banner details...</p>
             </div>
         );
     }
@@ -74,36 +75,36 @@ const ServiceDetailPage: React.FC = () => {
         );
     }
 
-    if (!service) {
+    if (!banner) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <p className="text-center text-gray-700">Service not found.</p>
+                <p className="text-center text-gray-700">Banner not found.</p>
             </div>
         );
     }
 
     const handleDelete = async () => {
         // As per guidelines, replacing window.confirm with a simpler alert, or you can implement a custom modal here.
-        if (!confirm('Are you sure you want to delete this service?')) {
+        if (!confirm('Are you sure you want to delete this banner?')) {
             return;
         }
 
         try {
             setLoading(true); // Indicate loading while deleting
-            await axios.delete(`/api/service/${service._id}`); // Use service._id directly
-            alert('Service deleted successfully!');
-            router.push('/service-management/Service-List'); // Redirect to service list page
+            await axios.delete(`/api/banner/${banner._id}`); // Use about._id directly
+            alert('Banner deleted successfully!');
+            router.push('/admin/banner-management/Banner-List'); // Redirect to about list page
         } catch (err) {
-            console.error('Error deleting service:', err);
+            console.error('Error deleting banner:', err);
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || 'Failed to delete the service. Please try again.');
+                setError(err.response?.data?.message || 'Failed to delete the banner. Please try again.');
             } else if (err instanceof Error) {
                 setError(err.message);
             } else {
                 setError('An unknown error occurred during deletion. Please try again.');
             }
         } finally {
-            setLoading(false); 
+            setLoading(false); // Stop loading regardless of success or failure
         }
     };
 
@@ -111,12 +112,12 @@ const ServiceDetailPage: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
                 <div className="flex justify-between items-start mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{service.title}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{banner.title}</h1>
                     <div className="flex space-x-3">
                         <Link
-                            href={`/service-management/Add-Service?page=edit&id=${service._id as string}`}
+                            href={`/banner-management/Add-Banner?page=edit&id=${banner._id as string}`}
                             className="text-yellow-600 border border-yellow-600 rounded-md p-2 hover:bg-yellow-600 hover:text-white transition-colors flex items-center justify-center"
-                            title="Edit Service"
+                            title="Edit About"
                         >
                             <PencilIcon size={16} />
                         </Link>
@@ -130,21 +131,19 @@ const ServiceDetailPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Main Service Details */}
+                {/* Main About Details */}
                 <div className="space-y-6 text-gray-700 dark:text-gray-300">
                   
-                 <div>
-                     <p className="text-3xl  text-gray-900 dark:text-white">{service.description.join(", ")}</p>
-                 </div>
+            
 
-                    {/* Main Image */}
+                    {/* Banner Image */}
                     <div>
-                        <strong>Main Image:</strong>
-                        {service.mainImage ? (
+                        <strong>Banner Image:</strong>  
+                        {banner.bannerImage ? (
                             <div className="mt-2">
                                 <NextImage
-                                    src={service.mainImage}
-                                    alt={`Main image for ${service.title}`}
+                                    src={banner.bannerImage}
+                                    alt={`Banner image for ${banner.title}`}
                                     width={400} // Increased size for detail page
                                     height={300}
                                     className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
@@ -152,38 +151,19 @@ const ServiceDetailPage: React.FC = () => {
                                 />
                             </div>
                         ) : (
-                            <p className="mt-1 text-gray-500">No main image available.</p>
-                        )}
-                    </div>
-
-                    {/* Banner Image */}
-                    <div>
-                        <strong>Banner Image:</strong>
-                        {service.bannerImage ? (
-                            <div className="mt-2">
-                                <NextImage
-                                    src={service.bannerImage}
-                                    alt={`Banner image for ${service.title}`}
-                                    width={400} // Increased size for detail page
-                                    height={300}
-                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
-                                    unoptimized={true}
-                                />  
-                            </div>
-                        ) : (
                             <p className="mt-1 text-gray-500">No banner image available.</p>
                         )}
                     </div>
-                </div>
 
+                  
                    
 
-
-
+                    <p><strong>Created At:</strong> {banner.createdAt ? new Date(banner.createdAt).toLocaleString() : 'N/A'}</p>
+                    <p><strong>Last Updated:</strong> {banner.updatedAt ? new Date(banner.updatedAt).toLocaleString() : 'N/A'}</p>
                 </div>
             </div>
-    
+        </div>
     );
 };
 
-export default ServiceDetailPage;
+export default BannerDetailPage;

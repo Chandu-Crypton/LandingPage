@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import About from "@/models/About";
+import Banner from "@/models/Banner";
 import { connectToDatabase } from "@/utils/db";
 import imagekit from "@/utils/imagekit";
 import { v4 as uuidv4 } from 'uuid';
@@ -20,11 +20,11 @@ export async function GET() {
     await connectToDatabase();
 
     try {
-        const docs = await About.find({});
+        const docs = await Banner.find({});
 
         if (docs.length === 0) {
             return NextResponse.json(
-                { success: true, data: [], message: 'No about documents found.' },
+                { success: true, data: [], message: 'No banner documents found.' },
                 { status: 200, headers: corsHeaders }
             );
         }
@@ -34,7 +34,7 @@ export async function GET() {
             { status: 200, headers: corsHeaders }
         );
     } catch (error) {
-        console.error('GET /api/about error:', error);
+        console.error('GET /api/banner error:', error);
         const message = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
             { success: false, message },
@@ -44,6 +44,7 @@ export async function GET() {
 }
 
 
+
 export async function POST(req: NextRequest) {
     await connectToDatabase();
 
@@ -51,40 +52,11 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         console.log('Received formData:', formData);
         const title = formData.get('title');
-        const mainImage = formData.get('mainImage');
         const bannerImage = formData.get('bannerImage');
-        const description = formData.get('description');
-        const typeData = formData.get('typeData');
        
-        if (typeof title !== 'string' || !title.trim() ||
-            typeof description !== 'string' || !description.trim() ||
-            typeof typeData !== 'string' || !typeData.trim()
-          ) {
+        if (typeof title !== 'string' || !title.trim()) {
             return NextResponse.json(
-                { success: false, message: 'Missing or invalid data for title, description, or typeData.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
-
-        let mainImageUrl = '';
-        if (mainImage instanceof File && mainImage.size > 0) {
-            const buffer = Buffer.from(await mainImage.arrayBuffer());
-            const uploadResponse = await imagekit.upload({
-                file: buffer,
-                fileName: `${uuidv4()}-${mainImage.name}`,
-                folder: '/about-main-images',
-            });
-            if (uploadResponse.url) {
-                mainImageUrl = uploadResponse.url;
-            } else {
-                return NextResponse.json(
-                    { success: false, message: 'Failed to upload main image to ImageKit.' },
-                    { status: 500, headers: corsHeaders }
-                );
-            }
-        } else {
-            return NextResponse.json(
-                { success: false, message: 'Main Image file is required and must not be empty.' },
+                { success: false, message: 'Missing or invalid title.' },
                 { status: 400, headers: corsHeaders }
             );
         }
@@ -95,8 +67,7 @@ export async function POST(req: NextRequest) {
             const uploadResponse = await imagekit.upload({
                 file: buffer,
                 fileName: `${uuidv4()}-${bannerImage.name}`,
-                folder: '/about-banner-images',
-
+                folder: '/banner-images',
             });
             if (uploadResponse.url) {
                 bannerImageUrl = uploadResponse.url;
@@ -108,27 +79,54 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        // Check if a banner with the same title already exists
+        const existingBanner = await Banner.findOne({ title: title.trim() });
 
+        let result;
+        let message;
 
-        const newEntry = await About.create({
-            title: title as string,
-            mainImage: mainImageUrl,
-            bannerImage: bannerImageUrl,
-            description: description as string,
-            typeData: typeData as string
-   
-        });
+        // Define the update data type
+        interface UpdateData {
+            bannerImage?: string;
+            updatedAt?: Date;
+        }
+
+        if (existingBanner) {
+            // Update existing banner
+            const updateData: UpdateData = {
+                updatedAt: new Date()
+            };
+            
+            // Only update image if a new one was provided
+            if (bannerImageUrl) {
+                updateData.bannerImage = bannerImageUrl;
+            }
+            
+            result = await Banner.findByIdAndUpdate(
+                existingBanner._id,
+                updateData,
+                { new: true, runValidators: true }
+            );
+            message = 'Banner updated successfully.';
+        } else {
+            // Create new banner
+            result = await Banner.create({
+                title: title.trim(),
+                bannerImage: bannerImageUrl,
+            });
+            message = 'Banner created successfully.';
+        }
 
         return NextResponse.json(
-            { success: true, data: newEntry, message: 'About entry created successfully.' },
-            { status: 201, headers: corsHeaders }
+            { success: true, data: result, message },
+            { status: existingBanner ? 200 : 201, headers: corsHeaders }
         );
 
     } catch (error) {
-        console.error('POST /api/about error:', error);
-        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        console.error('POST /api/banner error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
         return NextResponse.json(
-            { success: false, message },
+            { success: false, message: errorMessage },
             { status: 500, headers: corsHeaders }
         );
     }

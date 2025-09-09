@@ -3,6 +3,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 export interface IAbout extends Document {
     title: string,
+    bannerImage?: string,
     mainImage: string,
     description: string,
     typeData: string,
@@ -19,6 +20,11 @@ const aboutSchema: Schema = new Schema ({
         required : true
       },
      
+    bannerImage: {
+        type : String,
+        required : false
+    },
+    
     mainImage: {
         type : String,
         required : true

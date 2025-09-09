@@ -30,6 +30,7 @@ type Job = {
   applicationDeadline: Date;
   openingType: string;
   jobType: string;
+  bannerImage?: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt?: string;
@@ -39,8 +40,9 @@ type Job = {
 // Context type
 interface JobContextType {
   jobs: Job[];
-  addJob: (jobData: Omit<Job, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>) => Promise<void>;
-  updateJob: (id: string, jobData: Partial<Job>) => Promise<void>;
+  
+  addJob: (formData: FormData) => Promise<void>;
+  updateJob: (id: string, formData: FormData) => Promise<void>;
   deleteJob: (id: string) => Promise<void>;
 }
 
@@ -64,21 +66,23 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   // Add new job
-  const addJob = async (
-    jobData: Omit<Job, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>
-  ) => {
+
+
+
+
+
+const addJob = async (formData: FormData) => {
     try {
-      await axios.post('/api/job', jobData);
+      await axios.post('/api/job', formData);
       fetchJobs();
     } catch (error) {
       console.error('Error adding job:', error);
     }
   };
 
-  // Update job
-  const updateJob = async (id: string, jobData: Partial<Job>) => {
+const updateJob = async (id: string, formData: FormData) => {
     try {
-      await axios.put(`/api/job/${id}`, jobData);
+      await axios.put(`/api/job/${id}`, formData);
       fetchJobs();
     } catch (error) {
       console.error('Error updating job:', error);

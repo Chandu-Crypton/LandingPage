@@ -7,6 +7,7 @@ export interface IJob extends Document {
     about: string;
     department: string;
     location: string;
+    bannerImage: string;
     keyResponsibilities: string[];
     requiredSkills: {
         title: string;
@@ -45,6 +46,10 @@ const jobSchema: Schema = new Schema({
     about: {
         type: String,
         required: true,
+    },
+    bannerImage: {
+        type: String,
+        required: false,
     },
     department: {
         type: String,

@@ -7,6 +7,7 @@ import ComponentCard from '@/components/common/ComponentCard';
 import { useRouter } from 'next/navigation';
 import { IContact } from '@/models/Contact';
 import { useContact } from '@/context/ContactContext';
+import Image from 'next/image';
 
 interface ContactFormProps {
     contactIdToEdit?: string;
@@ -21,6 +22,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
     const [hremail, setHremail] = useState('');
     const [salesemail, setSalesemail] = useState('');
     const [companyemail, setCompanyemail] = useState('');
+    const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+    const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
 
     const { addContact, updateContact, contacts } = useContact();
     const [loading, setLoading] = useState(false);
@@ -37,7 +40,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
             console.log("contact data to edit :", contactToEdit);
 
             if (contactToEdit) {
-               
+
                 setHrNumber(contactToEdit.hrNumber);
                 setSalesNumber(contactToEdit.salesNumber);
                 setCompanyNumber(contactToEdit.companyNumber);
@@ -46,6 +49,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                 setCompanyemail(contactToEdit.companyemail);
                 setFullName(contactToEdit.fullName);
                 setMessage(contactToEdit.message);
+                setBannerImagePreview(contactToEdit.bannerImage || null);
             } else {
                 setLoading(true);
                 const fetchSingleContact = async () => {
@@ -62,6 +66,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                             setCompanyemail(fetchedContact.companyemail);
                             setFullName(fetchedContact.fullName);
                             setMessage(fetchedContact.message);
+                            setBannerImagePreview(fetchedContact.bannerImage || null)
                         } else {
                             setError(data.message || 'Contact data not found.');
                         }
@@ -82,27 +87,32 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
         setError(null);
         setLoading(true);
 
-        
 
-        const contactData = {
-            hrNumber,
-            salesNumber,
-            companyNumber,
-            hremail,
-            salesemail,
-            companyemail,
-            fullName,
-            message,
-        };
-           
+  const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('hremail', hremail);
+        formData.append('salesemail', salesemail);
+        formData.append('companyemail', companyemail);
+        formData.append('hrNumber', hrNumber);
+        formData.append('salesNumber', salesNumber);
+        formData.append('companyNumber', companyNumber);
+        formData.append('message', message);
 
-    try {
-        if (contactIdToEdit) {
-            await updateContact(contactIdToEdit, contactData);
-            alert('Contact updated successfully!');
-        } else {
-            await addContact(contactData);
-            alert('Contact added successfully!');
+ 
+
+        if (bannerImageFile) {
+            formData.append('bannerImage', bannerImageFile);
+        } else if (bannerImagePreview) {
+            formData.append('bannerImage', bannerImagePreview);
+        }
+
+        try {
+            if (contactIdToEdit) {
+                await updateContact(contactIdToEdit, formData);
+                alert('Contact updated successfully!');
+            } else {
+                await addContact(formData);
+                alert('Contact added successfully!');
                 clearForm();
             }
             router.push('/contact-management/Contact-List');
@@ -123,6 +133,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
         setCompanyemail('');
         setFullName('');
         setMessage('');
+        setBannerImageFile(null)
     };
 
 
@@ -135,7 +146,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
             <ComponentCard title={contactIdToEdit ? 'Edit Contact Details' : 'Add New Contact Details'}>
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                 
+
 
                     <div>
                         <Label htmlFor="fullName">Full Name</Label>
@@ -149,7 +160,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                         />
                     </div>
 
-                 
+
                     <div>
                         <Label htmlFor="hremail">HR Email</Label>
                         <Input
@@ -229,6 +240,28 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
                             placeholder="Enter your message"
                         />
                     </div>
+                   
+                    <div>
+                        <Label htmlFor="bannerImage">Banner Image</Label>
+                        {bannerImagePreview && (
+                            <div className="mb-2">
+                                <Image  
+                                    src={bannerImagePreview}
+                                    alt="Preview"
+                                    width={300}
+                                    height={200}
+                                    className="rounded shadow"
+                                    unoptimized
+                                />
+                            </div>
+                        )}
+                        <input type="file" id="bannerImage" accept="image/*" onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            setBannerImageFile(file);
+                            setBannerImagePreview(file ? URL.createObjectURL(file) : null);
+                        }} />
+                    </div>
+
 
                     <div className="pt-4 flex justify-end">
                         <button

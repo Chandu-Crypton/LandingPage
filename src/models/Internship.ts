@@ -14,6 +14,7 @@ export interface IInternship extends Document {
     eligibility: string[];
     description: string;
     mainImage?: string;
+    bannerImage?: string;
     isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
@@ -63,6 +64,10 @@ const InternshipSchema: Schema = new Schema({
         trim: true,
     },
     mainImage: {
+        type: String,
+        required: false, // Optional field
+    },
+    bannerImage: {
         type: String,
         required: false, // Optional field
     },

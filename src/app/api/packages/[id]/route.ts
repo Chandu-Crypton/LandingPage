@@ -39,7 +39,7 @@ export async function GET(req: Request) {
       { status: 200, headers: corsHeaders }
     );
   } catch (error) {
-    console.error('GET /api/package/[id] error:', error);
+    console.error('GET /api/packages/[id] error:', error);
     return NextResponse.json(
       { success: false, message: error instanceof Error ? error.message : 'Internal Server Error' },
       { status: 500, headers: corsHeaders }

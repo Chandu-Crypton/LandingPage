@@ -6,7 +6,7 @@ import axios from 'axios'; // Import AxiosError
 import { PencilIcon } from 'lucide-react'; // Changed Link to LinkIcon to avoid conflict
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons';
-
+import NextImage from 'next/image'; 
 
 interface IContact {
     _id: string,
@@ -18,6 +18,7 @@ interface IContact {
     salesNumber: string,
     companyNumber: string,
     message: string,
+    bannerImage?: string,
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -223,16 +224,36 @@ const ContactDetailPage: React.FC = () => {
                         <p className="font-semibold">Sales Email</p>
                         <p className="text-gray-600 dark:text-gray-400">{contact.salesemail}</p>
                     </div>
-                    <div className="md:col-span-2">
-                        <p className="font-semibold">Message</p>
-                        <div className="mt-2 border border-gray-200 dark:border-gray-700 rounded-lg p-5 shadow-inner 
+                    
+                    <div>
+                        <strong>Banner Image:</strong>
+                        {contact.bannerImage ? (
+                            <div className="mt-2">
+                                <NextImage
+                                    src={contact.bannerImage}
+                                    alt={`Banner image`}
+                                    width={400} // Increased size for detail page
+                                    height={300}
+                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                                    unoptimized={true}
+                                />
+                            </div>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No banner image available.</p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="md:col-span-2">
+                    <p className="font-semibold">Message</p>
+                    <div className="mt-2 border border-gray-200 dark:border-gray-700 rounded-lg p-5 shadow-inner 
                         bg-gray-50 dark:bg-gray-800 leading-relaxed">
-                            {contact.message}
-                        </div>
+                        {contact.message}
                     </div>
                 </div>
             </div>
         </div>
+        
 
     );
 };

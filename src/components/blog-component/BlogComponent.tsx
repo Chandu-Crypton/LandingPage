@@ -50,6 +50,10 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
     const [headingImagePreview, setHeadingImagePreview] = useState<string | null>(null);
 
+    const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+    const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
+
+
     const [items, setItems] = useState<{ itemTitle: string; itemDescription: string }[]>([
         { itemTitle: '', itemDescription: '' },
     ]);
@@ -162,6 +166,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
             setDescription(blogData.description || '');
             setMainImagePreview(blogData.mainImage || null);
             setHeadingImagePreview(blogData.headingImage || null);
+            setBannerImagePreview(blogData.bannerImage || null);
             setItems(normalizeBlogItems(blogData.items));
 
             // Also ensure the fetched blogHeading (if custom) is added to localNewHeadings for persistence
@@ -243,6 +248,12 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
         setHeadingImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
+    const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        setBannerImageFile(file);
+        setBannerImagePreview(file ? URL.createObjectURL(file) : null);
+    };
+
     // Main form submission handler
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -270,6 +281,15 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
             formData.append('mainImage', mainImagePreview);
         } else if (blogIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
             formData.append('mainImage', '');
+        }
+
+        // Handle banner image: new file, existing URL, or clear
+        if (bannerImageFile) {
+            formData.append('bannerImage', bannerImageFile);
+        } else if (bannerImagePreview) { // No new file, but there's an existing preview (URL)
+            formData.append('bannerImage', bannerImagePreview);
+        } else if (blogIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
+            formData.append('bannerImage', '');
         }
 
         // Handle heading image: new file, existing URL, or clear
@@ -327,6 +347,8 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
         setDescription('');
         setMainImageFile(null);
         setMainImagePreview(null);
+        setBannerImageFile(null);
+        setBannerImagePreview(null);
         setHeadingImageFile(null);
         setHeadingImagePreview(null);
         setItems([{ itemTitle: '', itemDescription: '' }]);
@@ -610,6 +632,59 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
                             disabled={loading}
                         />
                     </div>
+
+                    {/* Banner Image */}
+                    <div>
+                        <Label htmlFor="bannerImage">Banner Image</Label>
+                        {(bannerImagePreview && !bannerImageFile) && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600">Current Image:</p>
+                                <Image
+                                    src={bannerImagePreview}
+                                    alt="Banner Image Preview"
+                                    width={300}
+                                    height={200}
+                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                    unoptimized={true}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setBannerImagePreview(null);
+                                        setBannerImageFile(null);
+                                    }}
+                                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                    disabled={loading}
+                                >
+                                    Remove Current Image
+                                </button>
+                            </div>
+                        )}
+                        {bannerImageFile && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600">New Image Preview:</p>
+                                <Image
+                                    src={URL.createObjectURL(bannerImageFile)}
+                                    alt="New Banner Image Preview"
+                                    width={300}
+                                    height={200}
+                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                    unoptimized={true}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Selected: {bannerImageFile.name}</p>
+                            </div>
+                        )}
+                        <input
+                            id="bannerImage"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleBannerImageChange}  
+                            className="w-full border rounded p-2"
+                            required={!blogIdToEdit || (!bannerImagePreview && !bannerImageFile)}
+                            disabled={loading}
+                        />
+                    </div>
+                    
 
                     {/* Dynamic Items */}
                     <div>

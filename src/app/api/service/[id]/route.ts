@@ -104,6 +104,21 @@ export async function PUT(req: NextRequest) {
         } else if (mainImageFile === "null" || mainImageFile === "") {
             updateData.mainImage = "";
         }
+       
+        // --- Banner Image ---
+        const bannerImageFile = formData.get("bannerImage");
+        if (bannerImageFile instanceof File && bannerImageFile.size > 0) {
+            const buffer = Buffer.from(await bannerImageFile.arrayBuffer());
+            const uploadRes = await imagekit.upload({
+                file: buffer,
+                fileName: `${uuidv4()}-${bannerImageFile.name}`,
+                folder: "/service-banner-images",
+            });
+            updateData.bannerImage = uploadRes.url;
+        } else if (bannerImageFile === "null" || bannerImageFile === "") {
+            updateData.bannerImage = "";
+        }
+        
 
         // --- Check if anything to update ---
         if (Object.keys(updateData).length === 0) {

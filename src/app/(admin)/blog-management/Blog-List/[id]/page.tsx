@@ -174,6 +174,26 @@ const BlogDetailPage: React.FC = () => {
                         )}
                     </div>
 
+                    {/* Banner Image */}
+                    <div>
+                        <strong>Banner Image:</strong>
+                        {blog.bannerImage ? (
+                            <div className="mt-2">
+                                <NextImage
+                                    src={blog.bannerImage}
+                                    alt={`Banner image for ${blog.title}`}
+                                    width={400} // Increased size for detail page
+                                      height={200}
+                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                                    unoptimized={true}
+                                />
+                            </div>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No banner image available.</p>
+                        )}
+                    </div>
+
+
                                      {/* Blog Key Technology Items */}
                     <div>
                         <strong>Blog Key Technology Items:</strong>

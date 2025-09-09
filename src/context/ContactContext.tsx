@@ -14,6 +14,7 @@ type Contact = {
   salesNumber: string,
   companyNumber: string,
   message: string,
+  bannerImage?: string,
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -24,8 +25,8 @@ type Contact = {
 // Context type
 interface ContactContextType {
   contacts: Contact[];
-  addContact: (contactData: Omit<Contact, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>) => Promise<void>;
-  updateContact: (id: string, contactData: Partial<Contact>) => Promise<void>;
+  addContact: (formData: FormData) => Promise<void>;
+  updateContact: (id: string, formData: FormData) => Promise<void>;
   deleteContact: (id: string) => Promise<void>;
 }
 
@@ -49,11 +50,9 @@ export const ContactProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   // Add new contact
-  const addContact = async (
-    contactData: Omit<Contact, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>
-  ) => {
+const addContact = async (formData: FormData) => {
     try {
-      await axios.post('/api/contact', contactData);
+      await axios.post('/api/contact', formData);
       fetchContacts();
     } catch (error) {
       console.error('Error adding contact:', error);
@@ -61,9 +60,9 @@ export const ContactProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   // Update contact
-  const updateContact = async (id: string, contactData: Partial<Contact>) => {
+const updateContact = async (id: string, formData: FormData) => {
     try {
-      await axios.put(`/api/contact/${id}`, contactData);
+      await axios.put(`/api/contact/${id}`, formData);
       fetchContacts();
     } catch (error) {
       console.error('Error updating contact:', error);

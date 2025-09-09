@@ -23,6 +23,11 @@ interface IInternship {
     eligibility: string[];
     description: string;
     mainImage?: string;
+    bannerImage?: string;
+    isDeleted?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: number;
 }
 
 const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdToEdit }) => {
@@ -39,7 +44,8 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const [description, setDescription] = useState('');
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
-
+    const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+    const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -64,6 +70,8 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setEligibility(data.eligibility.length ? data.eligibility : ['']);
                     setDescription(data.description);
                     setMainImagePreview(data.mainImage || null);
+                    setBannerImagePreview(data.bannerImage || null);
+                    setFormError(null);
                 } else {
                     setFormError(res.data.message || 'Internship not found.');
                 }
@@ -127,6 +135,12 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
             formData.append('mainImage', mainImageFile);
         } else if (mainImagePreview) {
             formData.append('mainImage', mainImagePreview);
+        }
+
+        if (bannerImageFile) {
+            formData.append('bannerImage', bannerImageFile);
+        } else if (bannerImagePreview) {
+            formData.append('bannerImage', bannerImagePreview);
         }
 
         try {
@@ -275,6 +289,29 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         )}
                         <input type="file" id="mainImage" accept="image/*" onChange={handleMainImageChange} />
                     </div>
+
+                    {/* Banner Image */}
+                    <div>
+                        <Label htmlFor="bannerImage">Banner Image</Label>
+                        {bannerImagePreview && (
+                            <div className="mb-2">
+                                <Image  
+                                    src={bannerImagePreview}
+                                    alt="Preview"
+                                    width={300}
+                                    height={200}
+                                    className="rounded shadow"
+                                    unoptimized
+                                />
+                            </div>
+                        )}
+                        <input type="file" id="bannerImage" accept="image/*" onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            setBannerImageFile(file);
+                            setBannerImagePreview(file ? URL.createObjectURL(file) : null);
+                        }} />
+                    </div>
+                    
 
                     {/* Submit */}
                     <div className="pt-4 flex justify-end">

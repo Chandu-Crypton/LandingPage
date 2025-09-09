@@ -24,6 +24,7 @@ interface Job {
   workEnvironment: string[];
   benefits: string[];
   salary: string;
+  bannerImage?: string;
   experience: string;
   qualification: string;
   applicationDeadline: Date;

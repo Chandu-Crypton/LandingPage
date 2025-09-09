@@ -56,6 +56,118 @@ export async function GET(req: NextRequest) {
 }
 
 
+// export async function PUT(req: NextRequest) {
+//   await connectToDatabase();
+
+//   const url = new URL(req.url);
+//   const id = url.pathname.split("/").pop();
+
+//   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+//     return NextResponse.json(
+//       { success: false, message: 'Invalid or missing Product ID.' },
+//       { status: 400, headers: corsHeaders }
+//     );
+//   }
+
+//   try {
+//     const formData = await req.formData();
+
+//     // 1. Process string fields
+//     const stringFields: Array<keyof IProduct> = [
+//       'heading', 'title', 'subHeading', 'description',
+//       'franchiseData', 'efficiency', 'rating', 'category',
+//       'googleStoreLink', 'appleStoreLink', 'deployLink', 'emailLink', 'contact'
+//     ];
+
+//     const updateData: Partial<IProduct> = {};
+//     stringFields.forEach(field => {
+//       const value = formData.get(field);
+//       if (typeof value === 'string' && value.trim()) updateData[field] = value.trim();
+//       else if (value === '') updateData[field] = '';
+//     });
+
+//     // 2. Handle videoFile (URL or actual file)
+//     const videoFile = formData.get('videoFile');
+//     if (videoFile) {
+//       if (typeof videoFile === 'string' && videoFile.trim()) {
+//         updateData.videoFile = videoFile.trim();
+//       } else if (videoFile instanceof File && videoFile.size > 0) {
+//         const buffer = Buffer.from(await videoFile.arrayBuffer());
+//         const uploadResponse = await imagekit.upload({
+//           file: buffer,
+//           fileName: `${uuidv4()}-${videoFile.name}`,
+//           folder: '/product-videos',
+//         });
+//         if (uploadResponse.url) updateData.videoFile = uploadResponse.url;
+//       } else if (videoFile === '') {
+//         updateData.videoFile = '';
+//       }
+//     }
+
+//     // 3. Process array fields using helper
+//     const parsedProductControls = await processArrayField<IProduct['productControls'][0]>(
+//       formData,
+//       'productControls',
+//       'productIcon',
+//       'productIconUrl_existing',
+//       '/product-icons',
+//       ['productTitle', 'productDescription']
+//     );
+
+//     const parsedKeyFeatures = await processArrayField<IProduct['keyFeatures'][0]>(
+//       formData,
+//       'keyFeatures',
+//       'featureIcon',
+//       'featureIconUrl_existing',
+//       '/feature-icons',
+//       ['featureTitle', 'featureDescription']
+//     );
+
+//     const parsedScreenshot = await processArrayField<IProduct['screenshot'][0]>(
+//       formData,
+//       'screenshot',
+//       'file',
+//       'imageUrl_existing',
+//       '/product-screenshots',
+//       []
+//     );
+
+//     // 4. Assign to updateData
+//     if (parsedProductControls.length > 0) updateData.productControls = parsedProductControls;
+//     if (parsedKeyFeatures.length > 0) updateData.keyFeatures = parsedKeyFeatures;
+//     if (parsedScreenshot.length > 0) updateData.screenshot = parsedScreenshot;
+
+//     // 5. Update in DB
+//     const updatedProduct = await Product.findByIdAndUpdate(
+//       id,
+//       { $set: updateData },
+//       { new: true, runValidators: true }
+//     ).lean();
+
+//     if (!updatedProduct) {
+//       return NextResponse.json(
+//         { success: false, message: 'Product not found for update.' },
+//         { status: 404, headers: corsHeaders }
+//       );
+//     }
+
+//     return NextResponse.json(
+//       { success: true, data: updatedProduct as IProduct, message: 'Product updated successfully.' },
+//       { status: 200, headers: corsHeaders }
+//     );
+
+//   } catch (error) {
+//     console.error('PUT /api/product/[id] error:', error);
+//     const message = error instanceof Error ? error.message : 'Internal Server Error';
+//     return NextResponse.json(
+//       { success: false, message },
+//       { status: 500, headers: corsHeaders }
+//     );
+//   }
+// }
+
+
+
 export async function PUT(req: NextRequest) {
   await connectToDatabase();
 
@@ -86,7 +198,25 @@ export async function PUT(req: NextRequest) {
       else if (value === '') updateData[field] = '';
     });
 
-    // 2. Handle videoFile (URL or actual file)
+    // 2. Handle bannerImage (URL or actual file)
+    const bannerImage = formData.get('bannerImage');
+    if (bannerImage) {
+      if (typeof bannerImage === 'string' && bannerImage.trim()) {
+        updateData.bannerImage = bannerImage.trim();
+      } else if (bannerImage instanceof File && bannerImage.size > 0) {
+        const buffer = Buffer.from(await bannerImage.arrayBuffer());
+        const uploadResponse = await imagekit.upload({
+          file: buffer,
+          fileName: `${uuidv4()}-${bannerImage.name}`,
+          folder: '/product-banners',
+        });
+        if (uploadResponse.url) updateData.bannerImage = uploadResponse.url;
+      } else if (bannerImage === '') {
+        updateData.bannerImage = '';
+      }
+    }
+
+    // 3. Handle videoFile (URL or actual file)
     const videoFile = formData.get('videoFile');
     if (videoFile) {
       if (typeof videoFile === 'string' && videoFile.trim()) {
@@ -104,7 +234,24 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    // 3. Process array fields using helper
+    // 4. Process tags array
+    const tags = formData.get('tags');
+    if (tags) {
+      if (typeof tags === 'string') {
+        try {
+          const parsedTags = JSON.parse(tags);
+          if (Array.isArray(parsedTags)) {
+            updateData.tags = parsedTags.filter(tag => typeof tag === 'string');
+          }
+        } catch (error) {
+          console.log("product error:", error)
+          // If JSON parsing fails, treat as comma-separated string
+          updateData.tags = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+        }
+      }
+    }
+
+    // 5. Process array fields using helper
     const parsedProductControls = await processArrayField<IProduct['productControls'][0]>(
       formData,
       'productControls',
@@ -132,12 +279,12 @@ export async function PUT(req: NextRequest) {
       []
     );
 
-    // 4. Assign to updateData
+    // 6. Assign to updateData
     if (parsedProductControls.length > 0) updateData.productControls = parsedProductControls;
     if (parsedKeyFeatures.length > 0) updateData.keyFeatures = parsedKeyFeatures;
     if (parsedScreenshot.length > 0) updateData.screenshot = parsedScreenshot;
 
-    // 5. Update in DB
+    // 7. Update in DB
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { $set: updateData },

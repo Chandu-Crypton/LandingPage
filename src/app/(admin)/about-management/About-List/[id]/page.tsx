@@ -154,6 +154,25 @@ const AboutDetailPage: React.FC = () => {
                         )}
                     </div>
 
+                    {/* Banner Image */}
+                    <div>
+                        <strong>Banner Image:</strong>  
+                        {about.bannerImage ? (
+                            <div className="mt-2">
+                                <NextImage
+                                    src={about.bannerImage}
+                                    alt={`Banner image for ${about.title}`}
+                                    width={400} // Increased size for detail page
+                                    height={300}
+                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                                    unoptimized={true}
+                                />
+                            </div>
+                        ) : (
+                            <p className="mt-1 text-gray-500">No banner image available.</p>
+                        )}
+                    </div>
+
                     <p><strong>Type Data:</strong> {about.typeData}</p>
 
                    

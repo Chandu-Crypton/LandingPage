@@ -1075,11 +1075,24 @@ const contactItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Contact",
     subItems: [
-      // { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
+      { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
       { name: "Contact List", path: "/contact-management/Contact-List", pro: false },
     ],
   },
 ];
+
+
+const bannerItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Banner",
+    subItems: [
+      { name: "Add New Banner", path: "/banner-management/Add-Banner", pro: false },
+      { name: "Banner List", path: "/banner-management/Banner-List", pro: false },
+    ],
+  },
+];
+
 
 const newsletterItems: NavItem[] = [
   {
@@ -1123,6 +1136,7 @@ const fcontactItems: NavItem[] = [
     icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
     name: "Contact",
     subItems: [
+      
       { name: "Contact List", path: "/fcontact-management/FContact-List", pro: false },
     ],
     isSpecialSection: true,
@@ -1224,6 +1238,7 @@ const AppSidebar: React.FC = () => {
       { type: "services", items: fservicesItems },
       { type: "blog", items: fblogItems },
       { type: "package", items: packageItems },
+      { type: "banner", items: bannerItems}
     ];
 
     allMenuTypes.forEach(({ type, items }) => {
@@ -1603,6 +1618,24 @@ const AppSidebar: React.FC = () => {
                   </h2>
                   {renderMenuItems(contactItems, "contact")}
                 </div>
+
+                  
+                   <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "BANNER MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(bannerItems, "banner")}
+                </div>
+
 
                 <div>
                   <h2

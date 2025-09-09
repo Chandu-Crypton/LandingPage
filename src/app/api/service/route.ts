@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         const title = formData.get('title')?.toString();
         const descriptionString = formData.get('description')?.toString();
         const mainImageFile = formData.get('mainImage') as File | null;
-
+        const bannerImageFile = formData.get('bannerImage') as File | null;
         const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
         
          let mainImageUrl: string | undefined;
@@ -72,10 +72,22 @@ export async function POST(req: NextRequest) {
             mainImageUrl = uploadRes.url; // ImageKit public URL
         }
 
+        let bannerImageUrl: string | undefined;
+        if (bannerImageFile && bannerImageFile.size > 0) {
+            const buffer = Buffer.from(await bannerImageFile.arrayBuffer());    
+            const uploadRes = await imagekit.upload({
+                file: buffer, // Required
+                fileName: bannerImageFile.name, // Required
+                folder: '/service_images', // Optional, good for organization
+            });
+            bannerImageUrl = uploadRes.url; // ImageKit public URL
+        }
+
+
         // Basic validation for REQUIRED fields
-        if ( !title ||  description.length === 0 || !mainImageFile ) {
+        if ( !title ||  description.length === 0 || !mainImageFile || !bannerImageFile ) {
             return NextResponse.json(
-                { success: false, message: 'Missing required fields (title, description, mainImage).' },
+                { success: false, message: 'Missing required fields (title, description, mainImage, bannerImage).' },
                 { status: 400, headers: corsHeaders }
             );
         }
@@ -86,7 +98,8 @@ export async function POST(req: NextRequest) {
         const newService = await ServiceModel.create({
             title,
             description,
-            mainImage: mainImageUrl
+            mainImage: mainImageUrl,
+            bannerImage: bannerImageUrl
         });
 
         return NextResponse.json(

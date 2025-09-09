@@ -181,6 +181,26 @@ const InternshipDetailPage: React.FC = () => {
             )}
           </div>
 
+          {/* Banner Image */}
+          <div>
+            <strong>Banner Image:</strong>
+            {internship.bannerImage ? (
+              <div className="mt-2">
+                <NextImage
+                  src={internship.bannerImage}
+                  alt={`Banner image for ${internship.title}`}
+                  width={400}
+                  height={300}
+                  className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                  unoptimized={true}
+                />
+              </div>
+            ) : (
+              <p className="mt-1 text-gray-500">No banner image available.</p>
+            )}
+          </div>
+          
+
           <p><strong>Created At:</strong> {internship.createdAt ? new Date(internship.createdAt).toLocaleString() : 'N/A'}</p>
           <p><strong>Last Updated:</strong> {internship.updatedAt ? new Date(internship.updatedAt).toLocaleString() : 'N/A'}</p>
         </div>

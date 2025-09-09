@@ -115,6 +115,7 @@ const AboutListPage: React.FC = () => {
                                     <th className="px-5 py-3 text-left">Title</th>
                                     <th className="px-5 py-3 text-left">Description</th>
                                     <th className="px-5 py-3 text-left">Main Image</th>
+                                    <th className="px-5 py-3 text-left">Banner Image</th>
                                     <th className='px-5 py-3 text-left'>Type Data</th>
                                     <th className="px-5 py-3 text-left">Created At</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
@@ -130,6 +131,20 @@ const AboutListPage: React.FC = () => {
                                                 <NextImage
                                                     src={about.mainImage}
                                                     alt="Main About Image"
+                                                    width={80}
+                                                    height={60}
+                                                    className="rounded-md object-cover"
+                                                    unoptimized={true}
+                                                />
+                                            ) : (
+                                                <span className="text-gray-400">N/A</span>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            {about.bannerImage ? (
+                                                <NextImage
+                                                    src={about.bannerImage}
+                                                    alt="Banner About Image"
                                                     width={80}
                                                     height={60}
                                                     className="rounded-md object-cover"

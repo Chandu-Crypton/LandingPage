@@ -27,11 +27,11 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
     const [description, setDescription] = useState('');
     const [typeData, setTypeData] = useState('');
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
-   
+    const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
 
     // State for the URL used to display the image preview (could be DB URL or URL.createObjectURL)
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
-   
+    const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
 
    
     const router = useRouter();
@@ -51,7 +51,8 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
         const populateForm = (aboutData: IAbout) => {
             setTitle(aboutData.title);
             setDescription(aboutData.description);
-            setMainImagePreview(aboutData.mainImage);
+            setMainImagePreview(aboutData.mainImage ?? null);  // ✅ use null instead of undefined
+            setBannerImagePreview(aboutData.bannerImage ?? null);
             setTypeData(aboutData.typeData || ''); 
         };
 
@@ -107,6 +108,11 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
         } else if (aboutIdToEdit && !mainImagePreview) {
             formData.append('mainImage', '');
         }
+        if (bannerImageFile) {
+            formData.append('bannerImage', bannerImageFile);
+        } else if (aboutIdToEdit && !bannerImagePreview) {
+            formData.append('bannerImage', '');
+        }
 
        
        
@@ -142,6 +148,8 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
         setTypeData('');
         setMainImageFile(null);
         setMainImagePreview(null);
+        setBannerImageFile(null);
+        setBannerImagePreview(null);
     };
 
     return (
@@ -231,6 +239,64 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
                             required={!aboutIdToEdit || (!mainImagePreview && !mainImageFile)}
                         />
                     </div>
+
+                    {/* Banner Image */}
+                    <div>
+                        <Label htmlFor="bannerImage">Banner Image</Label>
+                        {(bannerImagePreview && !bannerImageFile) && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600">Current Banner Image:</p>  
+                                <Image
+                                    src={bannerImagePreview}
+                                    alt="Banner Image Preview"
+                                    width={300}
+                                    height={200}
+                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                    unoptimized={true}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setBannerImagePreview(null);
+                                        setBannerImageFile(null);
+                                    }}
+                                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                >
+                                    Remove Current Banner Image 
+                                </button>
+                            </div>
+                        )}
+                        {bannerImageFile && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600">New Banner Image Preview:</p>
+                                <Image
+                                    src={URL.createObjectURL(bannerImageFile)}
+                                    alt="New Banner Image Preview"
+                                    width={300}
+                                    height={200}
+                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                    unoptimized={true}
+                                />  
+                                <p className="text-xs text-gray-500 mt-1">Selected: {bannerImageFile.name}</p>
+                            </div>
+                        )}
+                        <input
+                            id="bannerImage"
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => {
+                                setBannerImageFile(e.target.files ? e.target.files[0] : null);
+                                if (e.target.files && e.target.files.length > 0) {
+                                    setBannerImagePreview(URL.createObjectURL(e.target.files[0]));
+                                } else if (!bannerImagePreview) {
+                                    setBannerImagePreview(null);
+                                }
+                            }}
+                            className="w-full border rounded p-2"
+                            required={!aboutIdToEdit || (!bannerImagePreview && !bannerImageFile)}
+                        />
+                    </div>
+
 
                   <div>
                         <Label htmlFor="typeData">Type Data</Label>

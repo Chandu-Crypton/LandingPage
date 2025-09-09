@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
         const fee = formData.get('fee')?.toString();
         const duration = formData.get('duration')?.toString();
         const mainImageFile = formData.get('mainImage') as File | null;
+        const bannerImageFile = formData.get('bannerImage') as File | null;
    
        const parseField = (fieldValue: string | null): string[] => {
   if (!fieldValue) return [];
@@ -104,12 +105,22 @@ const eligibility = parseField(formData.get("eligibility")?.toString() || null);
             const uploadRes = await imagekit.upload({
                 file: buffer, // Required
                 fileName: mainImageFile.name, // Required
-                folder: '/blog_images', // Optional, good for organization
+                folder: '/internshipmain_images', // Optional, good for organization
             });
             mainImageUrl = uploadRes.url; // ImageKit public URL
         }
 
-   
+        let bannerImageUrl: string | undefined;
+        if (bannerImageFile && bannerImageFile.size > 0) {
+            const buffer = Buffer.from(await bannerImageFile.arrayBuffer());
+            const uploadRes = await imagekit.upload({
+                file: buffer, // Required
+                fileName: bannerImageFile.name, // Required
+                folder: '/internshipbanner_images', // Optional, good for organization
+            });
+            bannerImageUrl = uploadRes.url; // ImageKit public URL
+        }
+        
 
         const newBlog = await Internship.create({
             subtitle,
@@ -121,6 +132,7 @@ const eligibility = parseField(formData.get("eligibility")?.toString() || null);
             mode,
             description,
             mainImage: mainImageUrl,
+            bannerImage: bannerImageUrl,
         });
 
         return NextResponse.json(

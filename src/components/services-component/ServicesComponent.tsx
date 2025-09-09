@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import ComponentCard from '@/components/common/ComponentCard';
@@ -21,25 +21,25 @@ interface SingleServiceApiResponse {
 }
 
 const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) => {
-    
+
 
     // States for other service fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState<string[]>([]);
-   
+
 
     // States for image files and their previews
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
-  
-   
+    const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+    const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
 
     const router = useRouter();
     const { addService, updateService, services } = useService();
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
-   
+
 
 
 
@@ -50,10 +50,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         const populateForm = (serviceData: IService) => {
             setTitle(serviceData.title || '');
             setDescription(serviceData.description || []);
-             setMainImagePreview(serviceData.mainImage || null);
+            setMainImagePreview(serviceData.mainImage || null);
+            setBannerImagePreview(serviceData.bannerImage || null);
+            setFormError(null);
         };
-           
-           
+
+
 
 
         if (serviceIdToEdit) {
@@ -95,6 +97,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setMainImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
+    const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        setBannerImageFile(file);
+        setBannerImagePreview(file ? URL.createObjectURL(file) : null);
+    }
+
+
+
 
     // Main form submission handler
     const handleSubmit = async (e: React.FormEvent) => {
@@ -103,12 +113,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setLoading(true);
 
         const formData = new FormData();
-      
+
 
 
         formData.append('title', title);
-        formData.append('description',  JSON.stringify(description));
-       
+        formData.append('description', JSON.stringify(description));
+
 
         // Handle main image: new file, existing URL, or clear
         if (mainImageFile) {
@@ -118,9 +128,16 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         } else if (serviceIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
             formData.append('mainImage', '');
         }
+        // Handle banner image: new file, existing URL, or clear
+        if (bannerImageFile) {
+            formData.append('bannerImage', bannerImageFile);
+        } else if (bannerImagePreview) { // No new file, but there's an existing preview (URL)
+            formData.append('bannerImage', bannerImagePreview);
+        } else if (serviceIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
+            formData.append('bannerImage', '');
+        }
 
-       
-      
+
         try {
             if (serviceIdToEdit) {
                 const cleanId = serviceIdToEdit.replace(/^\//, "");
@@ -149,11 +166,13 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
 
     const clearForm = () => {
-     
+
         setTitle('');
         setDescription([]);
         setMainImageFile(null);
         setMainImagePreview(null);
+        setBannerImageFile(null);
+        setBannerImagePreview(null);
         setFormError(null);
     };
 
@@ -162,9 +181,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             <ComponentCard title={serviceIdToEdit ? 'Edit Service Entry' : 'Add New Service Entry'}>
                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  
-                      
-                    
+
+
+
 
                     {/* Title */}
                     <div>
@@ -273,9 +292,60 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
 
-             
 
-               
+
+
+                   {/* Banner Image */}
+                   <div>
+                       <Label htmlFor="bannerImage">Banner Image</Label>
+                       {(bannerImagePreview && !bannerImageFile) && (
+                           <div className="mb-2">
+                               <p className="text-sm text-gray-600">Current Image:</p>
+                               <Image
+                                   src={bannerImagePreview}
+                                   alt="Banner Image Preview"
+                                   width={300}
+                                   height={200}
+                                   className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                   unoptimized={true}
+                               />
+                               <button
+                                   type="button"
+                                   onClick={() => {
+                                       setBannerImagePreview(null);
+                                       setBannerImageFile(null);
+                                   }}
+                                   className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                                   disabled={loading}
+                               >
+                                   Remove Current Image
+                               </button>
+                           </div>
+                       )}
+                       {bannerImageFile && (
+                           <div className="mb-2">
+                               <p className="text-sm text-gray-600">New Image Preview:</p>
+                               <Image
+                                   src={URL.createObjectURL(bannerImageFile)}
+                                   alt="New Banner Image Preview"
+                                   width={300}
+                                   height={200}
+                                   className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
+                                   unoptimized={true}
+                               />
+                               <p className="text-xs text-gray-500 mt-1">Selected: {bannerImageFile.name}</p>
+                           </div>
+                       )}
+                       <input
+                           id="bannerImage"
+                           type="file"
+                           accept="image/*"
+                           onChange={handleBannerImageChange}
+                           className="w-full border rounded p-2"
+                           required={!serviceIdToEdit || (!bannerImagePreview && !bannerImageFile)}
+                           disabled={loading}
+                       />
+                   </div>
 
 
 

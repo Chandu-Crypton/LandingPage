@@ -17,6 +17,7 @@ export interface IProduct extends Document {
     deployLink?: string,
     emailLink?: string,
     contact?: string,
+    bannerImage?: string,
     productControls: {
         productTitle: string,
         productIcon: string,
@@ -110,7 +111,12 @@ const productSchema: Schema = new Schema({
         type: String,
         required: false
     },
-
+    
+    bannerImage: {
+        type: String,
+        required: false
+    },
+    
     // Mongoose schema syntax for arrays of sub-documents:
 
     productControls: [

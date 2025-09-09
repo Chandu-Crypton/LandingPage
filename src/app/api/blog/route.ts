@@ -535,6 +535,7 @@ export async function POST(req: NextRequest) {
         const keyTechnologiesString = formData.get('keyTechnologies')?.toString();
         const mainImageFile = formData.get('mainImage') as File | null;
         const headingImageFile = formData.get('headingImage') as File | null;
+        const bannerImageFile = formData.get('bannerImage') as File | null;
         const itemsString = formData.get('items')?.toString();
    
         const tags: string[] = tagsString ? JSON.parse(tagsString) : [];
@@ -618,6 +619,18 @@ export async function POST(req: NextRequest) {
             headingImageUrl = uploadRes.url; // ImageKit public URL
         }
 
+
+        let bannerImageUrl: string | undefined;
+        if (bannerImageFile && bannerImageFile.size > 0) {
+            const buffer = Buffer.from(await bannerImageFile.arrayBuffer());
+            const uploadRes = await imagekit.upload({
+                file: buffer,
+                fileName: bannerImageFile.name,
+                folder: '/blog_images',
+            });
+            bannerImageUrl = uploadRes.url; // ImageKit public URL
+        }
+
         const newBlog = await Blog.create({
             addHeading,
             blogHeading,
@@ -631,6 +644,7 @@ export async function POST(req: NextRequest) {
             description,
             mainImage: mainImageUrl,
             headingImage: headingImageUrl,
+            bannerImage: bannerImageUrl,
             items,
         });
 
