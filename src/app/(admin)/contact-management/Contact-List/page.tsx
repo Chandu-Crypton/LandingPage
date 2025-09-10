@@ -5,20 +5,18 @@
 // import { ArrowUpIcon, TrashBinIcon, UserIcon } from '@/icons';
 // import ComponentCard from '@/components/common/ComponentCard';
 // import StatCard from '@/components/common/StatCard';
-// import { CalendarIcon, EyeIcon, PencilIcon } from 'lucide-react';
+// import { EyeIcon } from 'lucide-react';
 // import Link from 'next/link';
 // import Label from '@/components/form/Label';
 // import Input from '@/components/form/input/InputField';
 
 // interface IContact {
 //   _id: string;
-//   fullName: string;
-//   hremail: string;
-//   salesemail: string;
-//   companyemail: string;
-//   hrNumber: string;
-//   salesNumber: string;
-//   companyNumber: string;
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   phoneNumber: string;
+//   interested: string[];
 //   message: string;
 //   isDeleted?: boolean;
 //   createdAt?: string;
@@ -26,23 +24,20 @@
 //   __v?: number;
 // }
 
-// type DateFilter = "all" | "today" | "week" | "month" | "custom";
+// type DateFilter = 'all' | 'today' | 'week' | 'month';
 
 // const ContactListPage: React.FC = () => {
 //   const [contactData, setContactData] = useState<IContact[]>([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState<string | null>(null);
 //   const [searchTerm, setSearchTerm] = useState('');
-//   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
-//   const [customStartDate, setCustomStartDate] = useState<string>('');
-//   const [customEndDate, setCustomEndDate] = useState<string>('');
-//   const [showCalendarFilter, setShowCalendarFilter] = useState(false);
+//   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
 
 //   // Fetch data
 //   const fetchContactData = async () => {
 //     setLoading(true);
 //     try {
-//       const res = await axios.get('/api/contact');
+//       const res = await axios.get('/api/fcontact');
 //       if (res.data.success) {
 //         setContactData(res.data.data);
 //       } else {
@@ -64,7 +59,7 @@
 //   const handleDelete = async (id: string) => {
 //     if (!window.confirm('Are you sure you want to delete this contact entry?')) return;
 //     try {
-//       await axios.delete(`/api/contact/${id}`);
+//       await axios.delete(`/api/fcontact/${id}`);
 //       alert('Contact entry deleted successfully!');
 //       fetchContactData();
 //     } catch (err) {
@@ -73,23 +68,23 @@
 //     }
 //   };
 
-//   // Filter by date
+//   // Date filter
 //   const filterByDate = (contacts: IContact[]) => {
-//     if (dateFilter === "all") return contacts;
+//     if (dateFilter === 'all') return contacts;
 
 //     const now = new Date();
 //     return contacts.filter((c) => {
 //       if (!c.createdAt) return false;
 //       const created = new Date(c.createdAt);
 
-//       if (dateFilter === "today") {
+//       if (dateFilter === 'today') {
 //         return (
 //           created.getDate() === now.getDate() &&
 //           created.getMonth() === now.getMonth() &&
 //           created.getFullYear() === now.getFullYear()
 //         );
 //       }
-//       if (dateFilter === "week") {
+//       if (dateFilter === 'week') {
 //         const startOfWeek = new Date(now);
 //         startOfWeek.setDate(now.getDate() - now.getDay());
 //         startOfWeek.setHours(0, 0, 0, 0);
@@ -99,40 +94,17 @@
 
 //         return created >= startOfWeek && created < endOfWeek;
 //       }
-//       if (dateFilter === "month") {
+//       if (dateFilter === 'month') {
 //         return (
 //           created.getMonth() === now.getMonth() &&
 //           created.getFullYear() === now.getFullYear()
 //         );
 //       }
-//       if (dateFilter === "custom" && customStartDate && customEndDate) {
-//         const startDate = new Date(customStartDate);
-//         const endDate = new Date(customEndDate);
-//         endDate.setHours(23, 59, 59, 999);
-
-//         return created >= startDate && created <= endDate;
-//       }
 //       return true;
 //     });
 //   };
 
-//   // Apply custom date filter
-//   const applyCustomDateFilter = () => {
-//     if (customStartDate && customEndDate) {
-//       setDateFilter('custom');
-//       setShowCalendarFilter(false);
-//     }
-//   };
-
-//   // Reset custom date filter
-//   const resetCustomDateFilter = () => {
-//     setCustomStartDate('');
-//     setCustomEndDate('');
-//     setDateFilter('all');
-//     setShowCalendarFilter(false);
-//   };
-
-//   // Combine Search + Date filters
+//   // Combine search + date filters
 //   const filteredContacts = useMemo(() => {
 //     const result = filterByDate(contactData);
 
@@ -141,27 +113,15 @@
 
 //     return result.filter((c) => {
 //       return (
-//         (c.fullName?.toLowerCase() || "").includes(lower) ||
-//         (c.hremail?.toLowerCase() || "").includes(lower) ||
-//         (c.salesemail?.toLowerCase() || "").includes(lower) ||
-//         (c.companyemail?.toLowerCase() || "").includes(lower) ||
-//         (c.hrNumber?.toLowerCase() || "").includes(lower) ||
-//         (c.salesNumber?.toLowerCase() || "").includes(lower) ||
-//         (c.companyNumber?.toLowerCase() || "").includes(lower) ||
-//         (c.message?.toLowerCase() || "").includes(lower)
+//         (c.firstName?.toLowerCase() || '').includes(lower) ||
+//         (c.lastName?.toLowerCase() || '').includes(lower) ||
+//         (c.email?.toLowerCase() || '').includes(lower) ||
+//         (c.phoneNumber?.toLowerCase() || '').includes(lower) ||
+//         // (c.interested?.toLowerCase() || '').includes(lower) ||
+//         (c.message?.toLowerCase() || '').includes(lower)
 //       );
 //     });
-//   }, [contactData, searchTerm, dateFilter, customStartDate, customEndDate]);
-
-//   // Get date range display text
-//   const getDateRangeText = () => {
-//     if (dateFilter === 'custom' && customStartDate && customEndDate) {
-//       const start = new Date(customStartDate).toLocaleDateString();
-//       const end = new Date(customEndDate).toLocaleDateString();
-//       return `${start} - ${end}`;
-//     }
-//     return null;
-//   };
+//   }, [contactData, searchTerm, dateFilter]);
 
 //   return (
 //     <div className="container mx-auto px-4 py-8">
@@ -173,13 +133,13 @@
 //         </p>
 //       )}
 
-//       {/* Filters + Stats Row */}
+//       {/* Filters + Stats */}
 //       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-//         {/* Search filter */}
+//         {/* Search + Filters */}
 //         <div className="lg:col-span-3">
 //           <ComponentCard title="Search & Filters">
 //             <div className="py-3">
-//               <Label>Search by Name, Email, Phone, or Message</Label>
+//               <Label>Search by Name, Email, Phone or Message</Label>
 //               <Input
 //                 type="text"
 //                 placeholder="Type to filter contacts..."
@@ -187,99 +147,28 @@
 //                 onChange={(e) => setSearchTerm(e.target.value)}
 //               />
 
-//               {/* Date Filter Buttons */}
+//               {/* Date Filter */}
 //               <div className="flex gap-3 mt-4 flex-wrap">
-//                 {["today", "week", "month", "all"].map((filter) => (
+//                 {['today', 'week', 'month', 'all'].map((filter) => (
 //                   <button
 //                     key={filter}
-//                     onClick={() => {
-//                       setDateFilter(filter as DateFilter);
-//                       setShowCalendarFilter(false);
-//                     }}
-//                     className={`px-4 py-2 rounded-md border text-sm transition ${dateFilter === filter && dateFilter !== 'custom'
-//                       ? "bg-blue-500 text-white border-blue-500"
-//                       : "border-gray-300 text-gray-600 hover:bg-gray-100"
-//                       }`}
+//                     onClick={() => setDateFilter(filter as DateFilter)}
+//                     className={`px-4 py-2 rounded-md border text-sm transition ${
+//                       dateFilter === filter
+//                         ? 'bg-blue-500 text-white border-blue-500'
+//                         : 'border-gray-300 text-gray-600 hover:bg-gray-100'
+//                     }`}
 //                   >
-//                     {filter === "all"
-//                       ? "All"
-//                       : filter === "today"
-//                         ? "Today"
-//                         : filter === "week"
-//                           ? "This Week"
-//                           : "This Month"}
+//                     {filter === 'all'
+//                       ? 'All'
+//                       : filter === 'today'
+//                       ? 'Today'
+//                       : filter === 'week'
+//                       ? 'This Week'
+//                       : 'This Month'}
 //                   </button>
 //                 ))}
-
-//                 {/* Custom Date Range Button */}
-//                 <button
-//                   onClick={() => setShowCalendarFilter(!showCalendarFilter)}
-//                   className={`px-4 py-2 rounded-md border text-sm transition flex items-center gap-2 ${dateFilter === 'custom'
-//                     ? 'bg-blue-500 text-white border-blue-500'
-//                     : 'border-gray-300 text-gray-600 hover:bg-gray-100'
-//                     }`}
-//                 >
-//                   <CalendarIcon size={16} />
-//                   Custom Range
-//                 </button>
 //               </div>
-
-//               {/* Custom Date Range Picker */}
-//               {showCalendarFilter && (
-//                 <div className="mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-
-//                     <div>
-//                       <Label htmlFor="startDate">Start Date</Label>
-//                       <Input
-//                         id="startDate"
-//                         type="date"
-//                         value={customStartDate}
-//                         onChange={(e) => setCustomStartDate(e.target.value)}
-//                         max={customEndDate || new Date().toISOString().split('T')[0]}
-//                       />
-//                     </div>
-//                     <div>
-//                       <Label htmlFor="endDate">End Date</Label>
-//                       <Input
-//                         id="endDate"
-//                         type="date"
-//                         value={customEndDate}
-//                         onChange={(e) => setCustomEndDate(e.target.value)}
-//                         min={customStartDate}
-//                         max={new Date().toISOString().split('T')[0]}
-//                       />
-//                     </div>
-
-//                   <div className="flex gap-2">
-//                     <button
-//                       onClick={applyCustomDateFilter}
-//                       disabled={!customStartDate || !customEndDate}
-//                       className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-//                     >
-//                       Apply Filter
-//                     </button>
-//                     <button
-//                       onClick={resetCustomDateFilter}
-//                       className="px-4 py-2 bg-gray-500 text-white rounded-md text-sm"
-//                     >
-//                       Reset
-//                     </button>
-//                     <button
-//                       onClick={() => setShowCalendarFilter(false)}
-//                       className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm ml-auto"
-//                     >
-//                       Close
-//                     </button>
-//                   </div>
-//                 </div>
-//               )}
-
-//               {/* Display current date range */}
-//               {dateFilter === 'custom' && getDateRangeText() && (
-//                 <div className="mt-3 text-sm text-blue-600 font-medium">
-//                   Filtering by: {getDateRangeText()}
-//                 </div>
-//               )}
 //             </div>
 //           </ComponentCard>
 //         </div>
@@ -302,14 +191,13 @@
 //             <table className="min-w-full border border-gray-200 rounded-lg text-sm">
 //               <thead className="bg-gray-100 text-gray-700 text-left">
 //                 <tr>
-//                   <th className="px-5 py-3">Full Name</th>
-//                   <th className="px-5 py-3">HrEmail</th>
-//                   <th className="px-5 py-3">SalesEmail</th>
-//                   <th className="px-5 py-3">HR Number</th>
-//                   <th className="px-5 py-3">Sales Number</th>
-//                   <th className="px-5 py-3">Company Number</th>
+//                   <th className="px-5 py-3">First Name</th>
+//                   <th className="px-5 py-3">Last Name</th>
+//                   <th className="px-5 py-3">Email</th>
+//                   <th className="px-5 py-3">Phone Number</th>
+//                   <th className="px-5 py-3">Interested</th>
 //                   <th className="px-5 py-3">Message</th>
-//                   <th className="px-5 py-3">Contact History</th>
+//                   <th className="px-5 py-3">Created At</th>
 //                   <th className="px-5 py-3 text-center">Actions</th>
 //                 </tr>
 //               </thead>
@@ -318,52 +206,49 @@
 //                   filteredContacts.map((entry, idx) => (
 //                     <tr
 //                       key={entry._id}
-//                       className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-//                         } hover:bg-gray-100`}
+//                       className={`transition ${
+//                         idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+//                       } hover:bg-gray-100`}
 //                     >
-//                       <td className="px-4 py-3 whitespace-nowrap">{entry.fullName}</td>
-//                       <td className="px-4 py-3 break-words max-w-[150px]">{entry.hremail}</td>
-//                       <td className="px-4 py-3 break-words max-w-[150px]">{entry.salesemail}</td>
-//                       <td className="px-4 py-3 whitespace-nowrap">{entry.hrNumber}</td>
-//                       <td className="px-4 py-3 whitespace-nowrap">{entry.salesNumber}</td>
-//                       <td className="px-4 py-3 whitespace-nowrap">{entry.companyNumber}</td>
+//                       <td className="px-4 py-3 whitespace-nowrap">{entry.firstName}</td>
+//                       <td className="px-4 py-3 whitespace-nowrap">{entry.lastName}</td>
+//                       <td className="px-4 py-3 break-words max-w-[150px]">{entry.email}</td>
+//                       <td className="px-4 py-3 whitespace-nowrap">{entry.phoneNumber}</td>
+//                       <td className="px-4 py-3 whitespace-nowrap">{entry.interested.join(', ')}</td>
 //                       <td className="px-4 py-3 break-words max-w-[200px]">{entry.message}</td>
 //                       <td className="px-5 py-3">
-//                         {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "—"}
+//                         {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : '—'}
 //                       </td>
 //                       <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
 //                         <div className="flex justify-center gap-2">
-// <Link
-//   href={`/contact-management/Contact-List/${entry._id}`}
-//   className="p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-//   title="View"
-// >
-//   <EyeIcon size={16} />
-// </Link>
-// <Link
-//   href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
-//   className="p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
-//   title="Edit"
-// >
-//   <PencilIcon size={16} />
-// </Link>
-// <button
-//   onClick={() => handleDelete(entry._id)}
-//   className="p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-//   title="Delete"
-// >
-//   <TrashBinIcon />
-// </button>
+//                           <Link
+//                             href={`/fcontact-management/FContact-List/${entry._id}`}
+//                             className="p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+//                             title="View"
+//                           >
+//                             <EyeIcon size={16} />
+//                           </Link>
+//                           {/* <Link
+//                             href={`/fcontact-management/Add-FContact?page=edit&id=${entry._id}`}
+//                             className="p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+//                             title="Edit"
+//                           >
+//                             <PencilIcon size={16} />
+//                           </Link> */}
+//                           <button
+//                             onClick={() => handleDelete(entry._id)}
+//                             className="p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+//                             title="Delete"
+//                           >
+//                             <TrashBinIcon />
+//                           </button>
 //                         </div>
 //                       </td>
 //                     </tr>
 //                   ))
 //                 ) : (
 //                   <tr>
-//                     <td
-//                       colSpan={9}
-//                       className="px-5 py-10 text-center text-gray-500"
-//                     >
+//                     <td colSpan={8} className="px-5 py-10 text-center text-gray-500">
 //                       No contact entries found.
 //                     </td>
 //                   </tr>
@@ -385,27 +270,25 @@
 
 
 
+
 'use client';
 
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { ArrowUpIcon, TrashBinIcon, UserIcon } from '@/icons';
 import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
-import { CalendarIcon, EyeIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { EyeIcon, CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 
 interface IContact {
   _id: string;
-  fullName: string;
-  hremail: string;
-  salesemail: string;
-  companyemail: string;
-  hrNumber: string;
-  salesNumber: string;
-  companyNumber: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
   message: string;
   isDeleted?: boolean;
   createdAt?: string;
@@ -413,19 +296,17 @@ interface IContact {
   __v?: number;
 }
 
-type DateFilter = "all" | "today" | "week" | "month" | "custom";
+type DateFilter = 'all' | 'today' | 'week' | 'month' | 'custom';
 
 const ContactListPage: React.FC = () => {
   const [contactData, setContactData] = useState<IContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
   const [showCalendarFilter, setShowCalendarFilter] = useState(false);
-  const [showScrollHint, setShowScrollHint] = useState(false);
-  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch data
   const fetchContactData = async () => {
@@ -462,23 +343,25 @@ const ContactListPage: React.FC = () => {
     }
   };
 
-  // Filter by date
+  // Date filter
   const filterByDate = (contacts: IContact[]) => {
-    if (dateFilter === "all") return contacts;
+    if (dateFilter === 'all') return contacts;
 
     const now = new Date();
+    
     return contacts.filter((c) => {
       if (!c.createdAt) return false;
       const created = new Date(c.createdAt);
 
-      if (dateFilter === "today") {
+      if (dateFilter === 'today') {
         return (
           created.getDate() === now.getDate() &&
           created.getMonth() === now.getMonth() &&
           created.getFullYear() === now.getFullYear()
         );
       }
-      if (dateFilter === "week") {
+      
+      if (dateFilter === 'week') {
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - now.getDay());
         startOfWeek.setHours(0, 0, 0, 0);
@@ -488,19 +371,22 @@ const ContactListPage: React.FC = () => {
 
         return created >= startOfWeek && created < endOfWeek;
       }
-      if (dateFilter === "month") {
+      
+      if (dateFilter === 'month') {
         return (
           created.getMonth() === now.getMonth() &&
           created.getFullYear() === now.getFullYear()
         );
       }
-      if (dateFilter === "custom" && customStartDate && customEndDate) {
+      
+      if (dateFilter === 'custom' && customStartDate && customEndDate) {
         const startDate = new Date(customStartDate);
         const endDate = new Date(customEndDate);
-        endDate.setHours(23, 59, 59, 999);
-
+        endDate.setHours(23, 59, 59, 999); // Include the entire end date
+        
         return created >= startDate && created <= endDate;
       }
+      
       return true;
     });
   };
@@ -521,7 +407,7 @@ const ContactListPage: React.FC = () => {
     setShowCalendarFilter(false);
   };
 
-  // Combine Search + Date filters
+  // Combine search + date filters
   const filteredContacts = useMemo(() => {
     const result = filterByDate(contactData);
 
@@ -530,43 +416,14 @@ const ContactListPage: React.FC = () => {
 
     return result.filter((c) => {
       return (
-        (c.fullName?.toLowerCase() || "").includes(lower) ||
-        (c.hremail?.toLowerCase() || "").includes(lower) ||
-        (c.salesemail?.toLowerCase() || "").includes(lower) ||
-        (c.companyemail?.toLowerCase() || "").includes(lower) ||
-        (c.hrNumber?.toLowerCase() || "").includes(lower) ||
-        (c.salesNumber?.toLowerCase() || "").includes(lower) ||
-        (c.companyNumber?.toLowerCase() || "").includes(lower) ||
-        (c.message?.toLowerCase() || "").includes(lower)
+        (c.firstName?.toLowerCase() || '').includes(lower) ||
+        (c.lastName?.toLowerCase() || '').includes(lower) ||
+        (c.email?.toLowerCase() || '').includes(lower) ||
+        (c.phoneNumber?.toLowerCase() || '').includes(lower) ||
+        (c.message?.toLowerCase() || '').includes(lower)
       );
     });
   }, [contactData, searchTerm, dateFilter, customStartDate, customEndDate]);
-
-  // Check if table needs horizontal scrolling and show hint
-  useEffect(() => {
-    const checkScrollNeeded = () => {
-      if (tableContainerRef.current) {
-        const tableEl = tableContainerRef.current.querySelector('table');
-        if (tableEl) {
-          const needsScroll = tableEl.scrollWidth > tableContainerRef.current.clientWidth;
-          setShowScrollHint(needsScroll);
-
-          // Auto-hide the hint after 5 seconds
-          if (needsScroll) {
-            setTimeout(() => setShowScrollHint(false), 5000);
-          }
-        }
-      }
-    };
-
-    // Use a small delay to ensure the DOM is fully rendered
-    setTimeout(checkScrollNeeded, 100);
-    window.addEventListener('resize', checkScrollNeeded);
-
-    return () => {
-      window.removeEventListener('resize', checkScrollNeeded);
-    };
-  }, [filteredContacts]);
 
   // Get date range display text
   const getDateRangeText = () => {
@@ -588,13 +445,13 @@ const ContactListPage: React.FC = () => {
         </p>
       )}
 
-      {/* Filters + Stats Row */}
+      {/* Filters + Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-        {/* Search filter */}
-        <div className="lg:col-span-2">
+        {/* Search + Filters */}
+        <div className="lg:col-span-3">
           <ComponentCard title="Search & Filters">
             <div className="py-3">
-              <Label>Search by Name, Email, Phone, or Message</Label>
+              <Label>Search by Name, Email, Phone, Interest, or Message</Label>
               <Input
                 type="text"
                 placeholder="Type to filter contacts..."
@@ -602,37 +459,39 @@ const ContactListPage: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
 
-              {/* Date Filter Buttons */}
-              <div className="flex gap-3 mt-4 flex-wrap">
-                {["today", "week", "month", "all"].map((filter) => (
+              {/* Date Filter */}
+              <div className="flex flex-wrap gap-3 mt-4 items-center">
+                {['today', 'week', 'month', 'all'].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => {
                       setDateFilter(filter as DateFilter);
                       setShowCalendarFilter(false);
                     }}
-                    className={`px-4 py-2 rounded-md border text-sm transition ${dateFilter === filter && dateFilter !== 'custom'
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "border-gray-300 text-gray-600 hover:bg-gray-100"
-                      }`}
+                    className={`px-4 py-2 rounded-md border text-sm transition ${
+                      dateFilter === filter && dateFilter !== 'custom'
+                        ? 'bg-blue-500 text-white border-blue-500'
+                        : 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                    }`}
                   >
-                    {filter === "all"
-                      ? "All"
-                      : filter === "today"
-                        ? "Today"
-                        : filter === "week"
-                          ? "This Week"
-                          : "This Month"}
+                    {filter === 'all'
+                      ? 'All'
+                      : filter === 'today'
+                      ? 'Today'
+                      : filter === 'week'
+                      ? 'This Week'
+                      : 'This Month'}
                   </button>
                 ))}
-
+                
                 {/* Custom Date Range Button */}
                 <button
                   onClick={() => setShowCalendarFilter(!showCalendarFilter)}
-                  className={`px-4 py-2 rounded-md border text-sm transition flex items-center gap-2 ${dateFilter === 'custom'
-                    ? 'bg-blue-500 text-white border-blue-500'
-                    : 'border-gray-300 text-gray-600 hover:bg-gray-100'
-                    }`}
+                  className={`px-4 py-2 rounded-md border text-sm transition flex items-center gap-2 ${
+                    dateFilter === 'custom'
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                  }`}
                 >
                   <CalendarIcon size={16} />
                   Custom Range
@@ -710,96 +569,75 @@ const ContactListPage: React.FC = () => {
         />
       </div>
 
-      {/* Table Container with Horizontal Scroll Only */}
+      {/* Table */}
       <ComponentCard title="Contact List">
         {!loading ? (
-          <>
-            {/* Scroll hint for smaller screens */}
-            {showScrollHint && (
-              <div className="flex items-center justify-center mb-3 p-2 bg-blue-50 text-blue-700 rounded-md animate-pulse md:hidden">
-                <ChevronLeftIcon size={16} className="mx-1" />
-                <span className="text-sm">Swipe to see more columns</span>
-                <ChevronRightIcon size={16} className="mx-1" />
-              </div>
-            )}
-
-            {/* Scrollable container */}
-            {/* <div
-              ref={tableContainerRef}
-              className="overflow-x-auto"
-              style={{ maxHeight: 'calc(100vh - 400px)' }}
-            > */}
-            {/* Table Container with Vertical Scroll */}
-            <div style={{ maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
-              <table className="w-full table-auto border border-gray-200 rounded-lg text-xs">
-                <thead className="bg-gray-100 sticky top-0 z-10">
-                  <tr>
-                    <th className="px-1 py-1 text-left">Full Name</th>
-                    <th className="px-1 py-1 text-left">HrEmail</th>
-                    <th className="px-1 py-1 text-left">SalesEmail</th>
-                    <th className="px-1 py-1 text-left">HR Number</th>
-                    <th className="px-1 py-1 text-left">Sales Number</th>
-                    <th className="px-1 py-1 text-left">Company Number</th>
-                    <th className="px-1 py-1 text-left">Message</th>
-                    <th className="px-1 py-1 text-center">Date</th>
-                    <th className="px-1 py-1 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredContacts.map((contact) => (
-                    <tr key={contact._id} className="hover:bg-gray-50">
-                      <td className="px-1 py-1 truncate max-w-[120px]">{contact.fullName}</td>
-                      <td className="px-1 py-1 truncate max-w-[150px]">{contact.hremail}</td>
-                      <td className="px-1 py-1 truncate max-w-[150px]">{contact.salesemail}</td>
-                      <td className="px-1 py-1 truncate max-w-[100px]">{contact.hrNumber}</td>
-                      <td className="px-1 py-1 truncate max-w-[100px]">{contact.salesNumber}</td>
-                      <td className="px-1 py-1 truncate max-w-[120px]">{contact.companyNumber}</td>
-                      <td className="px-1 py-1 truncate max-w-[200px]">{contact.message}</td>
-                      <td className="px-1 py-1 text-center">
-                        {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : '—'}
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-gray-200 rounded-lg text-sm">
+              <thead className="bg-gray-100 text-gray-700 text-left">
+                <tr>
+                  <th className="px-5 py-3">First Name</th>
+                  <th className="px-5 py-3">Last Name</th>
+                  <th className="px-5 py-3">Email</th>
+                  <th className="px-5 py-3">Phone Number</th>
+                  <th className="px-5 py-3">Message</th>
+                  <th className="px-5 py-3">Created At</th>
+                  <th className="px-5 py-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredContacts.length > 0 ? (
+                  filteredContacts.map((entry, idx) => (
+                    <tr
+                      key={entry._id}
+                      className={`transition ${
+                        idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                      } hover:bg-gray-100`}
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.firstName}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.lastName}</td>
+                      <td className="px-4 py-3 break-words max-w-[150px]">{entry.email}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{entry.phoneNumber}</td>
+                      <td className="px-4 py-3 break-words max-w-[200px]">{entry.message}</td>
+                      <td className="px-5 py-3">
+                        {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : '—'}
                       </td>
-                      <td className="px-1 py-1 text-center">
-                        <div className="flex justify-center gap-1">
+                      <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
+                        <div className="flex justify-center gap-2">
                           <Link
-                            href={`/contact-management/Contact-List/${contact._id}`}
-                            className="p-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                            href={`/contact-management/Contact-List/${entry._id}`}
+                            className="p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
                             title="View"
                           >
-                            <EyeIcon size={14} />
-                          </Link>
-                          <Link
-                            href={`/contact-management/Add-Contact?page=edit&id=${contact._id}`}
-                            className="p-1 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
-                            title="Edit"
-                          >
-                            <PencilIcon size={14} />
+                            <EyeIcon size={16} />
                           </Link>
                           <button
-                            onClick={() => handleDelete(contact._id)}
-                            className="p-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                            onClick={() => handleDelete(entry._id)}
+                            className="p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                             title="Delete"
                           >
-                            <TrashBinIcon size={14} />
+                            <TrashBinIcon />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-          </>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="px-5 py-10 text-center text-gray-500">
+                      No contact entries found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="text-gray-600 text-center py-10">Loading contact data...</p>
         )}
       </ComponentCard>
-
     </div>
   );
 };
 
 export default ContactListPage;
-
-
-

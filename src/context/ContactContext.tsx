@@ -3,37 +3,36 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { IContact } from '@/models/Contact';
 
-type Contact = {
-  _id: string,
-  fullName: string,
-  hremail: string,
-  salesemail: string,
-  companyemail: string,
-  hrNumber: string,
-  salesNumber: string,
-  companyNumber: string,
-  message: string,
-  bannerImage?: string,
-  isDeleted?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  __v?: number;
-}
 
+export type ContactInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  message: string;
+};
 
 // Context type
+// interface FContactContextType {
+//   fcontacts: IFContact[];
+//   addFContact: (contactData: Omit<IFContact, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>) => Promise<void>;
+//   updateFContact: (id: string, contactData: Partial<IFContact>) => Promise<void>;
+//   deleteFContact: (id: string) => Promise<void>;
+// }
+
 interface ContactContextType {
-  contacts: Contact[];
-  addContact: (formData: FormData) => Promise<void>;
-  updateContact: (id: string, formData: FormData) => Promise<void>;
+  contacts: IContact[];
+  addContact: (contactData: ContactInput) => Promise<void>;
+  updateContact: (id: string, contactData: Partial<ContactInput>) => Promise<void>;
   deleteContact: (id: string) => Promise<void>;
 }
 
 const ContactContext = createContext<ContactContextType | null>(null);
 
 export const ContactProvider = ({ children }: { children: React.ReactNode }) => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<IContact[]>([]);
 
   // Fetch contacts from the API
   const fetchContacts = async () => {
@@ -41,7 +40,7 @@ export const ContactProvider = ({ children }: { children: React.ReactNode }) => 
       const response = await axios.get('/api/contact');
       setContacts(response.data.data);
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      console.error('Error fetching fcontacts:', error);
     }
   };
 
@@ -50,24 +49,26 @@ export const ContactProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   // Add new contact
-const addContact = async (formData: FormData) => {
-    try {
-      await axios.post('/api/contact', formData);
-      fetchContacts();
-    } catch (error) {
-      console.error('Error adding contact:', error);
-    }
-  };
+// Add new contact
+const addContact = async (contactData: ContactInput) => {
+  try {
+    await axios.post('/api/contact', contactData);
+    fetchContacts();
+  } catch (error) {
+    console.error('Error adding contact:', error);
+  }
+};
 
-  // Update contact
-const updateContact = async (id: string, formData: FormData) => {
-    try {
-      await axios.put(`/api/contact/${id}`, formData);
-      fetchContacts();
-    } catch (error) {
-      console.error('Error updating contact:', error);
-    }
-  };
+// Update contact
+const updateContact = async (id: string, contactData: Partial<ContactInput>) => {
+  try {
+    await axios.put(`/api/contact/${id}`, contactData);
+    fetchContacts();
+  } catch (error) {
+    console.error('Error updating contact:', error);
+  }
+};
+
 
   // Delete contact
   const deleteContact = async (id: string) => {

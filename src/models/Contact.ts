@@ -2,73 +2,49 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 
 export interface IContact extends Document {
-    fullName: string,
-    hremail: string,
-    salesemail: string,
-    companyemail: string,
-    hrNumber: string,
-    salesNumber: string,
-    companyNumber: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phoneNumber: string,
     message: string,
-    bannerImage?: string,
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
     __v?: number;
 }
 
-const contactSchema: Schema = new Schema ({
+const ContactSchema: Schema = new Schema ({
 
-      fullName: {
+      firstName: {
         type : String,
         required : true
       },
 
-    hremail: {
+    lastName: {
         type : String,
         required : true
     },
 
-    salesemail: {
+    email: {
         type: String,
         required: true
     },
 
-    companyemail: {
-        type: String,
-        required: true
-    },
-
-    hrNumber: {
-        type: String,
-        required : true
-    },
-     
-    salesNumber: {
+    phoneNumber: {
         type: String,
         required : true
     },
 
-    companyNumber: {
-        type: String,
-        required : true
-    },
-
+   
     message:{
         type: String,
         required: true
     },
-    
-      bannerImage:{
-        type: String,
-        required: false
-    },
-    
 
 
 }, { timestamps: true });
 
 
-const Contact = mongoose.models.Contact || mongoose.model<IContact>("Contact", contactSchema)
+const Contact = mongoose.models.Contact || mongoose.model<IContact>("Contact", ContactSchema)
 
 export default Contact;

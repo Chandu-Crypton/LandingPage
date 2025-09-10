@@ -1075,7 +1075,7 @@ const contactItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Contact",
     subItems: [
-      { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
+      // { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
       { name: "Contact List", path: "/contact-management/Contact-List", pro: false },
     ],
   },
