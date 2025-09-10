@@ -550,7 +550,7 @@
 //         if (tableEl) {
 //           const needsScroll = tableEl.scrollWidth > tableContainerRef.current.clientWidth;
 //           setShowScrollHint(needsScroll);
-          
+
 //           // Auto-hide the hint after 5 seconds
 //           if (needsScroll) {
 //             setTimeout(() => setShowScrollHint(false), 5000);
@@ -562,7 +562,7 @@
 //     // Use a small delay to ensure the DOM is fully rendered
 //     setTimeout(checkScrollNeeded, 100);
 //     window.addEventListener('resize', checkScrollNeeded);
-    
+
 //     return () => {
 //       window.removeEventListener('resize', checkScrollNeeded);
 //     };
@@ -722,7 +722,7 @@
 //                 <ChevronRightIcon size={16} className="mx-1" />
 //               </div>
 //             )}
-            
+
 //             <div 
 //               ref={tableContainerRef}
 //               className="overflow-x-auto"
@@ -777,27 +777,27 @@
 //                         </td>
 //                         <td className="px-3 py-2 sm:px-4 sm:py-3 sticky right-0 bg-white z-10">
 //                           <div className="flex justify-center gap-1 sm:gap-2">
-//                             <Link
-//                               href={`/contact-management/Contact-List/${entry._id}`}
-//                               className="p-1 sm:p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-//                               title="View"
-//                             >
-//                               <EyeIcon size={14} className="sm:size-4" />
-//                             </Link>
-//                             <Link
-//                               href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
-//                               className="p-1 sm:p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white transition-colors"
-//                               title="Edit"
-//                             >
-//                               <PencilIcon size={14} className="sm:size-4" />
-//                             </Link>
-//                             <button
-//                               onClick={() => handleDelete(entry._id)}
-//                               className="p-1 sm:p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-//                               title="Delete"
-//                             >
-//                               <TrashBinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-//                             </button>
+                            // <Link
+                            //   href={`/contact-management/Contact-List/${entry._id}`}
+                            //   className="p-1 sm:p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+                            //   title="View"
+                            // >
+                            //   <EyeIcon size={14} className="sm:size-4" />
+                            // </Link>
+                            // <Link
+                            //   href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
+                            //   className="p-1 sm:p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white transition-colors"
+                            //   title="Edit"
+                            // >
+                            //   <PencilIcon size={14} className="sm:size-4" />
+                            // </Link>
+                            // <button
+                            //   onClick={() => handleDelete(entry._id)}
+                            //   className="p-1 sm:p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                            //   title="Delete"
+                            // >
+                            //   <TrashBinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            // </button>
 //                           </div>
 //                         </td>
 //                       </tr>
@@ -995,7 +995,7 @@ const ContactListPage: React.FC = () => {
         if (tableEl) {
           const needsScroll = tableEl.scrollWidth > tableContainerRef.current.clientWidth;
           setShowScrollHint(needsScroll);
-          
+
           // Auto-hide the hint after 5 seconds
           if (needsScroll) {
             setTimeout(() => setShowScrollHint(false), 5000);
@@ -1007,7 +1007,7 @@ const ContactListPage: React.FC = () => {
     // Use a small delay to ensure the DOM is fully rendered
     setTimeout(checkScrollNeeded, 100);
     window.addEventListener('resize', checkScrollNeeded);
-    
+
     return () => {
       window.removeEventListener('resize', checkScrollNeeded);
     };
@@ -1167,25 +1167,26 @@ const ContactListPage: React.FC = () => {
                 <ChevronRightIcon size={16} className="mx-1" />
               </div>
             )}
-            
-            <div 
+
+            <div
               ref={tableContainerRef}
-              className="overflow-x-auto"
+              className="overflow-x-auto relative"  // relative is needed for sticky column
               style={{ maxHeight: 'calc(100vh - 400px)' }}
             >
-              <table className="w-full border border-gray-200 rounded-lg text-sm">
+             <table className="w-full lg:min-w-0 border border-gray-200 rounded-lg text-sm">
+
                 <thead className="bg-gray-100 text-gray-700 text-left">
                   <tr>
-                    {/* Responsive column sizing */}
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Full Name</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">HrEmail</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden md:table-cell">SalesEmail</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">HR Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">Sales Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Company Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden md:table-cell">Message</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Contact History</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-center sticky right-0 bg-gray-100 z-10">
+                    <th className="px-3 py-2 whitespace-nowrap">Full Name</th>
+                    <th className="px-3 py-2 whitespace-nowrap">HrEmail</th>
+                    <th className="px-3 py-2 whitespace-nowrap hidden md:table-cell">SalesEmail</th>
+                    <th className="px-3 py-2 whitespace-nowrap hidden lg:table-cell">HR Number</th>
+                    <th className="px-3 py-2 whitespace-nowrap hidden lg:table-cell">Sales Number</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Company Number</th>
+                    <th className="px-3 py-2 whitespace-nowrap hidden md:table-cell">Message</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Contact History</th>
+                    {/* Sticky column */}
+                    <th className="px-3 py-2 whitespace-nowrap text-center sticky right-0 bg-gray-100 z-20">
                       Actions
                     </th>
                   </tr>
@@ -1195,36 +1196,22 @@ const ContactListPage: React.FC = () => {
                     filteredContacts.map((entry, idx) => (
                       <tr
                         key={entry._id}
-                        className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          } hover:bg-gray-100`}
+                        className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
                       >
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap font-medium">
-                          {entry.fullName}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[120px] sm:max-w-[150px]">
-                          {entry.hremail}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[120px] sm:max-w-[150px] hidden md:table-cell">
-                          {entry.salesemail}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">
-                          {entry.hrNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">
-                          {entry.salesNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
-                          {entry.companyNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[150px] sm:max-w-[200px] hidden md:table-cell">
-                          {entry.message}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
+                        <td className="px-3 py-2 whitespace-nowrap">{entry.fullName}</td>
+                        <td className="px-3 py-2 break-words max-w-[150px]">{entry.hremail}</td>
+                        <td className="px-3 py-2 break-words max-w-[150px] hidden md:table-cell">{entry.salesemail}</td>
+                        <td className="px-3 py-2 whitespace-nowrap hidden lg:table-cell">{entry.hrNumber}</td>
+                        <td className="px-3 py-2 whitespace-nowrap hidden lg:table-cell">{entry.salesNumber}</td>
+                        <td className="px-3 py-2 whitespace-nowrap">{entry.companyNumber}</td>
+                        <td className="px-3 py-2 break-words max-w-[200px] hidden md:table-cell">{entry.message}</td>
+                        <td className="px-3 py-2 whitespace-nowrap">
                           {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "—"}
                         </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-center sticky right-0 bg-white z-10">
-                          <div className="flex justify-center gap-1 sm:gap-2">
-                            <Link
+                        {/* Sticky column */}
+                        <td className="px-3 py-2 text-center sticky right-0 bg-white shadow-md z-20">
+                          <div className="flex justify-center gap-2">
+                             <Link
                               href={`/contact-management/Contact-List/${entry._id}`}
                               className="p-1 sm:p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
                               title="View"
@@ -1243,7 +1230,7 @@ const ContactListPage: React.FC = () => {
                               className="p-1 sm:p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
                               title="Delete"
                             >
-                              <TrashBinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-5" />
+                              <TrashBinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
                           </div>
                         </td>
@@ -1251,10 +1238,7 @@ const ContactListPage: React.FC = () => {
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={9}
-                        className="px-5 py-10 text-center text-gray-500"
-                      >
+                      <td colSpan={9} className="px-5 py-10 text-center text-gray-500">
                         No contact entries found.
                       </td>
                     </tr>
@@ -1262,6 +1246,7 @@ const ContactListPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
           </>
         ) : (
           <p className="text-gray-600 text-center py-10">Loading contact data...</p>
