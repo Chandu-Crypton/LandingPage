@@ -138,7 +138,6 @@ const BlogListPage: React.FC = () => {
                                     <th className="px-5 py-3 text-left">Blog Heading</th>
                                     <th className="px-5 py-3 text-left">Category</th>
                                     <th className="px-5 py-3 text-left">Description</th>
-                                     <th className="px-5 py-3 text-left">Featured</th>
                                     <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-left">Heading Image</th>
                                     <th className="px-5 py-3 text-left">Items Count</th>
@@ -153,7 +152,7 @@ const BlogListPage: React.FC = () => {
                                         <td className="px-5 py-3 ">{blog.blogHeading}</td>
                                         <td className="px-5 py-3">{blog.category}</td>
                                         <td className="px-5 py-3">{blog.description}</td>
-                                         <td className="px-5 py-3">{blog.featured}</td>
+                                       
                                         <td className="px-5 py-3">
                                             {blog.mainImage ? (
                                                 <NextImage
