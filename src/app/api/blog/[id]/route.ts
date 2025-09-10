@@ -19,31 +19,31 @@ export async function OPTIONS() {
 }
 
 export async function GET(req: Request) {
-  await connectToDatabase();
+    await connectToDatabase();
 
-  const url = new URL(req.url);
-  const id = url.pathname.split("/").pop();
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
 
-  try {
-    const doc = await Blog.findById(id);
-    if (!doc) {
-      return NextResponse.json(
-        { success: false, message: 'Blog not found.' },
-        { status: 404, headers: corsHeaders }
-      );
+    try {
+        const doc = await Blog.findById(id);
+        if (!doc) {
+            return NextResponse.json(
+                { success: false, message: 'Blog not found.' },
+                { status: 404, headers: corsHeaders }
+            );
+        }
+        return NextResponse.json(
+            { success: true, data: doc },
+            { status: 200, headers: corsHeaders }
+        );
+    } catch (error) {
+        console.error(`GET /api/blog/${id} error:`, error);
+        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        return NextResponse.json(
+            { success: false, message },
+            { status: 500, headers: corsHeaders }
+        );
     }
-    return NextResponse.json(
-      { success: true, data: doc },
-      { status: 200, headers: corsHeaders }
-    );
-  } catch (error) {
-    console.error(`GET /api/blog/${id} error:`, error);
-    const message = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(
-      { success: false, message },
-      { status: 500, headers: corsHeaders }
-    );
-  }
 }
 
 
@@ -63,21 +63,23 @@ export async function PUT(req: NextRequest) {
     try {
         const formData = await req.formData();
         const updateData: Partial<IBlog> = {}; // Partial<IBlog>
-
+        console.log("form data:", formData)
         // --- Text Fields ---
         const addHeading = formData.get("addHeading")?.toString();
         const blogHeading = formData.get("blogHeading")?.toString();
         const title = formData.get("title")?.toString();
         const description = formData.get("description")?.toString();
         const readtime = formData.get("readtime")?.toString();
-        const featured = formData.get("featured") === 'true';
+        const featuredRaw = formData.get("featured");
+        
+
         const category = formData.get("category")?.toString();
         const bestQuote = formData.get("bestQuote")?.toString();
 
         if (addHeading !== undefined) updateData.addHeading = addHeading;
         if (blogHeading) updateData.blogHeading = blogHeading;
         if (title) updateData.title = title;
-        if(featured) updateData.featured = featured;
+        if (featuredRaw !== null) updateData.featured = featuredRaw === "true";
         if (description) updateData.description = description;
         if (readtime) updateData.readtime = readtime;
         if (category) updateData.category = category;
@@ -178,7 +180,7 @@ export async function PUT(req: NextRequest) {
         } else if (headingImageFile === "null" || headingImageFile === "") {
             updateData.headingImage = "";
         }
-         
+
 
         // --- Banner Image ---
         const bannerImageFile = formData.get("bannerImage");
@@ -194,7 +196,7 @@ export async function PUT(req: NextRequest) {
         else if (bannerImageFile === "null" || bannerImageFile === "") {
             updateData.bannerImage = "";
         }
-        
+
         // --- Check if anything to update ---
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json(
@@ -238,7 +240,7 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.pathname.split("/").pop();
 
-    
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
             { success: false, message: 'Invalid or missing ID.' },
