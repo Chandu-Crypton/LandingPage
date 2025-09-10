@@ -227,7 +227,7 @@
 //               {/* Custom Date Range Picker */}
 //               {showCalendarFilter && (
 //                 <div className="mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+
 //                     <div>
 //                       <Label htmlFor="startDate">Start Date</Label>
 //                       <Input
@@ -249,7 +249,7 @@
 //                         max={new Date().toISOString().split('T')[0]}
 //                       />
 //                     </div>
-//                   </div>
+
 //                   <div className="flex gap-2">
 //                     <button
 //                       onClick={applyCustomDateFilter}
@@ -375,11 +375,6 @@
 //           <p className="text-gray-600 text-center py-10">Loading contact data...</p>
 //         )}
 //       </ComponentCard>
-
-
-
-
-
 //     </div>
 //   );
 // };
@@ -392,12 +387,12 @@
 
 'use client';
 
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { ArrowUpIcon, TrashBinIcon, UserIcon } from '@/icons';
 import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
-import { CalendarIcon, EyeIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { CalendarIcon, EyeIcon, PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
@@ -429,8 +424,6 @@ const ContactListPage: React.FC = () => {
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
   const [showCalendarFilter, setShowCalendarFilter] = useState(false);
-  const [showScrollHint, setShowScrollHint] = useState(false);
-  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch data
   const fetchContactData = async () => {
@@ -510,6 +503,7 @@ const ContactListPage: React.FC = () => {
     });
   };
 
+  // Apply custom date filter
   const applyCustomDateFilter = () => {
     if (customStartDate && customEndDate) {
       setDateFilter('custom');
@@ -517,6 +511,7 @@ const ContactListPage: React.FC = () => {
     }
   };
 
+  // Reset custom date filter
   const resetCustomDateFilter = () => {
     setCustomStartDate('');
     setCustomEndDate('');
@@ -545,26 +540,7 @@ const ContactListPage: React.FC = () => {
     });
   }, [contactData, searchTerm, dateFilter, customStartDate, customEndDate]);
 
-  // Check if table needs horizontal scrolling and show hint
-  useEffect(() => {
-    const checkScrollNeeded = () => {
-      if (tableContainerRef.current) {
-        const tableEl = tableContainerRef.current.querySelector('table');
-        if (tableEl) {
-          const needsScroll = tableEl.scrollWidth > tableContainerRef.current.clientWidth;
-          setShowScrollHint(needsScroll);
-          if (needsScroll) {
-            setTimeout(() => setShowScrollHint(false), 5000);
-          }
-        }
-      }
-    };
-
-    setTimeout(checkScrollNeeded, 100);
-    window.addEventListener('resize', checkScrollNeeded);
-    return () => window.removeEventListener('resize', checkScrollNeeded);
-  }, [filteredContacts]);
-
+  // Get date range display text
   const getDateRangeText = () => {
     if (dateFilter === 'custom' && customStartDate && customEndDate) {
       const start = new Date(customStartDate).toLocaleDateString();
@@ -575,8 +551,8 @@ const ContactListPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 lg:py-8">
-      <h1 className="text-2xl lg:text-3xl font-bold mb-6 text-center">Contact Management</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6 text-center">Contact Management</h1>
 
       {error && (
         <p className="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded-md text-center">
@@ -584,9 +560,9 @@ const ContactListPage: React.FC = () => {
         </p>
       )}
 
-      {/* Filters + Stats (fixed, responsive grid) */}
+      {/* Filters + Stats Row */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-        {/* Search & Filters */}
+        {/* Search filter */}
         <div className="lg:col-span-3">
           <ComponentCard title="Search & Filters">
             <div className="py-3">
@@ -597,8 +573,9 @@ const ContactListPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              {/* Buttons */}
-              <div className="flex flex-wrap gap-2 mt-4">
+
+              {/* Date Filter Buttons */}
+              <div className="flex gap-3 mt-4 flex-wrap">
                 {["today", "week", "month", "all"].map((filter) => (
                   <button
                     key={filter}
@@ -606,9 +583,9 @@ const ContactListPage: React.FC = () => {
                       setDateFilter(filter as DateFilter);
                       setShowCalendarFilter(false);
                     }}
-                    className={`px-3 py-1.5 rounded-md border text-sm transition ${dateFilter === filter && dateFilter !== 'custom'
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "border-gray-300 text-gray-600 hover:bg-gray-100"
+                    className={`px-4 py-2 rounded-md border text-sm transition ${dateFilter === filter && dateFilter !== 'custom'
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "border-gray-300 text-gray-600 hover:bg-gray-100"
                       }`}
                   >
                     {filter === "all"
@@ -620,50 +597,53 @@ const ContactListPage: React.FC = () => {
                           : "This Month"}
                   </button>
                 ))}
+
+                {/* Custom Date Range Button */}
                 <button
                   onClick={() => setShowCalendarFilter(!showCalendarFilter)}
-                  className={`px-3 py-1.5 rounded-md border text-sm transition flex items-center gap-1.5 ${dateFilter === 'custom'
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                  className={`px-4 py-2 rounded-md border text-sm transition flex items-center gap-2 ${dateFilter === 'custom'
+                    ? 'bg-blue-500 text-white border-blue-500'
+                    : 'border-gray-300 text-gray-600 hover:bg-gray-100'
                     }`}
                 >
-                  <CalendarIcon size={14} />
-                  Custom
+                  <CalendarIcon size={16} />
+                  Custom Range
                 </button>
               </div>
-              {/* Date Picker */}
+
+              {/* Custom Date Range Picker */}
               {showCalendarFilter && (
                 <div className="mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                    <div>
-                      <Label htmlFor="startDate">Start Date</Label>
-                      <Input
-                        id="startDate"
-                        type="date"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        max={customEndDate || new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="endDate">End Date</Label>
-                      <Input
-                        id="endDate"
-                        type="date"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        min={customStartDate}
-                        max={new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
+
+                  <div>
+                    <Label htmlFor="startDate">Start Date</Label>
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      max={customEndDate || new Date().toISOString().split('T')[0]}
+                    />
                   </div>
+                  <div>
+                    <Label htmlFor="endDate">End Date</Label>
+                    <Input
+                      id="endDate"
+                      type="date"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      min={customStartDate}
+                      max={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+
                   <div className="flex gap-2">
                     <button
                       onClick={applyCustomDateFilter}
                       disabled={!customStartDate || !customEndDate}
                       className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Apply
+                      Apply Filter
                     </button>
                     <button
                       onClick={resetCustomDateFilter}
@@ -680,6 +660,8 @@ const ContactListPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Display current date range */}
               {dateFilter === 'custom' && getDateRangeText() && (
                 <div className="mt-3 text-sm text-blue-600 font-medium">
                   Filtering by: {getDateRangeText()}
@@ -689,49 +671,38 @@ const ContactListPage: React.FC = () => {
           </ComponentCard>
         </div>
 
-        {/* Stats Card */}
+        {/* Stats */}
         <StatCard
-          title="Total Contacts"
+          title="Total Contact Entries"
           value={filteredContacts.length}
           icon={UserIcon}
           badgeColor="success"
-          badgeValue="0.00%"
+          badgeValue="0.00%" // placeholder
           badgeIcon={ArrowUpIcon}
         />
       </div>
 
-      {/* Table Section */}
-      <ComponentCard title="Contact List" className="overflow-hidden">
+      {/* Table */}
+      {/* Table */}
+      <ComponentCard title="Contact List">
         {!loading ? (
-          <>
-            {showScrollHint && (
-              <div className="flex items-center justify-center mb-3 p-2 bg-blue-50 text-blue-700 rounded-md animate-pulse">
-                <ChevronLeftIcon size={16} className="mx-1" />
-                <span className="text-sm">Swipe to see more columns</span>
-                <ChevronRightIcon size={16} className="mx-1" />
-              </div>
-            )}
-            <div
-              ref={tableContainerRef}
-              className="overflow-x-auto w-full border rounded-lg"
-              style={{
-                maxHeight: "70vh",
-                scrollbarWidth: "thin",
-                WebkitOverflowScrolling: "touch", // smooth scroll on iOS
-              }}
-            >
-               <table className="min-w-[1400px] text-sm">
-                <thead className="bg-gray-100 sticky top-0 z-10">
+          <div className="relative">
+            {/* Table wrapper with horizontal scrolling only */}
+            <div className="overflow-x-auto overflow-y-hidden max-w-full">
+              <table className="min-w-[900px] lg:min-w-[1100px] border border-gray-200 rounded-lg text-sm">
+                <thead className="bg-gray-100 text-gray-700 text-left">
                   <tr>
-                    <th className="px-4 py-3 sticky left-0 bg-gray-100 z-10">Full Name</th>
-                    <th className="px-4 py-3">HrEmail</th>
-                    <th className="px-4 py-3">SalesEmail</th>
-                    <th className="px-4 py-3">HR Number</th>
-                    <th className="px-4 py-3">Sales Number</th>
-                    <th className="px-4 py-3">Company Number</th>
-                    <th className="px-4 py-3">Message</th>
-                    <th className="px-4 py-3">Contact History</th>
-                    <th className="px-4 py-3 sticky right-0 bg-gray-100 z-10 text-center">Actions</th>
+                    <th className="px-5 py-3">Full Name</th>
+                    <th className="px-5 py-3">HrEmail</th>
+                    <th className="px-5 py-3">SalesEmail</th>
+                    <th className="px-5 py-3">HR Number</th>
+                    <th className="px-5 py-3">Sales Number</th>
+                    <th className="px-5 py-3">Company Number</th>
+                    <th className="px-5 py-3">Message</th>
+                    <th className="px-5 py-3">Contact History</th>
+                    <th className="px-5 py-3 text-center sticky right-0 bg-gray-100 z-10">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -739,19 +710,36 @@ const ContactListPage: React.FC = () => {
                     filteredContacts.map((entry, idx) => (
                       <tr
                         key={entry._id}
-                        className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
+                        className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                          } hover:bg-gray-100`}
                       >
-                        <td className="px-4 py-3 sticky left-0 bg-white z-5">{entry.fullName}</td>
-                        <td className="px-4 py-3 max-w-[150px] break-words">{entry.hremail}</td>
-                        <td className="px-4 py-3 max-w-[150px] break-words">{entry.salesemail}</td>
-                        <td className="px-4 py-3">{entry.hrNumber}</td>
-                        <td className="px-4 py-3">{entry.salesNumber}</td>
-                        <td className="px-4 py-3">{entry.companyNumber}</td>
-                        <td className="px-4 py-3 max-w-[200px] break-words">{entry.message}</td>
-                        <td className="px-4 py-3">
-                          {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "—"}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {entry.fullName}
                         </td>
-                        <td className="px-4 py-3 sticky right-0 bg-white z-5">
+                        <td className="px-4 py-3 break-words max-w-[150px]">
+                          {entry.hremail}
+                        </td>
+                        <td className="px-4 py-3 break-words max-w-[150px]">
+                          {entry.salesemail}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {entry.hrNumber}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {entry.salesNumber}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {entry.companyNumber}
+                        </td>
+                        <td className="px-4 py-3 break-words max-w-[200px]">
+                          {entry.message}
+                        </td>
+                        <td className="px-5 py-3">
+                          {entry.createdAt
+                            ? new Date(entry.createdAt).toLocaleDateString()
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
                           <div className="flex justify-center gap-2">
                             <Link
                               href={`/contact-management/Contact-List/${entry._id}`}
@@ -780,7 +768,10 @@ const ContactListPage: React.FC = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={9} className="px-5 py-10 text-center text-gray-500">
+                      <td
+                        colSpan={9}
+                        className="px-5 py-10 text-center text-gray-500"
+                      >
                         No contact entries found.
                       </td>
                     </tr>
@@ -788,13 +779,21 @@ const ContactListPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         ) : (
-          <p className="text-gray-600 text-center py-10">Loading contact data...</p>
+          <p className="text-gray-600 text-center py-10">
+            Loading contact data...
+          </p>
         )}
       </ComponentCard>
+
     </div>
   );
 };
 
 export default ContactListPage;
+
+
+
+
+
