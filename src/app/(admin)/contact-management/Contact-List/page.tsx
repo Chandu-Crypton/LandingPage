@@ -333,27 +333,27 @@
 //                       </td>
 //                       <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
 //                         <div className="flex justify-center gap-2">
-//                           <Link
-//                             href={`/contact-management/Contact-List/${entry._id}`}
-//                             className="p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-//                             title="View"
-//                           >
-//                             <EyeIcon size={16} />
-//                           </Link>
-//                           <Link
-//                             href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
-//                             className="p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
-//                             title="Edit"
-//                           >
-//                             <PencilIcon size={16} />
-//                           </Link>
-//                           <button
-//                             onClick={() => handleDelete(entry._id)}
-//                             className="p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-//                             title="Delete"
-//                           >
-//                             <TrashBinIcon />
-//                           </button>
+// <Link
+//   href={`/contact-management/Contact-List/${entry._id}`}
+//   className="p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+//   title="View"
+// >
+//   <EyeIcon size={16} />
+// </Link>
+// <Link
+//   href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
+//   className="p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+//   title="Edit"
+// >
+//   <PencilIcon size={16} />
+// </Link>
+// <button
+//   onClick={() => handleDelete(entry._id)}
+//   className="p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+//   title="Delete"
+// >
+//   <TrashBinIcon />
+// </button>
 //                         </div>
 //                       </td>
 //                     </tr>
@@ -711,7 +711,7 @@ const ContactListPage: React.FC = () => {
       </div>
 
       {/* Table Container with Horizontal Scroll Only */}
-      <ComponentCard title="Contact List" className="overflow-hidden">
+      <ComponentCard title="Contact List">
         {!loading ? (
           <>
             {/* Scroll hint for smaller screens */}
@@ -723,103 +723,78 @@ const ContactListPage: React.FC = () => {
               </div>
             )}
 
-            <div 
+            {/* Scrollable container */}
+            {/* <div
               ref={tableContainerRef}
               className="overflow-x-auto"
               style={{ maxHeight: 'calc(100vh - 400px)' }}
-            >
-              <table className="w-full border border-gray-200 rounded-lg text-sm">
-                <thead className="bg-gray-100 text-gray-700 text-left">
+            > */}
+            {/* Table Container with Vertical Scroll */}
+            <div style={{ maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
+              <table className="w-full table-auto border border-gray-200 rounded-lg text-xs">
+                <thead className="bg-gray-100 sticky top-0 z-10">
                   <tr>
-                    {/* Responsive column sizing */}
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Full Name</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">HrEmail</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden md:table-cell">SalesEmail</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">HR Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">Sales Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Company Number</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden md:table-cell">Message</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">Contact History</th>
-                    <th className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-center">Actions</th>
+                    <th className="px-1 py-1 text-left">Full Name</th>
+                    <th className="px-1 py-1 text-left">HrEmail</th>
+                    <th className="px-1 py-1 text-left">SalesEmail</th>
+                    <th className="px-1 py-1 text-left">HR Number</th>
+                    <th className="px-1 py-1 text-left">Sales Number</th>
+                    <th className="px-1 py-1 text-left">Company Number</th>
+                    <th className="px-1 py-1 text-left">Message</th>
+                    <th className="px-1 py-1 text-center">Date</th>
+                    <th className="px-1 py-1 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredContacts.length > 0 ? (
-                    filteredContacts.map((entry, idx) => (
-                      <tr
-                        key={entry._id}
-                        className={`transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          } hover:bg-gray-100`}
-                      >
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap font-medium">
-                          {entry.fullName}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[120px] sm:max-w-[150px]">
-                          {entry.hremail}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[120px] sm:max-w-[150px] hidden md:table-cell">
-                          {entry.salesemail}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">
-                          {entry.hrNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap hidden lg:table-cell">
-                          {entry.salesNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
-                          {entry.companyNumber}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 break-words max-w-[150px] sm:max-w-[200px] hidden md:table-cell">
-                          {entry.message}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
-                          {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : "—"}
-                        </td>
-                        <td className="px-3 py-2 sm:px-4 sm:py-3 sticky right-0 bg-white z-10">
-                          <div className="flex justify-center gap-1 sm:gap-2">
-                            <Link
-                              href={`/contact-management/Contact-List/${entry._id}`}
-                              className="p-1 sm:p-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-                              title="View"
-                            >
-                              <EyeIcon size={14} className="sm:size-4" />
-                            </Link>
-                            <Link
-                              href={`/contact-management/Add-Contact?page=edit&id=${entry._id}`}
-                              className="p-1 sm:p-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white transition-colors"
-                              title="Edit"
-                            >
-                              <PencilIcon size={14} className="sm:size-4" />
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(entry._id)}
-                              className="p-1 sm:p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-                              title="Delete"
-                            >
-                              <TrashBinIcon className="w-3.5 h-3.5 sm:w-4 sm:h-5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={9}
-                        className="px-5 py-10 text-center text-gray-500"
-                      >
-                        No contact entries found.
+                  {filteredContacts.map((contact) => (
+                    <tr key={contact._id} className="hover:bg-gray-50">
+                      <td className="px-1 py-1 truncate max-w-[120px]">{contact.fullName}</td>
+                      <td className="px-1 py-1 truncate max-w-[150px]">{contact.hremail}</td>
+                      <td className="px-1 py-1 truncate max-w-[150px]">{contact.salesemail}</td>
+                      <td className="px-1 py-1 truncate max-w-[100px]">{contact.hrNumber}</td>
+                      <td className="px-1 py-1 truncate max-w-[100px]">{contact.salesNumber}</td>
+                      <td className="px-1 py-1 truncate max-w-[120px]">{contact.companyNumber}</td>
+                      <td className="px-1 py-1 truncate max-w-[200px]">{contact.message}</td>
+                      <td className="px-1 py-1 text-center">
+                        {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : '—'}
+                      </td>
+                      <td className="px-1 py-1 text-center">
+                        <div className="flex justify-center gap-1">
+                          <Link
+                            href={`/contact-management/Contact-List/${contact._id}`}
+                            className="p-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                            title="View"
+                          >
+                            <EyeIcon size={14} />
+                          </Link>
+                          <Link
+                            href={`/contact-management/Add-Contact?page=edit&id=${contact._id}`}
+                            className="p-1 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+                            title="Edit"
+                          >
+                            <PencilIcon size={14} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(contact._id)}
+                            className="p-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                            title="Delete"
+                          >
+                            <TrashBinIcon size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
+
           </>
         ) : (
           <p className="text-gray-600 text-center py-10">Loading contact data...</p>
         )}
       </ComponentCard>
+
     </div>
   );
 };
