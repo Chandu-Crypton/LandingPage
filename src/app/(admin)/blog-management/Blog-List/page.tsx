@@ -140,8 +140,8 @@ const BlogListPage: React.FC = () => {
                                     <th className="px-5 py-3 text-left">Description</th>
                                     <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-left">Heading Image</th>
-                                    <th className="px-5 py-3 text-left">Items Count</th>
-                                    <th className="px-5 py-3 text-left">Created At</th>
+                                    {/* <th className="px-5 py-3 text-left">Items Count</th> */}
+                                    {/* <th className="px-5 py-3 text-left">Created At</th> */}
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -181,10 +181,10 @@ const BlogListPage: React.FC = () => {
                                                 <span className="text-gray-400">N/A</span>
                                             )}
                                         </td>
-                                        <td className="px-5 py-3">{blog.items.length}</td>
-                                        <td className="px-5 py-3">
+                                        {/* <td className="px-5 py-3">{blog.items.length}</td> */}
+                                        {/* <td className="px-5 py-3">
                                             {blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'N/A'}
-                                        </td>
+                                        </td> */}
                                         <td className="px-5 py-3">
                                             <div className="flex justify-center gap-2">
                                                 <Link

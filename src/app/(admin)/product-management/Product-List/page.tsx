@@ -170,9 +170,9 @@ const ProductListPage: React.FC = () => {
                                 <tr className="text-gray-600 dark:text-gray-300">
                                     <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Heading</th>
                                     <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Title</th>
-                                    <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Sub-Heading</th>
+                                    {/* <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Sub-Heading</th> */}
                                     <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Description</th>
-                                    <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Franchise Data</th>
+                                    <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Franchise</th>
                                     <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Efficiency</th>
                                     <th className="px-5 py-3 text-left font-semibold tracking-wider whitespace-nowrap">Rating</th>
                                     <th className="px-5 py-3 text-center font-semibold tracking-wider whitespace-nowrap">Actions</th>
@@ -184,7 +184,7 @@ const ProductListPage: React.FC = () => {
                                         <tr key={product._id} className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition duration-150 ease-in-out">
                                             <td className="px-5 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">{product.heading}</td>
                                             <td className="px-5 py-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">{product.title}</td>
-                                            <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{product.subHeading}</td>
+                                            {/* <td className="px-5 py-3 text-gray-700 dark:text-gray-300">{product.subHeading}</td> */}
                                             <td className="px-5 py-3 text-gray-700 dark:text-gray-300 ">{product.description}</td>
                                             <td className="px-5 py-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">{product.franchiseData}</td>
                                             <td className="px-5 py-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">{product.efficiency}</td>

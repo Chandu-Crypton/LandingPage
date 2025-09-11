@@ -1452,9 +1452,10 @@ const AppSidebar: React.FC = () => {
             title="Show Fetch True sections only"
           >
             <Image
-              src="/images/logo/final-logo.png"
+              // src="/images/logo/final-logo.png"
+               src="/images/logo/Fetch-True-Logo.png.png"
               alt="Fetch True Logo"
-              width={isExpanded || isHovered || isMobileOpen ? 120 : 32}
+              width={isExpanded || isHovered || isMobileOpen ? 100 : 32}
               height={isExpanded || isHovered || isMobileOpen ? 40 : 32}
             />
           </button>
