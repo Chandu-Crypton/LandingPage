@@ -27,6 +27,8 @@ import { FBlogProvider } from '@/context/FBlogContext';
 import { ServiceProvider } from '@/context/ServiceContext';
 import { PackageProvider } from '@/context/PackageContext';
 import { BannerProvider } from '@/context/BannerContext';
+import { ReviewProvider } from '@/context/ReviewContext';
+import { FaqProvider } from '@/context/FaqContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -63,15 +65,19 @@ export default function RootLayout({
                                               <ServiceProvider>
                                                 <PackageProvider>
                                                   <BannerProvider>
-                                                    <UserProvider>
-                                                      <WhyChooseProvider>
-                                                        <ZoneProvider>
+                                                    <ReviewProvider>
+                                                      <FaqProvider>
+                                                        <UserProvider>
+                                                          <WhyChooseProvider>
+                                                            <ZoneProvider>
 
-                                                          {children}
+                                                              {children}
 
-                                                        </ZoneProvider>
-                                                      </WhyChooseProvider>
-                                                    </UserProvider>
+                                                            </ZoneProvider>
+                                                          </WhyChooseProvider>
+                                                        </UserProvider>
+                                                      </FaqProvider>
+                                                    </ReviewProvider>
                                                   </BannerProvider>
                                                 </PackageProvider>
                                               </ServiceProvider>

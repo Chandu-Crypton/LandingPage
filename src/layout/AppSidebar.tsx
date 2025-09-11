@@ -1070,6 +1070,30 @@ const internshipItems: NavItem[] = [
   },
 ];
 
+
+const reviewItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Review",
+    subItems: [
+      { name: "Add New Review", path: "/review-management/Add-Review", pro: false },
+      { name: "Review List", path: "/review-management/Review-List", pro: false },
+    ],
+  },
+];
+
+
+const faqItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "FAQ",
+    subItems: [
+      { name: "Add New Faq", path: "/faq-management/Add-Faq", pro: false },
+      { name: "Faq List", path: "/faq-management/Faq-List", pro: false },
+    ],
+  },
+];
+
 const contactItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
@@ -1128,7 +1152,7 @@ const servicesItems: NavItem[] = [
     ],
   },
 ];
-    
+
 
 
 const fcontactItems: NavItem[] = [
@@ -1136,7 +1160,7 @@ const fcontactItems: NavItem[] = [
     icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
     name: "Contact",
     subItems: [
-      
+
       { name: "Contact List", path: "/fcontact-management/FContact-List", pro: false },
     ],
     isSpecialSection: true,
@@ -1238,7 +1262,11 @@ const AppSidebar: React.FC = () => {
       { type: "services", items: fservicesItems },
       { type: "blog", items: fblogItems },
       { type: "package", items: packageItems },
-      { type: "banner", items: bannerItems}
+      { type: "banner", items: bannerItems },
+      { type: "review", items: reviewItems },
+      { type: "faq", items: faqItems },
+
+
     ];
 
     allMenuTypes.forEach(({ type, items }) => {
@@ -1603,6 +1631,40 @@ const AppSidebar: React.FC = () => {
                   {renderMenuItems(internshipItems, "internship")}
                 </div>
 
+
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "REVIEW MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(reviewItems, "review")}
+                </div>
+
+
+                 <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
+                      "FAQ MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(faqItems, "faq")}
+                </div>
+
                 <div>
                   <h2
                     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
@@ -1619,8 +1681,8 @@ const AppSidebar: React.FC = () => {
                   {renderMenuItems(contactItems, "contact")}
                 </div>
 
-                  
-                   <div>
+
+                <div>
                   <h2
                     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                       ? "lg:justify-center"
@@ -1669,8 +1731,8 @@ const AppSidebar: React.FC = () => {
                   {renderMenuItems(policyItems, "policy")}
                 </div>
 
-               
-                 <div>
+
+                <div>
                   <h2
                     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                       ? "lg:justify-center"
