@@ -55,9 +55,9 @@ const InternshipListPage: React.FC = () => {
     return internships.filter((internship: IInternship) => {
       if (internship.title.toLowerCase().includes(lower)) return true;
       if (internship.subtitle.toLowerCase().includes(lower)) return true;
-      if (internship.description.toLowerCase().includes(lower)) return true;
-      if (internship.benefits.some(b => b.toLowerCase().includes(lower))) return true;
-      if (internship.eligibility.some(e => e.toLowerCase().includes(lower))) return true;
+      // if (internship.description.toLowerCase().includes(lower)) return true;
+      // if (internship.benefits.some(b => b.toLowerCase().includes(lower))) return true;
+      // if (internship.eligibility.some(e => e.toLowerCase().includes(lower))) return true;
       return false;
     });
   }, [internships, searchTerm]);
@@ -113,9 +113,9 @@ const InternshipListPage: React.FC = () => {
                   <th className="px-5 py-3 text-left">Fee</th>
                   <th className="px-5 py-3 text-left">Duration</th>
                   <th className="px-5 py-3 text-left">Mode</th>
-                  <th className="px-5 py-3 text-left">Benefits</th>
+                  {/* <th className="px-5 py-3 text-left">Benefits</th>
                   <th className="px-5 py-3 text-left">Eligibility</th>
-                  <th className="px-5 py-3 text-left">Description</th>
+                  <th className="px-5 py-3 text-left">Description</th> */}
                   <th className="px-5 py-3 text-left">Main Image</th>
                   <th className="px-5 py-3 text-left">Created At</th>
                   <th className="px-5 py-3 text-center">Actions</th>
@@ -129,9 +129,9 @@ const InternshipListPage: React.FC = () => {
                     <td className="px-5 py-3">{internship.fee}</td>
                     <td className="px-5 py-3">{internship.duration}</td>
                     <td className="px-5 py-3">{internship.mode}</td>
-                    <td className="px-5 py-3">{internship.benefits.join(', ')}</td>
+                    {/* <td className="px-5 py-3">{internship.benefits.join(', ')}</td>
                     <td className="px-5 py-3">{internship.eligibility.join(', ')}</td>
-                    <td className="px-5 py-3 truncate max-w-xs">{internship.description}</td>
+                    <td className="px-5 py-3 truncate max-w-xs">{internship.description}</td> */}
                     <td className="px-5 py-3">
                       {internship.mainImage ? (
                         <NextImage
