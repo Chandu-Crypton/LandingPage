@@ -29,6 +29,7 @@ import { PackageProvider } from '@/context/PackageContext';
 import { BannerProvider } from '@/context/BannerContext';
 import { ReviewProvider } from '@/context/ReviewContext';
 import { FaqProvider } from '@/context/FaqContext';
+import { SalesContactProvider } from '@/context/SalesContactContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -67,15 +68,17 @@ export default function RootLayout({
                                                   <BannerProvider>
                                                     <ReviewProvider>
                                                       <FaqProvider>
-                                                        <UserProvider>
-                                                          <WhyChooseProvider>
-                                                            <ZoneProvider>
+                                                        <SalesContactProvider>
+                                                          <UserProvider>
+                                                            <WhyChooseProvider>
+                                                              <ZoneProvider>
 
-                                                              {children}
+                                                                {children}
 
-                                                            </ZoneProvider>
-                                                          </WhyChooseProvider>
-                                                        </UserProvider>
+                                                              </ZoneProvider>
+                                                            </WhyChooseProvider>
+                                                          </UserProvider>
+                                                        </SalesContactProvider>
                                                       </FaqProvider>
                                                     </ReviewProvider>
                                                   </BannerProvider>

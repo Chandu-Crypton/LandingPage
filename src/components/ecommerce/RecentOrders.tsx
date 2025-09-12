@@ -216,7 +216,7 @@
 
 
 
-
+'use client'
 
 import {
   Table,
@@ -226,54 +226,66 @@ import {
   TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 // Define the TypeScript interface for job rows
 interface Job {
-  id: number;
-  title: string; // Job Title
-  department: string; // Department or Category
-  location: string; // Job location
-  salary: string; // Salary info
-  status: "Open" | "Closed" | "Interviewing"; // Job Status
+  _id: string; // 👈 add this
+  addHeading?: string;
+  title: string;
+  about: string;
+  department: string;
+  location: string;
+  bannerImage: string;
+  keyResponsibilities: string[];
+  requiredSkills: {
+    title: string;
+    level: string;
+  }[];
+  requirements: string[];
+  jobDescription: string[];
+  experience: string;
+  jobType: string;
+  salary: string;
+  applicationDeadline: Date;
+  qualification: string;
+  workEnvironment: string[];
+  openingType: string;
+  benefits: {
+    title: string;
+    description: string;
+  }[];
+  isDeleted?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  __v?: number;
+  status: "Open" | "Closed" | "Interviewing";
 }
 
-// Sample job data
-const jobData: Job[] = [
-  {
-    id: 1,
-    title: "Frontend Developer",
-    department: "Engineering",
-    location: "Remote",
-    salary: "$60,000 - $80,000",
-    status: "Open",
-  },
-  {
-    id: 2,
-    title: "UI/UX Designer",
-    department: "Design",
-    location: "New York, USA",
-    salary: "$50,000 - $70,000",
-    status: "Interviewing",
-  },
-  {
-    id: 3,
-    title: "Backend Developer",
-    department: "Engineering",
-    location: "San Francisco, USA",
-    salary: "$80,000 - $100,000",
-    status: "Closed",
-  },
-  {
-    id: 4,
-    title: "Digital Marketing Manager",
-    department: "Marketing",
-    location: "Remote",
-    salary: "$40,000 - $60,000",
-    status: "Open",
-  },
-];
+
+
 
 export default function JobList() {
+  const [jobData, setJobData] = useState<Job[]>([]);
+
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await axios.get("https://landing-page-yclw.vercel.app/api/job");
+        if (res.data.success) {
+          setJobData(res.data.data); // 👈 assuming API returns { success: true, data: [...] }
+        }
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -332,8 +344,8 @@ export default function JobList() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {jobData.map((job) => (
-              <TableRow key={job.id}>
+            {jobData.slice(0, 10).map((job) => (
+              <TableRow key={job._id}>
                 <TableCell className="py-3 text-gray-800 text-theme-sm dark:text-white/90 font-medium">
                   {job.title}
                 </TableCell>
@@ -343,7 +355,6 @@ export default function JobList() {
                 <TableCell className="py-3 px-4 text-gray-500 text-theme-sm dark:text-gray-400 whitespace-nowrap">
                   {job.location}
                 </TableCell>
-
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {job.salary}
                 </TableCell>
@@ -358,12 +369,13 @@ export default function JobList() {
                           : "error"
                     }
                   >
-                    {job.status}
+                    {job.status || "Open"}
                   </Badge>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </div>
     </div>

@@ -476,6 +476,9 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setBannerImagePreview(data.bannerImage || null);
                     setInternship(data.internship);
                     setLevel(data.level);
+                    setProjects(data.projects);
+                    setMentorship(data.mentorship);
+                    setLearningOutcomes(data.learningOutcomes);
                     setCategory(data.category);
                     setRating(data.rating);
                     setSyllabusLink(data.syllabusLink);

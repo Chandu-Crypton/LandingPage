@@ -1100,7 +1100,9 @@ const contactItems: NavItem[] = [
     name: "Contact",
     subItems: [
       // { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
-      { name: "Contact List", path: "/contact-management/Contact-List", pro: false },
+      // { name: "Add New Sales Contact", path: "/salescontact-management/Add-SaleContact", pro: false },
+      { name: "Candidates Contact List", path: "/contact-management/Contact-List", pro: false },
+       { name: "Sales Contact List", path: "/salecontact-management/SaleContact-List", pro: false },
     ],
   },
 ];
