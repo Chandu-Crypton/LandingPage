@@ -30,6 +30,7 @@ import { BannerProvider } from '@/context/BannerContext';
 import { ReviewProvider } from '@/context/ReviewContext';
 import { FaqProvider } from '@/context/FaqContext';
 import { SalesContactProvider } from '@/context/SalesContactContext';
+import { DepartmentBoardProvider } from '@/context/DepartmentBoardContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -69,15 +70,17 @@ export default function RootLayout({
                                                     <ReviewProvider>
                                                       <FaqProvider>
                                                         <SalesContactProvider>
-                                                          <UserProvider>
-                                                            <WhyChooseProvider>
-                                                              <ZoneProvider>
+                                                          <DepartmentBoardProvider>
+                                                            <UserProvider>
+                                                              <WhyChooseProvider>
+                                                                <ZoneProvider>
 
-                                                                {children}
+                                                                  {children}
 
-                                                              </ZoneProvider>
-                                                            </WhyChooseProvider>
-                                                          </UserProvider>
+                                                                </ZoneProvider>
+                                                              </WhyChooseProvider>
+                                                            </UserProvider>
+                                                          </DepartmentBoardProvider>
                                                         </SalesContactProvider>
                                                       </FaqProvider>
                                                     </ReviewProvider>

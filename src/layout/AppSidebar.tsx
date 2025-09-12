@@ -1054,7 +1054,9 @@ const boardItems: NavItem[] = [
     name: "Board",
     subItems: [
       { name: "Add New Board", path: "/board-management/Add-Board", pro: false },
+      { name: "Add New Department Board", path: "/departmentboard-component/Add-DepartmentBoard", pro: false },
       { name: "Board List", path: "/board-management/Board-List", pro: false },
+      { name: "Department Board List", path: "/departmentboard-component/DepartmentBoard-List", pro: false },
     ],
   },
 ];
