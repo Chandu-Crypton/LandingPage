@@ -1157,7 +1157,7 @@ const servicesItems: NavItem[] = [
 
 const fcontactItems: NavItem[] = [
   {
-    icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
+    icon: <PieChartIcon  />, // Use existing icon with blue color
     name: "Contact",
     subItems: [
 
@@ -1169,7 +1169,7 @@ const fcontactItems: NavItem[] = [
 
 const fservicesItems: NavItem[] = [
   {
-    icon: <PieChartIcon className="text-blue-500" />, // Use existing icon with blue color
+    icon: <PieChartIcon />, // Use existing icon with blue color
     name: "Services",
     subItems: [
       { name: "Add New Services", path: "/fservices-management/Add-FServices", pro: false },
@@ -1181,7 +1181,7 @@ const fservicesItems: NavItem[] = [
 
 const fblogItems: NavItem[] = [
   {
-    icon: <PieChartIcon className="text-blue-500" />,
+    icon: <PieChartIcon />,
     name: "Blog",
     subItems: [
       { name: "Add New Blog", path: "/fblog-management/Add-FBlog", pro: false },
@@ -1194,7 +1194,7 @@ const fblogItems: NavItem[] = [
 
 const packageItems: NavItem[] = [
   {
-    icon: <PieChartIcon className="text-blue-500" />,
+    icon: <PieChartIcon  />,
     name: "Package",
     subItems: [
       { name: "Add New Package", path: "/package-management/Add-Package", pro: false },
@@ -1315,18 +1315,18 @@ const AppSidebar: React.FC = () => {
                 } cursor-pointer ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-                } ${nav.isSpecialSection ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
+                } ${nav.isSpecialSection ? "bg-blue-50 border-l-4 border-grey-500" : ""}`}
             >
               <span
                 className={`${openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-icon-active"
                   : "menu-item-icon-inactive"
-                  } ${nav.isSpecialSection ? "text-blue-500" : ""}`}
+                  } ${nav.isSpecialSection ? "text-grey-500" : ""}`}
               >
                 {nav.icon}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
-                <span className={`menu-item-text ${nav.isSpecialSection ? "text-blue-600 font-semibold" : ""}`}>
+                <span className={`menu-item-text ${nav.isSpecialSection ? "text-grey-600 font-semibold" : ""}`}>
                   {nav.name}
                 </span>
               )}
@@ -1336,7 +1336,7 @@ const AppSidebar: React.FC = () => {
                     openSubmenu?.index === index
                     ? "rotate-180 text-brand-500"
                     : ""
-                    } ${nav.isSpecialSection ? "text-blue-500" : ""}`}
+                    } ${nav.isSpecialSection ? "text-grey-500" : ""}`}
                 />
               )}
             </button>
@@ -1345,7 +1345,7 @@ const AppSidebar: React.FC = () => {
               <Link
                 href={nav.path}
                 className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                  } ${nav.isSpecialSection ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
+                  } ${nav.isSpecialSection ? "bg-blue-50 border-l-4 border-grey-500" : ""}`}
               >
                 <span
                   className={`${isActive(nav.path)
@@ -1384,7 +1384,7 @@ const AppSidebar: React.FC = () => {
                       className={`menu-dropdown-item ${isActive(subItem.path)
                         ? "menu-dropdown-item-active"
                         : "menu-dropdown-item-inactive"
-                        } ${nav.isSpecialSection ? "border-l-2 border-blue-500" : ""}`}
+                        } ${nav.isSpecialSection ? "border-l-2 border-grey-500" : ""}`}
                     >
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
@@ -1453,10 +1453,10 @@ const AppSidebar: React.FC = () => {
           >
             <Image
               // src="/images/logo/final-logo.png"
-               src="/images/logo/Fetch-True-Logo.png.png"
+               src="/images/logo/Fetch-True-icon.png"
               alt="Fetch True Logo"
-              width={isExpanded || isHovered || isMobileOpen ? 100 : 32}
-              height={isExpanded || isHovered || isMobileOpen ? 40 : 32}
+              width={isExpanded || isHovered || isMobileOpen ? 110 : 32}
+              height={isExpanded || isHovered || isMobileOpen ? 50 : 32}
             />
           </button>
         </div>
@@ -1770,28 +1770,41 @@ const AppSidebar: React.FC = () => {
             {(activeView === 'fetchTrue') && (
               <>
                 <div>
-                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                    {isExpanded || isHovered || isMobileOpen ? "CONTACT MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  
+                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}>
+                    {isExpanded || isHovered || isMobileOpen ? "CONTACT MANAGEMENT" : <PieChartIcon className="text-grey-500" />}
                   </h2>
                   {renderMenuItems(fcontactItems, "contact")}
                 </div>
 
                 <div>
-                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}>
                     {isExpanded || isHovered || isMobileOpen ? "SERVICES MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(fservicesItems, "services")}
                 </div>
 
                 <div>
-                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}>
                     {isExpanded || isHovered || isMobileOpen ? "BLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(fblogItems, "blog")}
                 </div>
 
                 <div>
-                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-blue-600 dark:text-blue-400 font-bold ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}>
                     {isExpanded || isHovered || isMobileOpen ? "PACKAGE MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(packageItems, "package")}
