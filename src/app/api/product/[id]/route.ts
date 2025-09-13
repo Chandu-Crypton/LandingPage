@@ -1,174 +1,22 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/utils/db'; 
+import { connectToDatabase } from '@/utils/db';
 import Product, { IProduct } from '@/models/Product';
-import imagekit from '@/utils/imagekit'; 
-import { v4 as uuidv4 } from 'uuid'; 
-import mongoose from 'mongoose'; 
-import { processArrayField } from '../route';
+import imagekit from '@/utils/imagekit';
+import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
+
 
 const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 
 
 export async function GET(req: NextRequest) {
-    await connectToDatabase();
-
-    const url = new URL(req.url);
-    const id = url.pathname.split("/").pop();
-
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        return NextResponse.json(
-            { success: false, message: 'Invalid or missing Product ID.' },
-            { status: 400, headers: corsHeaders }
-        );
-    }
-
-    try {
-       
-        const product = await Product.findById(id).lean();
-
-        if (!product) { 
-            return NextResponse.json(
-                { success: false, message: 'Product not found or has been deleted.' },
-                { status: 404, headers: corsHeaders }
-            );
-        }
-
-        return NextResponse.json(
-            { success: true, data: product as IProduct, message: 'Product fetched successfully.' },
-            { status: 200, headers: corsHeaders }
-        );
-
-    } catch (error) {
-        console.error('GET /api/product/[id] error:', error);
-        const message = error instanceof Error ? error.message : 'Internal Server Error';
-        return NextResponse.json(
-            { success: false, message },
-            { status: 500, headers: corsHeaders }
-        );
-    }
-}
-
-
-// export async function PUT(req: NextRequest) {
-//   await connectToDatabase();
-
-//   const url = new URL(req.url);
-//   const id = url.pathname.split("/").pop();
-
-//   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-//     return NextResponse.json(
-//       { success: false, message: 'Invalid or missing Product ID.' },
-//       { status: 400, headers: corsHeaders }
-//     );
-//   }
-
-//   try {
-//     const formData = await req.formData();
-
-//     // 1. Process string fields
-//     const stringFields: Array<keyof IProduct> = [
-//       'heading', 'title', 'subHeading', 'description',
-//       'franchiseData', 'efficiency', 'rating', 'category',
-//       'googleStoreLink', 'appleStoreLink', 'deployLink', 'emailLink', 'contact'
-//     ];
-
-//     const updateData: Partial<IProduct> = {};
-//     stringFields.forEach(field => {
-//       const value = formData.get(field);
-//       if (typeof value === 'string' && value.trim()) updateData[field] = value.trim();
-//       else if (value === '') updateData[field] = '';
-//     });
-
-//     // 2. Handle videoFile (URL or actual file)
-//     const videoFile = formData.get('videoFile');
-//     if (videoFile) {
-//       if (typeof videoFile === 'string' && videoFile.trim()) {
-//         updateData.videoFile = videoFile.trim();
-//       } else if (videoFile instanceof File && videoFile.size > 0) {
-//         const buffer = Buffer.from(await videoFile.arrayBuffer());
-//         const uploadResponse = await imagekit.upload({
-//           file: buffer,
-//           fileName: `${uuidv4()}-${videoFile.name}`,
-//           folder: '/product-videos',
-//         });
-//         if (uploadResponse.url) updateData.videoFile = uploadResponse.url;
-//       } else if (videoFile === '') {
-//         updateData.videoFile = '';
-//       }
-//     }
-
-//     // 3. Process array fields using helper
-//     const parsedProductControls = await processArrayField<IProduct['productControls'][0]>(
-//       formData,
-//       'productControls',
-//       'productIcon',
-//       'productIconUrl_existing',
-//       '/product-icons',
-//       ['productTitle', 'productDescription']
-//     );
-
-//     const parsedKeyFeatures = await processArrayField<IProduct['keyFeatures'][0]>(
-//       formData,
-//       'keyFeatures',
-//       'featureIcon',
-//       'featureIconUrl_existing',
-//       '/feature-icons',
-//       ['featureTitle', 'featureDescription']
-//     );
-
-//     const parsedScreenshot = await processArrayField<IProduct['screenshot'][0]>(
-//       formData,
-//       'screenshot',
-//       'file',
-//       'imageUrl_existing',
-//       '/product-screenshots',
-//       []
-//     );
-
-//     // 4. Assign to updateData
-//     if (parsedProductControls.length > 0) updateData.productControls = parsedProductControls;
-//     if (parsedKeyFeatures.length > 0) updateData.keyFeatures = parsedKeyFeatures;
-//     if (parsedScreenshot.length > 0) updateData.screenshot = parsedScreenshot;
-
-//     // 5. Update in DB
-//     const updatedProduct = await Product.findByIdAndUpdate(
-//       id,
-//       { $set: updateData },
-//       { new: true, runValidators: true }
-//     ).lean();
-
-//     if (!updatedProduct) {
-//       return NextResponse.json(
-//         { success: false, message: 'Product not found for update.' },
-//         { status: 404, headers: corsHeaders }
-//       );
-//     }
-
-//     return NextResponse.json(
-//       { success: true, data: updatedProduct as IProduct, message: 'Product updated successfully.' },
-//       { status: 200, headers: corsHeaders }
-//     );
-
-//   } catch (error) {
-//     console.error('PUT /api/product/[id] error:', error);
-//     const message = error instanceof Error ? error.message : 'Internal Server Error';
-//     return NextResponse.json(
-//       { success: false, message },
-//       { status: 500, headers: corsHeaders }
-//     );
-//   }
-// }
-
-
-
-export async function PUT(req: NextRequest) {
   await connectToDatabase();
 
   const url = new URL(req.url);
@@ -182,129 +30,23 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const formData = await req.formData();
 
-    // 1. Process string fields
-    const stringFields: Array<keyof IProduct> = [
-      'heading', 'title', 'subHeading', 'description',
-      'franchiseData', 'efficiency', 'rating', 'category',
-      'googleStoreLink', 'appleStoreLink', 'deployLink', 'emailLink', 'contact'
-    ];
+    const product = await Product.findById(id).lean();
 
-    const updateData: Partial<IProduct> = {};
-    stringFields.forEach(field => {
-      const value = formData.get(field);
-      if (typeof value === 'string' && value.trim()) updateData[field] = value.trim();
-      else if (value === '') updateData[field] = '';
-    });
-
-    // 2. Handle bannerImage (URL or actual file)
-    const bannerImage = formData.get('bannerImage');
-    if (bannerImage) {
-      if (typeof bannerImage === 'string' && bannerImage.trim()) {
-        updateData.bannerImage = bannerImage.trim();
-      } else if (bannerImage instanceof File && bannerImage.size > 0) {
-        const buffer = Buffer.from(await bannerImage.arrayBuffer());
-        const uploadResponse = await imagekit.upload({
-          file: buffer,
-          fileName: `${uuidv4()}-${bannerImage.name}`,
-          folder: '/product-banners',
-        });
-        if (uploadResponse.url) updateData.bannerImage = uploadResponse.url;
-      } else if (bannerImage === '') {
-        updateData.bannerImage = '';
-      }
-    }
-
-    // 3. Handle videoFile (URL or actual file)
-    const videoFile = formData.get('videoFile');
-    if (videoFile) {
-      if (typeof videoFile === 'string' && videoFile.trim()) {
-        updateData.videoFile = videoFile.trim();
-      } else if (videoFile instanceof File && videoFile.size > 0) {
-        const buffer = Buffer.from(await videoFile.arrayBuffer());
-        const uploadResponse = await imagekit.upload({
-          file: buffer,
-          fileName: `${uuidv4()}-${videoFile.name}`,
-          folder: '/product-videos',
-        });
-        if (uploadResponse.url) updateData.videoFile = uploadResponse.url;
-      } else if (videoFile === '') {
-        updateData.videoFile = '';
-      }
-    }
-
-    // 4. Process tags array
-    const tags = formData.get('tags');
-    if (tags) {
-      if (typeof tags === 'string') {
-        try {
-          const parsedTags = JSON.parse(tags);
-          if (Array.isArray(parsedTags)) {
-            updateData.tags = parsedTags.filter(tag => typeof tag === 'string');
-          }
-        } catch (error) {
-          console.log("product error:", error)
-          // If JSON parsing fails, treat as comma-separated string
-          updateData.tags = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-        }
-      }
-    }
-
-    // 5. Process array fields using helper
-    const parsedProductControls = await processArrayField<IProduct['productControls'][0]>(
-      formData,
-      'productControls',
-      'productIcon',
-      'productIconUrl_existing',
-      '/product-icons',
-      ['productTitle', 'productDescription']
-    );
-
-    const parsedKeyFeatures = await processArrayField<IProduct['keyFeatures'][0]>(
-      formData,
-      'keyFeatures',
-      'featureIcon',
-      'featureIconUrl_existing',
-      '/feature-icons',
-      ['featureTitle', 'featureDescription']
-    );
-
-    const parsedScreenshot = await processArrayField<IProduct['screenshot'][0]>(
-      formData,
-      'screenshot',
-      'file',
-      'imageUrl_existing',
-      '/product-screenshots',
-      []
-    );
-
-    // 6. Assign to updateData
-    if (parsedProductControls.length > 0) updateData.productControls = parsedProductControls;
-    if (parsedKeyFeatures.length > 0) updateData.keyFeatures = parsedKeyFeatures;
-    if (parsedScreenshot.length > 0) updateData.screenshot = parsedScreenshot;
-
-    // 7. Update in DB
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    ).lean();
-
-    if (!updatedProduct) {
+    if (!product) {
       return NextResponse.json(
-        { success: false, message: 'Product not found for update.' },
+        { success: false, message: 'Product not found or has been deleted.' },
         { status: 404, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
-      { success: true, data: updatedProduct as IProduct, message: 'Product updated successfully.' },
+      { success: true, data: product as IProduct, message: 'Product fetched successfully.' },
       { status: 200, headers: corsHeaders }
     );
 
   } catch (error) {
-    console.error('PUT /api/product/[id] error:', error);
+    console.error('GET /api/product/[id] error:', error);
     const message = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
       { success: false, message },
@@ -315,44 +57,199 @@ export async function PUT(req: NextRequest) {
 
 
 
-export async function DELETE(req: NextRequest) {
-    await connectToDatabase();
 
-    const url = new URL(req.url);
-    const id = url.pathname.split("/").pop();
+// ✅ Helper: upload one image
+async function uploadSingleImage(file: File, folder: string): Promise<string> {
+  if (!file || file.size === 0) return "";
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const uploadRes = await imagekit.upload({
+    file: buffer,
+    fileName: `${uuidv4()}-${file.name}`,
+    folder,
+  });
+  return uploadRes.url;
+}
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        return NextResponse.json(
-            { success: false, message: 'Invalid or missing Product ID.' },
-            { status: 400, headers: corsHeaders }
-        );
+// ✅ Helper: upload multiple images
+async function uploadMultipleImages(files: File[], folder: string): Promise<string[]> {
+  const urls: string[] = [];
+  for (const file of files) {
+    const url = await uploadSingleImage(file, folder);
+    if (url) urls.push(url);
+  }
+  return urls;
+}
+
+
+export async function PUT(req: NextRequest) {
+  await connectToDatabase();
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { success: false, message: "Invalid or missing Product ID." },
+      { status: 400, headers: corsHeaders }
+    );
+  }
+
+  try {
+    const formData = await req.formData();
+    console.log('form data:', formData)
+    // Find product first
+    const product = await Product.findById(id);
+    if (!product) {
+      return NextResponse.json(
+        { success: false, message: "Product not found" },
+        { status: 404, headers: corsHeaders }
+      );
     }
 
-    try {
-        // Perform a soft delete by setting 'isDeleted' to true
-        const deletedProduct = await Product.findByIdAndDelete(id);
+    // Build update object dynamically
+    const updateData: Partial<IProduct> = {};
 
-        if (!deletedProduct) {
-            return NextResponse.json(
-                { success: false, message: 'Product not found for deletion.' },
-                { status: 404, headers: corsHeaders }
-            );
+    // ✅ Simple text fields
+    [
+      "title",
+      "subTitle",
+      "description",
+      "category",
+      "overviewTitle",
+      "overviewDesc",
+      "keyFeatureTitle",
+      "technologyTitle",
+      "technologyDesc",
+    ].forEach((field) => {
+      if (formData.has(field)) {
+        updateData[field as keyof IProduct] = formData.get(field)?.toString();
+      }
+    });
+
+    // ✅ Arrays
+    const arrayFields = ["homeFeatureTags", "keyFeaturePoints", "technologyPoints", "futurePoints"];
+    arrayFields.forEach((field) => {
+      if (formData.has(field)) {
+        try {
+          updateData[field as keyof IProduct] = JSON.parse(formData.get(field) as string);
+        } catch {
+          updateData[field as keyof IProduct] = [];
+        }
+      }
+    });
+
+    // ✅ Images
+    const imageFields = [
+      { name: "mainImage", folder: "/products/main" },
+      { name: "overviewImage", folder: "/products/overview" },
+      { name: "keyFeatureImage", folder: "/products/keyFeatures" },
+      { name: "technologyImage", folder: "/products/technology" },
+      { name: "futureImage", folder: "/products/future" },
+    ];
+
+    for (const { name, folder } of imageFields) {
+      if (formData.has(name)) {
+        const file = formData.get(name) as File | null;
+        if (file && file.size > 0) {
+          updateData[name as keyof IProduct] = (await uploadSingleImage(file, folder));
+        }
+      }
+    }
+
+    // ✅ Multiple banner images
+    const bannerFiles = formData.getAll("bannerImages") as File[];
+    if (bannerFiles.length > 0) {
+      const urls = await uploadMultipleImages(bannerFiles, "/products/banner");
+      updateData["bannerImages"] = urls;
+    }
+
+    // ✅ Project Details (array of objects)
+    if (formData.has("projectDetails")) {
+      const projectDetailsRaw = JSON.parse(formData.get("projectDetails") as string);
+      const projectDetails: { title: string; description: string; image: string }[] = [];
+
+      for (let i = 0; i < projectDetailsRaw.length; i++) {
+        const detail = projectDetailsRaw[i];
+        console.log("details:", detail);
+        // check if image file exists for this index
+        // const imageFile = formData.get(`projectDetailsImage-${i}`) as File | null;
+        const imageFileEntry = formData.get(`projectDetailsImage-${i}`) || formData.get(`projectDetailsImages_${i}`);
+
+        let imageFile: File | null = null;
+        if (imageFileEntry && imageFileEntry instanceof File) {
+          imageFile = imageFileEntry;
         }
 
-      
-        
+        let imageUrl = detail.image || ""; // fallback: keep old image
+        if (imageFile && imageFile.size > 0) {
+          imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
+        }
 
-        return NextResponse.json(
-            { success: true, message: 'Product successfully marked as deleted.' },
-            { status: 200, headers: corsHeaders }
-        );
+        projectDetails.push({
+          title: detail.title,
+          description: detail.description,
+          image: imageUrl,
+        });
+      }
 
-    } catch (error) {
-        console.error('DELETE /api/product/[id] error:', error);
-        const message = error instanceof Error ? error.message : 'Internal Server Error';
-        return NextResponse.json(
-            { success: false, message },
-            { status: 500, headers: corsHeaders }
-        );
+      updateData.projectDetails = projectDetails;
     }
+
+    // ✅ Update product
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
+
+    return NextResponse.json(
+      { success: true, data: updatedProduct, message: "Product updated successfully." },
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (error) {
+    console.error("PUT /api/product/[id] error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+}
+
+
+export async function DELETE(req: NextRequest) {
+  await connectToDatabase();
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { success: false, message: 'Invalid or missing Product ID.' },
+      { status: 400, headers: corsHeaders }
+    );
+  }
+
+  try {
+    // Perform a soft delete by setting 'isDeleted' to true
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
+      return NextResponse.json(
+        { success: false, message: 'Product not found for deletion.' },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+
+
+
+    return NextResponse.json(
+      { success: true, message: 'Product successfully marked as deleted.' },
+      { status: 200, headers: corsHeaders }
+    );
+
+  } catch (error) {
+    console.error('DELETE /api/product/[id] error:', error);
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json(
+      { success: false, message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
 }

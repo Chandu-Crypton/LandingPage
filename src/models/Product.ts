@@ -2,35 +2,38 @@ import mongoose, { Document, Schema } from 'mongoose'
 
 
 export interface IProduct extends Document {
-    heading: string,
     title: string,
-    subHeading: string,
-    description: string,
-    tags: string[],
+    subTitle: string,
     category: string,
-    videoFile: string,
-    franchiseData: string,
-    efficiency: string,
-    rating: string,
-    googleStoreLink?: string,
-    appleStoreLink?: string,
-    deployLink?: string,
-    emailLink?: string,
-    contact?: string,
-    bannerImage?: string,
-    productControls: {
-        productTitle: string,
-        productIcon: string,
-        productDescription: string,
+    description: string,
+    homeFeatureTags: string[],
+    mainImage: string,
+    bannerImages: string[],
+
+    overviewTitle: string,
+    overviewImage: string,
+    overviewDesc: string,
+
+    keyFeatureTitle: string,
+    keyFeatureImage: string,
+    keyFeaturePoints: string[],
+
+    technologyTitle: string,
+    technologyImage: string,
+    technologyPoints: string[],
+    technologyDesc: string,
+
+    projectDetails: {
+        title: string,
+        image: string,
+        description: string,
     }[],
-    keyFeatures: {
-        featureTitle: string,
-        featureIcon: string,
-        featureDescription: string
-    }[],
-    screenshot: {
-        screenshotImage: string,
-    }[],
+
+    futurePoints:string[],
+    futureImage: string,
+
+
+   
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -39,17 +42,12 @@ export interface IProduct extends Document {
 
 const productSchema: Schema = new Schema({
 
-    heading: {
-        type: String,
-        required: true
-    },
-
     title: {
         type: String,
         required: true
     },
 
-    subHeading: {
+    subTitle: {
         type: String,
         required: true
     },
@@ -59,7 +57,7 @@ const productSchema: Schema = new Schema({
         required: true
     },
 
-    tags: {
+    homeFeatureTags: {
         type: [String],
         required: true
     },
@@ -69,98 +67,95 @@ const productSchema: Schema = new Schema({
         required: true
     },
 
-    videoFile: {
+   mainImage: {
         type: String,
         required: true
     },
 
-    franchiseData: {
+    bannerImages: {
+        type: [String],
+        required: true
+    },
+
+
+
+
+    overviewTitle: {
+        type: String,
+        required: true
+    },
+    overviewImage: {
+        type: String,
+        required: true
+    },
+    overviewDesc: {
         type: String,
         required: true
     },
 
-    efficiency: {
+
+
+    keyFeatureTitle: {
+        type: String,
+        required: true
+    },
+    keyFeatureImage: {
+        type: String,
+        required: true
+    },
+    keyFeaturePoints: {
+        type: [String],
+        required: true
+    },
+
+
+    technologyTitle: {
+        type: String,
+        required: true
+    },
+    technologyImage: {
+        type: String,
+        required: true
+    },
+    technologyPoints: {
+        type: [String],
+        required: true
+    },
+    technologyDesc: {
         type: String,
         required: true
     },
 
-    rating: {
-        type: String,
-        required: true
-    },
 
-    googleStoreLink: {
+projectDetails: [
+    {
+     title: {
         type: String,
-        required: false
+        required: true, trim: true
     },
-    appleStoreLink: {
+    image: {
         type: String,
-        required: false
+        required: true, trim: true
     },
-    deployLink: {
+    description: {
         type: String,
-        required: false
+        required: true, trim: true
     },
-
-    emailLink: {
-        type: String,
-        required: false
-    },
-
-    contact: {
-        type: String,
-        required: false
-    },
+}
+],
     
-    bannerImage: {
-        type: String,
-        required: false
+
+   futurePoints: {
+        type: [String],
+        required: true
     },
-    
-    // Mongoose schema syntax for arrays of sub-documents:
+    futureImage: {
+        type: String,
+        required: true
+    },
+   
 
-    productControls: [
-        {
-            productTitle: {
-                type: String,
-                required: true
-            },
-            productIcon: {
-                type: String,
-                required: true
-            },
-            productDescription: {
-                type: String,
-                required: true
-            }
-        }
-    ],
-
-    keyFeatures: [
-        {
-            featureTitle: {
-                type: String,
-                required: true
-            },
-            featureIcon: {
-                type: String,
-                required: true
-            },
-            featureDescription: {
-                type: String,
-                required: true
-            }
-        }
-    ],
-
-    screenshot: [
-        {
-            screenshotImage: {
-                type: String,
-                required: true
-            }
-        }
-    ]
+   
 
 }, { timestamps: true });
 

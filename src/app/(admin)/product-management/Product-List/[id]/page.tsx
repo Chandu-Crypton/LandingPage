@@ -3,35 +3,50 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { PencilIcon } from 'lucide-react'; // Icon for Edit
+import Image from 'next/image';
 import Link from 'next/link';
-import { TrashBinIcon } from '@/icons'; // Assuming this is your custom delete icon
-import NextImage from 'next/image'; // For displaying product icons and screenshots
+import { ArrowLeft, PencilIcon } from 'lucide-react';
+import ComponentCard from '@/components/common/ComponentCard';
+import { TrashBinIcon } from '@/icons';
 
-// Define the IProduct interface (matching your Mongoose schema)
+import { useProduct } from '@/context/ProductContext';
+
+
+
+// Product schema interface
 interface IProduct {
     _id: string;
-    heading: string;
     title: string;
-    subHeading: string;
+    subTitle: string;
+    category: string;
     description: string;
-    videoFile: string;
-    franchiseData: string;
-    efficiency: string;
-    rating: string;
-    productControls: {
-        productTitle: string;
-        productIcon: string;
-        productDescription: string;
-    }[];
-    keyFeatures: {
-        featureTitle: string;
-        featureIcon: string;
-        featureDescription: string;
-    }[];
-    screenshot: {
-        screenshotImage: string;
-    }[];
+    homeFeatureTags: string[];
+    mainImage: string;
+    bannerImages: string[];
+
+    overviewTitle: string;
+    overviewImage: string;
+    overviewDesc: string;
+
+    keyFeatureTitle: string;
+    keyFeatureImage: string;
+    keyFeaturePoints: string[];
+
+    technologyTitle: string;
+    technologyImage: string;
+    technologyPoints: string[];
+    technologyDesc: string;
+    
+    projectDetails: {
+        title: string,
+        image: string,
+        description: string,
+    }[],
+
+
+    futurePoints: string[];
+    futureImage: string;
+
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -39,241 +54,200 @@ interface IProduct {
 }
 
 const ProductDetailPage: React.FC = () => {
-    // Get the product ID from the URL parameters
-    const { id } = useParams();
-    // useRouter hook for programmatic navigation
+    const { id } = useParams(); // get ID from URL
     const router = useRouter();
-    // State to store the fetched product data
+    const { deleteProduct } = useProduct();
     const [product, setProduct] = useState<IProduct | null>(null);
-    // State to manage the loading status
     const [loading, setLoading] = useState(true);
-    // State to store any error messages
     const [error, setError] = useState<string | null>(null);
 
-    // Effect hook to fetch product data when the component mounts or ID changes
-    useEffect(() => {
-        const fetchProduct = async () => {
-            if (!id) {
-                setLoading(false);
-                setError('Product ID is missing.');
-                return;
+    const fetchProduct = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get<{ success: boolean; data: IProduct; message?: string }>(
+                `/api/product/${id}`
+            );
+            if (res.data.success) {
+                setProduct(res.data.data);
+            } else {
+                setError(res.data.message || 'Product not found.');
             }
-            try {
-                // Fetch product details from your API
-                const res = await axios.get<{ success: boolean; data: IProduct; message?: string }>(`/api/product/${id}`);
-                if (res.data.success && res.data.data) {
-                    setProduct(res.data.data);
-                } else {
-                    setError(res.data.message || 'Product not found.');
-                }
-            } catch (err) { // Type the catch error
-                console.error('Error fetching product details:', err);
-                setError('Failed to load product details.');
-            } finally {
-                setLoading(false); // End loading state regardless of success or failure
-            }
-        };
-
-        fetchProduct();
-    }, [id]); // Dependency array includes 'id' to re-fetch if it changes
-
-    // Display loading message while data is being fetched
-    if (loading) {
-        return <p className="text-center text-gray-500 dark:text-gray-400 py-10">Loading product details...</p>;
-    }
-
-    // Display error if product is not found or an error occurred
-    if (error || !product) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <p className="text-center text-red-500 bg-red-100 p-4 rounded-md shadow-sm">
-                    {error || 'Product not found.'}
-                </p>
-            </div>
-        );
-    }
-
-    // Function to handle product deletion
-    const handleDelete = async () => {
-        // Confirm with the user before proceeding
-        if (!window.confirm(`Are you sure you want to delete "${product.title}"? This action cannot be undone.`)) {
-            return;
+        } catch (err) {
+            console.error('Error fetching product:', err);
+            setError('Failed to load product details.');
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const handleDelete = async (id: string) => {
+        console.warn('Deletion initiated for review ID:', id);
 
         try {
-            // Send DELETE request to the API
-            await axios.delete(`/api/product/${id}`);
-            alert('Product deleted successfully!'); // Show success message
-            router.push('/admin/product-management/Product-List'); // Redirect to the product list page
-        } catch (error) { // Type the catch error
-            console.error('Error deleting product:', error);
-            alert('Failed to delete the product. Please try again.');
+            setLoading(true);
+            await deleteProduct(id);
+            setError(null);
+        } catch (err) {
+            console.error('Error deleting product:', err);
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || 'Failed to delete review. Please try again.');
+            } else if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Failed to delete review. An unknown error occurred.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Helper function to render lists of features/controls with titles, descriptions, and icons
-    const renderFeatureList = (
-        items: {
-            productTitle?: string;
-            featureTitle?: string;
-            productIcon?: string;
-            featureIcon?: string;
-            productDescription?: string;
-            featureDescription?: string;
-        }[],
-        type: 'productControl' | 'keyFeature'
-    ) => {
-        if (!items || items.length === 0) {
-            return <p className="text-gray-600 dark:text-gray-400">No {type === 'productControl' ? 'controls' : 'features'} available.</p>;
-        }
-        return (
-            <ul className="list-none pl-0 space-y-4">
-                {items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-md shadow-sm">
-                        {/* Display icon if available */}
-                        {(item.productIcon || item.featureIcon) && (
-                            <NextImage
-                                src={item.productIcon || item.featureIcon || "https://placehold.co/50x50/cccccc/ffffff?text=X"}
-                                alt={`${type} Icon`}
-                                width={140}
-                                height={140}
-                                className="rounded-md flex-shrink-0"
-                                unoptimized={true} // Use unoptimized for external URLs if not configured in next.config.js
-                                onError={(e) => {
-                                    e.currentTarget.src = "https://placehold.co/50x50/cccccc/ffffff?text=X"; // Fallback on error
-                                }}
-                            />
-                        )}
-                        <div>
-                            <h4 className="font-semibold text-lg text-gray-900 dark:text-white">
-                                {type === 'productControl' ? item.productTitle : item.featureTitle}
-                            </h4>
-                            <p className="text-gray-700 dark:text-gray-200 text-sm">
-                                {type === 'productControl' ? item.productDescription : item.featureDescription}
-                            </p>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        );
-    };
 
-    // Helper function to render screenshots
-    const renderScreenshots = (screenshots: { screenshotImage: string }[]) => {
-        if (!screenshots || screenshots.length === 0) {
-            return <p className="text-gray-600 dark:text-gray-400">No screenshots available.</p>;
-        }
-        return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {screenshots.map((ss, idx) => (
-                    <div key={idx} className="relative aspect-video rounded-md overflow-hidden shadow-md">
-                        <NextImage
-                            src={ss.screenshotImage || "https://placehold.co/600x400/cccccc/ffffff?text=Screenshot"}
-                            alt={`Screenshot ${idx + 1}`}
-                            layout="fill"
-                            objectFit="cover"
-                            className="transition-transform duration-300 hover:scale-105"
-                            unoptimized={true} // Use unoptimized for external URLs if not configured in next.config.js
-                            onError={(e) => {
-                                e.currentTarget.src = "https://placehold.co/600x400/cccccc/ffffff?text=Error"; // Fallback on error
-                            }}
-                        />
-                    </div>
-                ))}
-            </div>
-        );
-    };
+    useEffect(() => {
+        if (id) fetchProduct();
+    }, [id]);
+
+    if (loading) return <p className="text-center py-10">Loading...</p>;
+    if (error) return <p className="text-center text-red-500">{error}</p>;
+    if (!product) return <p className="text-center py-10">No product found.</p>;
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
-                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-0">{product.title}</h1>
-                    <div className="flex space-x-3">
-                       
-                        <Link
-                            href={`/product-management/Add-Product?page=edit&id=${product._id}`}
-                            className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
-                            aria-label={`Edit ${product.title}`}
-                        >
-                            <PencilIcon size={20} />
-                        </Link>
-                      
-                        <button
-                            onClick={handleDelete}
-                            className="text-red-500 border border-red-500 rounded-md p-2 hover:bg-red-500 hover:text-white"
-                            aria-label={`Delete ${product.title}`}
-                        >
-                            <TrashBinIcon size={20} />
-                        </button>
-                    </div>
-                </div>
+            {/* Back button */}
+            <button
+                onClick={() => router.back()}
+                className="flex items-center text-blue-500 hover:underline mb-6"
+            >
+                <ArrowLeft className="mr-2" /> Back to Products
+            </button>
 
-                <div className="space-y-8">
-                  
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Heading:</p>
-                            <p className="text-gray-800 dark:text-gray-200 text-lg">{product.heading}</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Sub-Heading:</p>
-                            <p className="text-gray-800 dark:text-gray-200 text-lg">{product.subHeading}</p>
-                        </div>
-                        <div className="md:col-span-2">
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Description:</p>
-                            <p className="text-gray-800 dark:text-gray-200 leading-relaxed">{product.description}</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Franchise Data:</p>
-                            <p className="text-gray-800 dark:text-gray-200">{product.franchiseData}</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Efficiency:</p>
-                            <p className="text-gray-800 dark:text-gray-200">{product.efficiency}</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-600 dark:text-gray-400 font-semibold">Rating:</p>
-                            <p className="text-gray-800 dark:text-gray-200">{product.rating}</p>
-                        </div>
-                        {product.updatedAt && (
-                            <div>
-                                <p className="text-gray-600 dark:text-gray-400 font-semibold">Last Updated:</p>
-                                <p className="text-gray-800 dark:text-gray-200">{new Date(product.updatedAt).toLocaleString()}</p>
-                            </div>
-                        )}
-                    </div>
-
-                    
-                    {product.videoFile && (
-                        <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Product Video</h3>
-                            <video controls className="w-full max-w-2xl rounded-lg shadow-md mx-auto">
-                                <source src={product.videoFile} type="video/mp4" /> 
-                                Your browser does not support the video tag.
-                            </video>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 text-center">Video URL: <a href={product.videoFile} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-words">{product.videoFile}</a></p>
-                        </div>
-                    )}
-
-                  
-                    <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Product Controls</h3>
-                        {renderFeatureList(product.productControls, 'productControl')}
-                    </div>
-
-                    <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Key Features</h3>
-                        {renderFeatureList(product.keyFeatures, 'keyFeature')}
-                    </div>
-
-                 
-                    <div className="border-t pt-6 border-gray-200 dark:border-gray-700">
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Screenshots</h3>
-                        {renderScreenshots(product.screenshot)}
-                    </div>
+            <h1 className="text-3xl font-bold text-center mb-8">{product.title}</h1>
+            <div className="flex justify-between items-start mb-6">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{product.title}</h1>
+                <div className="flex space-x-3">
+                    <Link
+                        href={`/product-management/Add-Product?page=edit&id=${product._id as string}`}
+                        className="text-yellow-600 border border-yellow-600 rounded-md p-2 hover:bg-yellow-600 hover:text-white transition-colors flex items-center justify-center"
+                        title="Edit Product"
+                    >
+                        <PencilIcon size={16} />
+                    </Link>
+                    <button
+                        onClick={() => handleDelete(product._id)}
+                        className="text-red-600 border border-red-600 rounded-md p-2 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center"
+                        title="Delete Review"
+                    >
+                        <TrashBinIcon size={16} />
+                    </button>
                 </div>
             </div>
+
+            {/* Basic Info */}
+            <ComponentCard title="Basic Information">
+                <p><strong>Subtitle:</strong> {product.subTitle}</p>
+                <p><strong>Category:</strong> {product.category}</p>
+                <p><strong>Description:</strong> {product.description}</p>
+                <div className="mt-2">
+                    <strong>Home Feature Tags:</strong>
+                    <ul className="list-disc ml-6">
+                        {product.homeFeatureTags.map((tag, i) => (
+                            <li key={i}>{tag}</li>
+                        ))}
+                    </ul>
+                </div>
+            </ComponentCard>
+
+            {/* Images */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <ComponentCard title="Main Image">
+                    {product.mainImage && (
+                        <Image src={product.mainImage} alt="Main Image" width={400} height={250} className="rounded-lg" />
+                    )}
+                </ComponentCard>
+                <ComponentCard title="Banner Images">
+                    <div className="grid grid-cols-2 gap-4">
+                        {product.bannerImages.map((img, i) => (
+                            <Image key={i} src={img} alt={`Banner ${i + 1}`} width={300} height={200} className="rounded-lg" />
+                        ))}
+                    </div>
+                </ComponentCard>
+            </div>
+
+            {/* Overview */}
+            <ComponentCard title="Overview" className="mt-6">
+                <p><strong>{product.overviewTitle}</strong></p>
+                {product.overviewImage && (
+                    <Image src={product.overviewImage} alt="Overview" width={400} height={250} className="rounded-lg my-3" />
+                )}
+                <p>{product.overviewDesc}</p>
+            </ComponentCard>
+
+            {/* Key Features */}
+            <ComponentCard title="Key Features" className="mt-6">
+                <p><strong>{product.keyFeatureTitle}</strong></p>
+                {product.keyFeatureImage && (
+                    <Image src={product.keyFeatureImage} alt="Key Feature" width={400} height={250} className="rounded-lg my-3" />
+                )}
+                <ul className="list-disc ml-6">
+                    {product.keyFeaturePoints.map((point, i) => (
+                        <li key={i}>{point}</li>
+                    ))}
+                </ul>
+            </ComponentCard>
+
+            {/* Technology */}
+            <ComponentCard title="Technology" className="mt-6">
+                <p><strong>{product.technologyTitle}</strong></p>
+                {product.technologyImage && (
+                    <Image src={product.technologyImage} alt="Technology" width={400} height={250} className="rounded-lg my-3" />
+                )}
+                <ul className="list-disc ml-6">
+                    {product.technologyPoints.map((point, i) => (
+                        <li key={i}>{point}</li>
+                    ))}
+                </ul>
+                <p>{product.technologyDesc}</p>
+            </ComponentCard>
+
+            <ComponentCard title="Project Details" className="mt-6">
+                {product.projectDetails && product.projectDetails.length > 0 ? (
+                    product.projectDetails.map((detail, index) => (
+                        <div key={index} className="mb-6">
+                            <p className="font-semibold">{detail.title}</p>
+                            {detail.image && (
+                                <Image
+                                    src={detail.image}
+                                    alt={`Project Detail ${index + 1}`}
+                                    width={400}
+                                    height={250}
+                                    className="rounded-lg my-3"
+                                />
+                            )}
+                            <p>{detail.description}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No project details available.</p>
+                )}
+            </ComponentCard>
+
+
+            {/* Future Points */}
+            <ComponentCard title="Future Scope" className="mt-6">
+                {product.futureImage && (
+                    <Image src={product.futureImage} alt="Future" width={400} height={250} className="rounded-lg my-3" />
+                )}
+                <ul className="list-disc ml-6">
+                    {product.futurePoints.map((point, i) => (
+                        <li key={i}>{point}</li>
+                    ))}
+                </ul>
+            </ComponentCard>
+
+            {/* Meta Info */}
+            <ComponentCard title="Metadata" className="mt-6">
+                <p><strong>Created At:</strong> {new Date(product.createdAt || '').toLocaleString()}</p>
+                <p><strong>Updated At:</strong> {new Date(product.updatedAt || '').toLocaleString()}</p>
+            </ComponentCard>
         </div>
     );
 };
