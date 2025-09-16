@@ -85,6 +85,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
+         const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      return NextResponse.json(
+        { success: false, message: 'Phone number must be exactly 10 digits.' },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
 
 
         // If no document exists, create a new one

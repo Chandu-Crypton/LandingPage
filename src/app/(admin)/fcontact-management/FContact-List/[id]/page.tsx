@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { PencilIcon } from 'lucide-react';
-import Link from 'next/link';
+// import { PencilIcon } from 'lucide-react';
+// import Link from 'next/link';
 import { TrashBinIcon } from '@/icons';
 
 interface IContact {
@@ -65,7 +65,7 @@ const ContactDetailPage: React.FC = () => {
         try {
             await axios.delete(`/api/fcontact/${contact._id}`);
             alert('Contact entry deleted successfully!');
-            router.push('/admin/contact-management');
+            router.push('/fcontact-management/FContact-List');
         } catch (err: unknown) {
             console.error('Error deleting contact entry:', err);
             let errorMessage = 'Failed to delete the contact entry. Please try again.';
@@ -96,7 +96,7 @@ const ContactDetailPage: React.FC = () => {
                         </p>
                     </div>
                     <div className="flex gap-3">
-                        <Link
+                        {/* <Link
                             href={`/fcontact-management/Add-FContact?page=edit&id=${contact._id}`}
                             className="p-2 rounded-lg border border-yellow-500 text-yellow-500 
                      hover:bg-yellow-500 hover:text-white 
@@ -104,7 +104,7 @@ const ContactDetailPage: React.FC = () => {
                             title="Edit"
                         >
                             <PencilIcon size={18} />
-                        </Link>
+                        </Link> */}
                         <button
                             onClick={handleDelete}
                             className="p-2 rounded-lg border border-red-500 text-red-500 

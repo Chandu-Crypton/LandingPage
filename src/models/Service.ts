@@ -6,6 +6,21 @@ export interface IService extends Document {
     description: string[];
     mainImage: string;
     bannerImage?: string;
+    serviceImage1: string;
+    serviceImage2: string;
+    service:[
+        icon: string,
+        title: string,
+        description: string,
+    ],
+    technology:{
+        title: string,
+        icon: string,
+    },
+    whyChooseUs:{
+        icon: string,
+        description: string,
+    }[],
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
