@@ -304,13 +304,13 @@ const ContactListPage: React.FC = () => {
                         <table className="min-w-full border border-gray-200 rounded-lg text-sm">
                             <thead className="bg-gray-100 text-gray-700 text-left">
                                 <tr>
+                                    <th className="px-5 py-3">Title</th>
                                     <th className="px-5 py-3">First Name</th>
                                     <th className="px-5 py-3">Last Name</th>
                                     <th className="px-5 py-3">Email</th>
                                     <th className="px-5 py-3">Phone Number</th>
                                     <th className="px-5 py-3">Location</th>
-                                    <th className="px-5 py-3">Timings</th>
-                                    <th className="px-5 py-3">Created At</th>
+                                    <th className="px-5 py-3">Timings</th>  
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -322,15 +322,16 @@ const ContactListPage: React.FC = () => {
                                             className={`transition ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                                                 } hover:bg-gray-100`}
                                         >
+                                            <td className="px-4 py-3 whitespace-nowrap">{entry.title || '-'}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entry.firstName || '-'}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entry.lastName || '-'}</td>
                                             <td className="px-4 py-3 break-words max-w-[150px]">{entry.email || '-'}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entry.phoneNumber || '-'}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entry.location || '-'}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entry.timings || '-'}</td>
-                                            <td className="px-5 py-3">
+                                            {/* <td className="px-5 py-3">
                                                 {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : '—'}
-                                            </td>
+                                            </td> */}
                                             <td className="px-4 py-3 sticky right-0 bg-white shadow-md z-10">
                                                 <div className="flex justify-center gap-2">
                                                     <Link

@@ -78,6 +78,15 @@ export async function PUT(req: Request) {
         if (body.email !== undefined && typeof body.email === 'string') {
             updateData.email = body.email;
         }
+        if (body.title !== undefined && typeof body.title === 'string') {
+            updateData.title = body.title;
+        }
+        if (body.location !== undefined && typeof body.location === 'string') {
+            updateData.location = body.location;
+        }
+        if (body.timings !== undefined && typeof body.timings === 'string') {
+            updateData.timings = body.timings;
+        }
 
        
         if (body.firstName !== undefined && typeof body.firstName === 'string') {
