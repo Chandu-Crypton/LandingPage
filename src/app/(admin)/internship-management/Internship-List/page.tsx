@@ -54,7 +54,7 @@ const InternshipListPage: React.FC = () => {
 
     return internships.filter((internship: IInternship) => {
       if (internship.title.toLowerCase().includes(lower)) return true;
-      if (internship.subtitle.toLowerCase().includes(lower)) return true;
+      if (internship.subtitle?.toLowerCase().includes(lower)) return true;
       // if (internship.description.toLowerCase().includes(lower)) return true;
       // if (internship.benefits.some(b => b.toLowerCase().includes(lower))) return true;
       // if (internship.eligibility.some(e => e.toLowerCase().includes(lower))) return true;
