@@ -32,6 +32,7 @@ import { FaqProvider } from '@/context/FaqContext';
 import { SalesContactProvider } from '@/context/SalesContactContext';
 import { DepartmentBoardProvider } from '@/context/DepartmentBoardContext';
 import { DisplayContactProvider } from '@/context/DisplayContactContext';
+import { FNewsLetterProvider } from '@/context/FNewsLetterContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -73,15 +74,17 @@ export default function RootLayout({
                                                         <SalesContactProvider>
                                                           <DepartmentBoardProvider>
                                                             <DisplayContactProvider>
-                                                            <UserProvider>
-                                                              <WhyChooseProvider>
-                                                                <ZoneProvider>
+                                                              <FNewsLetterProvider>
+                                                                <UserProvider>
+                                                                  <WhyChooseProvider>
+                                                                    <ZoneProvider>
 
-                                                                  {children}
+                                                                      {children}
 
-                                                                </ZoneProvider>
-                                                              </WhyChooseProvider>
-                                                            </UserProvider>
+                                                                    </ZoneProvider>
+                                                                  </WhyChooseProvider>
+                                                                </UserProvider>
+                                                              </FNewsLetterProvider>
                                                             </DisplayContactProvider>
                                                           </DepartmentBoardProvider>
                                                         </SalesContactProvider>

@@ -1211,6 +1211,19 @@ const packageItems: NavItem[] = [
 ];
 
 
+const fnewsletterItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "NewsLetter",
+    subItems: [
+      { name: "Add New NewsLetter", path: "/fnewsletter-management/Add-NewsLetter", pro: false },
+      { name: "NewsLetter List", path: "/fnewsletter-management/NewsLetter-List", pro: false },
+    ],
+    isSpecialSection: true,
+  },
+];
+
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
@@ -1271,6 +1284,7 @@ const AppSidebar: React.FC = () => {
       { type: "banner", items: bannerItems },
       { type: "review", items: reviewItems },
       { type: "faq", items: faqItems },
+      { type: "fnewsletter", items: fnewsletterItems },
 
 
     ];
@@ -1807,6 +1821,17 @@ const AppSidebar: React.FC = () => {
                   </h2>
                   {renderMenuItems(fblogItems, "blog")}
                 </div>
+
+                  <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
+                    {isExpanded || isHovered || isMobileOpen ? "NEWSLETTER MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(fnewsletterItems, "fnewsletter")}
+                </div>
+
 
                 <div>
                   <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
