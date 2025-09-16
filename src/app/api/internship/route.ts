@@ -65,6 +65,11 @@ export async function POST(req: NextRequest) {
         const category = formData.get("category")?.toString();
         const rating = formData.get("rating")?.toString();
         const syllabusLink = formData.get("syllabusLink")?.toString();
+        const stipend = formData.get("stipend")?.toString();
+        const durationDetails = formData.get("durationDetails")?.toString();
+        const enrolledStudents = formData.get("enrolledStudents")?.toString();
+        const schedule = formData.get("schedule")?.toString();
+
 
         // Arrays
         const tags = parseJSON<string[]>(formData.get("tags"));
@@ -180,7 +185,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Validate required fields
-        if (!title || !subtitle || !duration || !mode || !category || !rating) {
+        if (!title  || !duration || !mode || !category || !rating) {
             return NextResponse.json(
                 { success: false, message: "Missing required fields." },
                 { status: 400, headers: corsHeaders }
@@ -208,6 +213,10 @@ export async function POST(req: NextRequest) {
             learningOutcomes,
             skills,
             tool,
+            stipend,
+            schedule,
+            enrolledStudents,
+            durationDetails,
             curriculum,
             summary,
             mainImage: mainImageUrl,

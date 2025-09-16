@@ -71,6 +71,10 @@ export async function PUT(req: NextRequest) {
         const description = formData.get("description")?.toString();
         const mode = formData.get("mode")?.toString();
         const duration = formData.get("duration")?.toString();
+        const stipend = formData.get("stipend")?.toString();
+        const schedule = formData.get("schedule")?.toString();
+        const enrolledStudents = formData.get("enrolledStudents")?.toString();
+        const durationDetails = formData.get("durationDetails")?.toString();
 
         if (title) updateData.title = title;
         if (subtitle) updateData.subtitle = subtitle;
@@ -78,6 +82,10 @@ export async function PUT(req: NextRequest) {
         if (description) updateData.description = description;
         if (mode) updateData.mode = mode;
         if (duration) updateData.duration = duration;
+        if (stipend) updateData.stipend = stipend;
+        if (schedule) updateData.schedule = schedule;
+        if (enrolledStudents) updateData.enrolledStudents = enrolledStudents;
+        if (durationDetails) updateData.durationDetails = durationDetails;
 
         // --- Benefits ---
         const benefitsString = formData.get("benefits")?.toString();

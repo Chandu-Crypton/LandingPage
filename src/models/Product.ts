@@ -9,14 +9,34 @@ export interface IProduct extends Document {
     homeFeatureTags: string[],
     mainImage: string,
     bannerImages: string[],
+    livedemoLink?: string,
 
-    overviewTitle: string,
+    heading:{
+        headingPercentage: string,
+        headingDesc: string,
+    }[],
+
+    measurableResults?: {
+        title: string,
+        description: string,
+    }[],
+
+    projectTeam?: {
+        members: string,
+        role: string,
+    }[],
+
+    overviewTitle: string,  
     overviewImage: string,
     overviewDesc: string,
 
-    keyFeatureTitle: string,
-    keyFeatureImage: string,
-    keyFeaturePoints: string[],
+   keyFeatures: {
+       title: string,
+       description: string,
+       image: string,
+   }[],
+
+   
 
     technologyTitle: string,
     technologyImage: string,
@@ -76,7 +96,31 @@ const productSchema: Schema = new Schema({
         type: [String],
         required: true
     },
+    livedemoLink: {
+        type: String,
+        required: false
+    },
 
+    heading: [
+        {
+            headingPercentage: { type: String, required: true },
+            headingDesc: { type: String, required: true },
+        }
+    ],  
+
+    measurableResults: [
+        {
+            title: { type: String, required: false },
+            description: { type: String, required: false },
+        }
+    ],
+
+    projectTeam: [
+        {
+            members: { type: String, required: false },
+            role: { type: String, required: false },
+        }
+    ],  
 
 
 
@@ -94,20 +138,11 @@ const productSchema: Schema = new Schema({
     },
 
 
-
-    keyFeatureTitle: {
-        type: String,
-        required: true
-    },
-    keyFeatureImage: {
-        type: String,
-        required: true
-    },
-    keyFeaturePoints: {
-        type: [String],
-        required: true
-    },
-
+    keyFeatures: [{
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+        image: { type: String, required: true }
+    }],
 
     technologyTitle: {
         type: String,

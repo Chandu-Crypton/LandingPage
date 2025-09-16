@@ -61,143 +61,321 @@ export async function GET() {
 
 
 
+// export async function POST(req: NextRequest) {
+//     await connectToDatabase();
+
+//     try {
+//         const formData = await req.formData();
+//         console.log("form data:", formData);
+
+//         // ✅ Basic fields
+//         const title = formData.get("title")?.toString() || "";
+//         const subTitle = formData.get("subTitle")?.toString() || "";
+//         const description = formData.get("description")?.toString() || "";
+//         const category = formData.get("category")?.toString() || "";
+
+//         // ✅ Arrays
+//         const homeFeatureTags = formData.get("homeFeatureTags")
+//             ? JSON.parse(formData.get("homeFeatureTags") as string)
+//             : [];
+
+//         const keyFeaturePoints = formData.get("keyFeaturePoints")
+//             ? JSON.parse(formData.get("keyFeaturePoints") as string)
+//             : [];
+
+//         const technologyPoints = formData.get("technologyPoints")
+//             ? JSON.parse(formData.get("technologyPoints") as string)
+//             : [];
+
+//         const futurePoints = formData.get("futurePoints")
+//             ? JSON.parse(formData.get("futurePoints") as string)
+//             : [];
+
+//         // ✅ Project details (array of objects)
+//         const projectDetailsRaw = formData.get("projectDetails")
+//             ? JSON.parse(formData.get("projectDetails") as string)
+//             : [];
+//         // format should be: [{ title, description }...] from frontend
+//         const projectDetails: { title: string; description: string; image: string }[] = [];
+
+//         for (let i = 0; i < projectDetailsRaw.length; i++) {
+//             const detail = projectDetailsRaw[i];
+
+//             // ✅ FIX: use same key name as frontend
+//             const imageFile = formData.get(`projectDetailsImages_${i}`) as File | null;
+
+//             let imageUrl = "";
+//             if (imageFile) {
+//                 imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
+//             } else if (detail.image) {
+//                 // for existing previews when editing
+//                 imageUrl = detail.image;
+//             }
+
+//             projectDetails.push({
+//                 title: detail.title,
+//                 description: detail.description,
+//                 image: imageUrl,
+//             });
+//         }
+
+
+//         // ✅ Upload main/banners/others
+//         const mainImageFile = formData.get("mainImage") as File | null;
+//         const bannerImageFiles = formData.getAll("bannerImages") as File[];
+
+//         const overviewImageFile = formData.get("overviewImage") as File | null;
+//         const keyFeatureImageFile = formData.get("keyFeatureImage") as File | null;
+//         const technologyImageFile = formData.get("technologyImage") as File | null;
+//         const futureImageFile = formData.get("futureImage") as File | null;
+
+//         const mainImageUrl = mainImageFile
+//             ? await uploadSingleImage(mainImageFile, "/products/main")
+//             : "";
+//         const bannerImageUrls =
+//             bannerImageFiles.length > 0
+//                 ? await uploadMultipleImages(bannerImageFiles, "/products/banner")
+//                 : [];
+
+//         const overviewImageUrl = overviewImageFile
+//             ? await uploadSingleImage(overviewImageFile, "/products/overview")
+//             : "";
+//         const keyFeatureImageUrl = keyFeatureImageFile
+//             ? await uploadSingleImage(keyFeatureImageFile, "/products/keyFeatures")
+//             : "";
+//         const technologyImageUrl = technologyImageFile
+//             ? await uploadSingleImage(technologyImageFile, "/products/technology")
+//             : "";
+//         const futureImageUrl = futureImageFile
+//             ? await uploadSingleImage(futureImageFile, "/products/future")
+//             : "";
+
+//         // ✅ Other text fields
+//         const overviewTitle = formData.get("overviewTitle")?.toString() || "";
+//         const overviewDesc = formData.get("overviewDesc")?.toString() || "";
+
+//         const keyFeatureTitle = formData.get("keyFeatureTitle")?.toString() || "";
+
+//         const technologyTitle = formData.get("technologyTitle")?.toString() || "";
+//         const technologyDesc = formData.get("technologyDesc")?.toString() || "";
+
+//         // ✅ Save product
+//         const newProduct = await Product.create({
+//             title,
+//             subTitle,
+//             description,
+//             category,
+//             homeFeatureTags,
+
+//             mainImage: mainImageUrl,
+//             bannerImages: bannerImageUrls,
+
+//             overviewTitle,
+//             overviewImage: overviewImageUrl,
+//             overviewDesc,
+
+//             keyFeatureTitle,
+//             keyFeatureImage: keyFeatureImageUrl,
+//             keyFeaturePoints,
+
+//             technologyTitle,
+//             technologyImage: technologyImageUrl,
+//             technologyPoints,
+//             technologyDesc,
+
+//             projectDetails, // ✅ array of objects
+
+//             futurePoints,
+//             futureImage: futureImageUrl,
+//         });
+
+//         return NextResponse.json(
+//             { success: true, data: newProduct, message: "Product created successfully." },
+//             { status: 201, headers: corsHeaders }
+//         );
+//     } catch (error) {
+//         console.error("POST /api/product error:", error);
+//         return NextResponse.json(
+//             { success: false, message: "Internal Server Error" },
+//             { status: 500, headers: corsHeaders }
+//         );
+//     }
+// }
+
+
+
+
 export async function POST(req: NextRequest) {
-    await connectToDatabase();
+  await connectToDatabase();
 
-    try {
-        const formData = await req.formData();
-        console.log("form data:", formData);
+  try {
+    const formData = await req.formData();
 
-        // ✅ Basic fields
-        const title = formData.get("title")?.toString() || "";
-        const subTitle = formData.get("subTitle")?.toString() || "";
-        const description = formData.get("description")?.toString() || "";
-        const category = formData.get("category")?.toString() || "";
+    // ✅ Basic fields
+    const title = formData.get("title")?.toString() || "";
+    const subTitle = formData.get("subTitle")?.toString() || "";
+    const description = formData.get("description")?.toString() || "";
+    const category = formData.get("category")?.toString() || "";
+    const livedemoLink = formData.get("livedemoLink")?.toString() || "";
 
-        // ✅ Arrays
-        const homeFeatureTags = formData.get("homeFeatureTags")
-            ? JSON.parse(formData.get("homeFeatureTags") as string)
-            : [];
+    // ✅ Arrays (string[])
+    const homeFeatureTags = formData.get("homeFeatureTags")
+      ? JSON.parse(formData.get("homeFeatureTags") as string)
+      : [];
 
-        const keyFeaturePoints = formData.get("keyFeaturePoints")
-            ? JSON.parse(formData.get("keyFeaturePoints") as string)
-            : [];
+    const technologyPoints = formData.get("technologyPoints")
+      ? JSON.parse(formData.get("technologyPoints") as string)
+      : [];
 
-        const technologyPoints = formData.get("technologyPoints")
-            ? JSON.parse(formData.get("technologyPoints") as string)
-            : [];
+    const futurePoints = formData.get("futurePoints")
+      ? JSON.parse(formData.get("futurePoints") as string)
+      : [];
 
-        const futurePoints = formData.get("futurePoints")
-            ? JSON.parse(formData.get("futurePoints") as string)
-            : [];
+    // ✅ Arrays of objects
+    const heading = formData.get("heading")
+      ? JSON.parse(formData.get("heading") as string)
+      : [];
 
-        // ✅ Project details (array of objects)
-        const projectDetailsRaw = formData.get("projectDetails")
-            ? JSON.parse(formData.get("projectDetails") as string)
-            : [];
-        // format should be: [{ title, description }...] from frontend
-        const projectDetails: { title: string; description: string; image: string }[] = [];
+    const measurableResults = formData.get("measurableResults")
+      ? JSON.parse(formData.get("measurableResults") as string)
+      : [];
 
-        for (let i = 0; i < projectDetailsRaw.length; i++) {
-            const detail = projectDetailsRaw[i];
+    const projectTeam = formData.get("projectTeam")
+      ? JSON.parse(formData.get("projectTeam") as string)
+      : [];
 
-            // ✅ FIX: use same key name as frontend
-            const imageFile = formData.get(`projectDetailsImages_${i}`) as File | null;
+    const keyFeaturesRaw = formData.get("keyFeatures")
+      ? JSON.parse(formData.get("keyFeatures") as string)
+      : [];
 
-            let imageUrl = "";
-            if (imageFile) {
-                imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
-            } else if (detail.image) {
-                // for existing previews when editing
-                imageUrl = detail.image;
-            }
+    const projectDetailsRaw = formData.get("projectDetails")
+      ? JSON.parse(formData.get("projectDetails") as string)
+      : [];
 
-            projectDetails.push({
-                title: detail.title,
-                description: detail.description,
-                image: imageUrl,
-            });
-        }
+    // ✅ Handle file uploads
+    const mainImageFile = formData.get("mainImage") as File | null;
+    const bannerImageFiles = formData.getAll("bannerImages") as File[];
 
+    const overviewImageFile = formData.get("overviewImage") as File | null;
+    const technologyImageFile = formData.get("technologyImage") as File | null;
+    const futureImageFile = formData.get("futureImage") as File | null;
 
-        // ✅ Upload main/banners/others
-        const mainImageFile = formData.get("mainImage") as File | null;
-        const bannerImageFiles = formData.getAll("bannerImages") as File[];
+    const mainImageUrl = mainImageFile
+      ? await uploadSingleImage(mainImageFile, "/products/main")
+      : "";
+    const bannerImageUrls =
+      bannerImageFiles.length > 0
+        ? await uploadMultipleImages(bannerImageFiles, "/products/banner")
+        : [];
 
-        const overviewImageFile = formData.get("overviewImage") as File | null;
-        const keyFeatureImageFile = formData.get("keyFeatureImage") as File | null;
-        const technologyImageFile = formData.get("technologyImage") as File | null;
-        const futureImageFile = formData.get("futureImage") as File | null;
+    const overviewImageUrl = overviewImageFile
+      ? await uploadSingleImage(overviewImageFile, "/products/overview")
+      : "";
+    const technologyImageUrl = technologyImageFile
+      ? await uploadSingleImage(technologyImageFile, "/products/technology")
+      : "";
+    const futureImageUrl = futureImageFile
+      ? await uploadSingleImage(futureImageFile, "/products/future")
+      : "";
 
-        const mainImageUrl = mainImageFile
-            ? await uploadSingleImage(mainImageFile, "/products/main")
-            : "";
-        const bannerImageUrls =
-            bannerImageFiles.length > 0
-                ? await uploadMultipleImages(bannerImageFiles, "/products/banner")
-                : [];
+    // ✅ Other text fields
+    const overviewTitle = formData.get("overviewTitle")?.toString() || "";
+    const overviewDesc = formData.get("overviewDesc")?.toString() || "";
 
-        const overviewImageUrl = overviewImageFile
-            ? await uploadSingleImage(overviewImageFile, "/products/overview")
-            : "";
-        const keyFeatureImageUrl = keyFeatureImageFile
-            ? await uploadSingleImage(keyFeatureImageFile, "/products/keyFeatures")
-            : "";
-        const technologyImageUrl = technologyImageFile
-            ? await uploadSingleImage(technologyImageFile, "/products/technology")
-            : "";
-        const futureImageUrl = futureImageFile
-            ? await uploadSingleImage(futureImageFile, "/products/future")
-            : "";
+    const technologyTitle = formData.get("technologyTitle")?.toString() || "";
+    const technologyDesc = formData.get("technologyDesc")?.toString() || "";
 
-        // ✅ Other text fields
-        const overviewTitle = formData.get("overviewTitle")?.toString() || "";
-        const overviewDesc = formData.get("overviewDesc")?.toString() || "";
+    // ✅ Key features (with image upload per item)
+    const keyFeatures: { title: string; description: string; image: string }[] =
+      [];
+    for (let i = 0; i < keyFeaturesRaw.length; i++) {
+      const feature = keyFeaturesRaw[i];
+      const imageFile = formData.get(`keyFeatureImage_${i}`) as File | null;
 
-        const keyFeatureTitle = formData.get("keyFeatureTitle")?.toString() || "";
-
-        const technologyTitle = formData.get("technologyTitle")?.toString() || "";
-        const technologyDesc = formData.get("technologyDesc")?.toString() || "";
-
-        // ✅ Save product
-        const newProduct = await Product.create({
-            title,
-            subTitle,
-            description,
-            category,
-            homeFeatureTags,
-
-            mainImage: mainImageUrl,
-            bannerImages: bannerImageUrls,
-
-            overviewTitle,
-            overviewImage: overviewImageUrl,
-            overviewDesc,
-
-            keyFeatureTitle,
-            keyFeatureImage: keyFeatureImageUrl,
-            keyFeaturePoints,
-
-            technologyTitle,
-            technologyImage: technologyImageUrl,
-            technologyPoints,
-            technologyDesc,
-
-            projectDetails, // ✅ array of objects
-
-            futurePoints,
-            futureImage: futureImageUrl,
-        });
-
-        return NextResponse.json(
-            { success: true, data: newProduct, message: "Product created successfully." },
-            { status: 201, headers: corsHeaders }
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadSingleImage(
+          imageFile,
+          "/products/keyFeatures"
         );
-    } catch (error) {
-        console.error("POST /api/product error:", error);
-        return NextResponse.json(
-            { success: false, message: "Internal Server Error" },
-            { status: 500, headers: corsHeaders }
-        );
+      } else if (feature.image) {
+        imageUrl = feature.image;
+      }
+
+      keyFeatures.push({
+        title: feature.title,
+        description: feature.description,
+        image: imageUrl,
+      });
     }
+
+    // ✅ Project details (with image upload per item)
+    const projectDetails: {
+      title: string;
+      description: string;
+      image: string;
+    }[] = [];
+    for (let i = 0; i < projectDetailsRaw.length; i++) {
+      const detail = projectDetailsRaw[i];
+      const imageFile = formData.get(`projectDetailsImages_${i}`) as File | null;
+
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadSingleImage(
+          imageFile,
+          "/products/projectDetails"
+        );
+      } else if (detail.image) {
+        imageUrl = detail.image;
+      }
+
+      projectDetails.push({
+        title: detail.title,
+        description: detail.description,
+        image: imageUrl,
+      });
+    }
+
+    // ✅ Save product
+    const newProduct = await Product.create({
+      title,
+      subTitle,
+      description,
+      category,
+      livedemoLink,
+      homeFeatureTags,
+
+      mainImage: mainImageUrl,
+      bannerImages: bannerImageUrls,
+
+      heading,
+      measurableResults,
+      projectTeam,
+
+      overviewTitle,
+      overviewImage: overviewImageUrl,
+      overviewDesc,
+
+      keyFeatures,
+      technologyTitle,
+      technologyImage: technologyImageUrl,
+      technologyPoints,
+      technologyDesc,
+
+      projectDetails,
+      futurePoints,
+      futureImage: futureImageUrl,
+    });
+
+    return NextResponse.json(
+      { success: true, data: newProduct, message: "Product created successfully." },
+      { status: 201, headers: corsHeaders }
+    );
+  } catch (error) {
+    console.error("POST /api/product error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500, headers: corsHeaders }
+    );
+  }
 }

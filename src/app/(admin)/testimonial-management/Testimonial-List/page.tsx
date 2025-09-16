@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import Link from 'next/link';
 import { EyeIcon, PencilIcon } from 'lucide-react';
-import { ArrowUpIcon, TrashBinIcon, UserIcon } from '@/icons'; 
+import { ArrowUpIcon, TrashBinIcon, UserIcon } from '@/icons';
 
 import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
@@ -14,6 +14,8 @@ import Input from '@/components/form/input/InputField';
 
 interface ITestimonial {
     _id: string;
+    sectionTitle: string;
+    mainImage?: string;
     title: string;
     fullName: string;
     description: string;
@@ -85,7 +87,7 @@ const TestimonialListPage: React.FC = () => {
             testimonial.title.toLowerCase().includes(lowercasedSearchTerm) ||
             testimonial.fullName.toLowerCase().includes(lowercasedSearchTerm) ||
             testimonial.description.toLowerCase().includes(lowercasedSearchTerm) ||
-            testimonial.rating.toString().includes(lowercasedSearchTerm)
+         (testimonial.sectionTitle && testimonial.sectionTitle.toLowerCase().includes(lowercasedSearchTerm))
         );
     }, [testimonials, searchTerm]);
 
@@ -135,6 +137,8 @@ const TestimonialListPage: React.FC = () => {
                         <table className="min-w-full text-sm">
                             <thead>
                                 <tr className="text-gray-600">
+                                    <th className="px-5 py-3 text-left">Section Title</th>
+                                    <th className="px-5 py-3 text-left">Image</th>
                                     <th className="px-5 py-3 text-left">Title</th>
                                     <th className="px-5 py-3 text-left">Full Name</th>
                                     <th className="px-5 py-3 text-left">Description</th>
@@ -145,20 +149,35 @@ const TestimonialListPage: React.FC = () => {
                             <tbody>
                                 {filteredTestimonials.map((testimonial) => (
                                     <tr key={testimonial._id} className="border-t hover:bg-gray-50 transition">
+                                        <td className="px-5 py-3">{testimonial.sectionTitle || '-'}</td>
+                                        <td className="px-5 py-3">
+                                            {testimonial.mainImage ? (
+                                                <img
+                                                    src={testimonial.mainImage}
+                                                    alt={testimonial.title}
+                                                    className="h-12 w-12 object-cover rounded"
+                                                />
+                                            ) : (
+                                                '-'
+                                            )}
+                                        </td>
                                         <td className="px-5 py-3 font-semibold">{testimonial.title}</td>
                                         <td className="px-5 py-3">{testimonial.fullName}</td>
                                         <td className="px-5 py-3">{testimonial.description}</td>
-                                        <td className="px-5 py-3">{testimonial.rating.toFixed(1)}</td> 
                                         <td className="px-5 py-3">
-                                            <div className="flex justify-center gap-2">
+                                            {testimonial.rating != null ? testimonial.rating.toFixed(1) : 'N/A'}
+                                        </td>
+                                        {/* Actions... */}
+                                        <td className="px-5 py-3">
+                                            <div className="flex justify-center items-center gap-2">
                                                 <Link
-                                                    href={`/testimonial-management/Testimonial-List/${testimonial._id}`} 
+                                                    href={`/testimonial-management/Testimonial-List/${testimonial._id}`}
                                                     className="text-blue-500 border border-blue-500 rounded-md p-2 hover:bg-blue-500 hover:text-white"
                                                 >
                                                     <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
-                                                    href={`/testimonial-management/Add-Testimonial?page=edit&id=${testimonial._id}`} 
+                                                    href={`/testimonial-management/Add-Testimonial?page=edit&id=${testimonial._id}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                                                 >
                                                     <PencilIcon size={16} />
@@ -173,14 +192,8 @@ const TestimonialListPage: React.FC = () => {
                                         </td>
                                     </tr>
                                 ))}
-                                {filteredTestimonials.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="px-5 py-10 text-center text-gray-500">
-                                            No testimonials found.
-                                        </td>
-                                    </tr>
-                                )}
                             </tbody>
+
                         </table>
                     </div>
                 ) : (

@@ -31,6 +31,7 @@ import { ReviewProvider } from '@/context/ReviewContext';
 import { FaqProvider } from '@/context/FaqContext';
 import { SalesContactProvider } from '@/context/SalesContactContext';
 import { DepartmentBoardProvider } from '@/context/DepartmentBoardContext';
+import { DisplayContactProvider } from '@/context/DisplayContactContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -71,6 +72,7 @@ export default function RootLayout({
                                                       <FaqProvider>
                                                         <SalesContactProvider>
                                                           <DepartmentBoardProvider>
+                                                            <DisplayContactProvider>
                                                             <UserProvider>
                                                               <WhyChooseProvider>
                                                                 <ZoneProvider>
@@ -80,6 +82,7 @@ export default function RootLayout({
                                                                 </ZoneProvider>
                                                               </WhyChooseProvider>
                                                             </UserProvider>
+                                                            </DisplayContactProvider>
                                                           </DepartmentBoardProvider>
                                                         </SalesContactProvider>
                                                       </FaqProvider>

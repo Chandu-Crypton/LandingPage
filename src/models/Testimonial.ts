@@ -2,10 +2,12 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // Corrected interface name to ITestimonial
 export interface ITestimonial extends Document {
+    sectionTitle: string;
+    mainImage?: string;
     title: string;
     fullName: string;
     description: string;
-    rating: number;
+    rating?: number;
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -13,6 +15,14 @@ export interface ITestimonial extends Document {
 }
 
 const TestimonialSchema: Schema = new Schema({
+    sectionTitle: {
+        type: String,
+        required: true
+    },
+    mainImage: {
+        type: String,
+        required: false
+    },
     title: {
         type: String,
         required: true
@@ -27,7 +37,7 @@ const TestimonialSchema: Schema = new Schema({
     },
     rating: {
         type: Number,
-        required: true
+        required: false
     },
 }, { timestamps: true }); 
 

@@ -1054,9 +1054,9 @@ const boardItems: NavItem[] = [
     name: "Board",
     subItems: [
       { name: "Add New Board", path: "/board-management/Add-Board", pro: false },
-      { name: "Add New Department Member", path: "/departmentboard-component/Add-DepartmentBoard", pro: false },
+      { name: "Add New Core Team", path: "/departmentboard-component/Add-DepartmentBoard", pro: false },
       { name: "Board List", path: "/board-management/Board-List", pro: false },
-      { name: "Department Member List", path: "/departmentboard-component/DepartmentBoard-List", pro: false },
+      { name: "Core Team List", path: "/departmentboard-component/DepartmentBoard-List", pro: false },
     ],
   },
 ];
@@ -1103,8 +1103,10 @@ const contactItems: NavItem[] = [
     subItems: [
       // { name: "Add New Contact", path: "/contact-management/Add-Contact", pro: false },
       // { name: "Add New Sales Contact", path: "/salescontact-management/Add-SaleContact", pro: false },
+      { name: "Add New Display Contact", path: "/displaycontact-management/Add-DisplayContact", pro: false },
       { name: "Candidates Contact List", path: "/contact-management/Contact-List", pro: false },
-       { name: "Sales Contact List", path: "/salecontact-management/SaleContact-List", pro: false },
+      { name: "Sales Contact List", path: "/salecontact-management/SaleContact-List", pro: false },
+      { name: "Display Contact List", path: "/displaycontact-management/DisplayContact-List", pro: false },
     ],
   },
 ];
@@ -1161,7 +1163,7 @@ const servicesItems: NavItem[] = [
 
 const fcontactItems: NavItem[] = [
   {
-    icon: <PieChartIcon  />, // Use existing icon with blue color
+    icon: <PieChartIcon />, // Use existing icon with blue color
     name: "Contact",
     subItems: [
 
@@ -1198,7 +1200,7 @@ const fblogItems: NavItem[] = [
 
 const packageItems: NavItem[] = [
   {
-    icon: <PieChartIcon  />,
+    icon: <PieChartIcon />,
     name: "Package",
     subItems: [
       { name: "Add New Package", path: "/package-management/Add-Package", pro: false },
@@ -1457,7 +1459,7 @@ const AppSidebar: React.FC = () => {
           >
             <Image
               // src="/images/logo/final-logo.png"
-               src="/images/logo/Fetch-True-icon.png"
+              src="/images/logo/Fetch-True-icon.png"
               alt="Fetch True Logo"
               width={isExpanded || isHovered || isMobileOpen ? 110 : 32}
               height={isExpanded || isHovered || isMobileOpen ? 50 : 32}
@@ -1612,6 +1614,23 @@ const AppSidebar: React.FC = () => {
                       }`}
                   >
                     {isExpanded || isHovered || isMobileOpen ? (
+                      "SERVICES MANAGEMENT"
+                    ) : (
+                      <HorizontaLDots />
+                    )}
+                  </h2>
+                  {renderMenuItems(servicesItems, "services")}
+                </div>
+
+
+                <div>
+                  <h2
+                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                      }`}
+                  >
+                    {isExpanded || isHovered || isMobileOpen ? (
                       "BOARD MANAGEMENT"
                     ) : (
                       <HorizontaLDots />
@@ -1654,7 +1673,7 @@ const AppSidebar: React.FC = () => {
                 </div>
 
 
-                 <div>
+                <div>
                   <h2
                     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                       ? "lg:justify-center"
@@ -1737,21 +1756,6 @@ const AppSidebar: React.FC = () => {
                 </div>
 
 
-                <div>
-                  <h2
-                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}
-                  >
-                    {isExpanded || isHovered || isMobileOpen ? (
-                      "SERVICES MANAGEMENT"
-                    ) : (
-                      <HorizontaLDots />
-                    )}
-                  </h2>
-                  {renderMenuItems(servicesItems, "services")}
-                </div>
 
               </>
             )}
@@ -1774,41 +1778,41 @@ const AppSidebar: React.FC = () => {
             {(activeView === 'fetchTrue') && (
               <>
                 <div>
-                  
-                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}>
+
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
                     {isExpanded || isHovered || isMobileOpen ? "CONTACT MANAGEMENT" : <PieChartIcon className="text-grey-500" />}
                   </h2>
                   {renderMenuItems(fcontactItems, "contact")}
                 </div>
 
                 <div>
-                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
                     {isExpanded || isHovered || isMobileOpen ? "SERVICES MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(fservicesItems, "services")}
                 </div>
 
                 <div>
-                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
                     {isExpanded || isHovered || isMobileOpen ? "BLOG MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(fblogItems, "blog")}
                 </div>
 
                 <div>
-                  <h2   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
                     {isExpanded || isHovered || isMobileOpen ? "PACKAGE MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(packageItems, "package")}

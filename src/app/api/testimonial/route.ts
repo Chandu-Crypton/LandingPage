@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Testimonial from "@/models/Testimonial";
 
 import { connectToDatabase } from "@/utils/db";
+import imagekit from "@/utils/imagekit";
+import mongoose from "mongoose";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -43,51 +45,78 @@ export async function GET() {
 }
 
 
+
+
 export async function POST(req: NextRequest) {
-  await connectToDatabase();
+    await connectToDatabase();
 
-  try {
-    const {
-      title,
-      fullName,
-      description,
-      rating
-    } = await req.json();
+    try {
+        const formData = await req.formData();
+        console.log("form data:", formData)
 
-    if (
-      !title || typeof title !== 'string' ||
-      !fullName || typeof fullName !== 'string' ||
-      !description || typeof description !== 'string' ||
-      !rating || typeof rating !== 'number' 
-      
-    ) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid request body format.' },
-        { status: 400, headers: corsHeaders }
-      );
+        // Fields from formData
+        const sectionTitle = formData.get("sectionTitle")?.toString();
+        const title = formData.get("title")?.toString();
+        const fullName = formData.get("fullName")?.toString();
+        const description = formData.get("description")?.toString();
+        const rating = formData.get("rating")
+            ? Number(formData.get("rating"))
+            : undefined;
+
+        const mainImageFile = formData.get("mainImage") as File | null;
+
+        // ✅ Required field validation
+        if (!sectionTitle || !title || !fullName || !description) {
+            return NextResponse.json(
+                { success: false, message: "Missing required fields (sectionTitle, title, fullName, description)." },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+
+        // ✅ Upload image if provided
+        let mainImageUrl: string | undefined;
+        if (mainImageFile && mainImageFile.size > 0) {
+            const buffer = Buffer.from(await mainImageFile.arrayBuffer());
+            const uploadRes = await imagekit.upload({
+                file: buffer,
+                fileName: mainImageFile.name,
+                folder: "/testimonial_images",
+            });
+            mainImageUrl = uploadRes.url;
+        }
+
+        // ✅ Create new testimonial
+        const newTestimonial = await Testimonial.create({
+            sectionTitle,
+            title,
+            fullName,
+            description,
+            rating,
+            mainImage: mainImageUrl,
+        });
+
+        return NextResponse.json(
+            { success: true, data: newTestimonial, message: "Testimonial created successfully." },
+            { status: 201, headers: corsHeaders }
+        );
+
+    } catch (error) {
+        console.error("POST /api/testimonial error:", error);
+        const message = error instanceof Error ? error.message : "Internal Server Error";
+
+        if (error instanceof mongoose.Error.ValidationError) {
+            const errors = Object.values(error.errors).map(
+                (err) => (err as mongoose.Error.ValidatorError).message
+            );
+            return NextResponse.json(
+                { success: false, message: "Validation failed: " + errors.join(", ") },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+
+        return NextResponse.json(
+            { success: false, message },
+            { status: 500, headers: corsHeaders }
+        );
     }
-
-    
-        
-
-    const newEntry = await Testimonial.create({
-      title,
-      fullName,
-      description,
-      rating
-    });
-
-    return NextResponse.json(
-      { success: true, data: newEntry, message: 'Testimonial content created successfully.' },
-      { status: 201, headers: corsHeaders }
-    );
-
-  } catch (error) {
-    console.error('POST /api/testimonial error:', error);
-    const message = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(
-      { success: false, message },
-      { status: 500, headers: corsHeaders }
-    );
-  }
 }

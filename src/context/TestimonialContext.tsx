@@ -6,6 +6,8 @@ import axios from 'axios';
 
 type Testimonial = {
   _id: string;
+  sectionTitle: string;
+  mainImage?: string;
   title: string;
   fullName: string;
   description: string,
@@ -20,9 +22,9 @@ type Testimonial = {
 // Context type
 interface TestimonialContextType {
   testimonials: Testimonial[];
-  addTestimonial: (testimonialData: Omit<Testimonial, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>) => Promise<void>;
-  updateTestimonial: (id: string, testimonialData: Partial<Testimonial>) => Promise<void>;
-  deleteTestimonial: (id: string) => Promise<void>;
+    addTestimonial: (formData: FormData) => Promise<void>;
+    updateTestimonial: (id: string, formData: FormData) => Promise<void>;
+    deleteTestimonial: (id: string) => Promise<void>;
 }
 
 const TestimonialContext = createContext<TestimonialContextType | null>(null);
@@ -45,28 +47,26 @@ export const TestimonialProvider = ({ children }: { children: React.ReactNode })
   }, []);
 
   // Add new footer
-  const addTestimonial = async (
-    testimonialData: Omit<Testimonial, '_id' | 'createdAt' | 'updatedAt' | '__v' | 'isDeleted'>
-  ) => {
+  const addTestimonial = async (formData: FormData) => {
     try {
-      await axios.post('/api/testimonial', testimonialData);
+      await axios.post('/api/testimonial', formData);
       fetchTestimonials();
     } catch (error) {
       console.error('Error adding testimonial:', error);
     }
   };
 
-  // Update footer
-  const updateTestimonial = async (id: string, testimonialData: Partial<Testimonial>) => {
+  // Update testimonial
+ const updateTestimonial = async (id: string, formData: FormData) => {
     try {
-      await axios.put(`/api/testimonial/${id}`, testimonialData);
+      await axios.put(`/api/testimonial/${id}`, formData);
       fetchTestimonials();
     } catch (error) {
       console.error('Error updating testimonial:', error);
     }
   };
 
-  // Delete footer
+  // Delete testimonial
   const deleteTestimonial = async (id: string) => {
     try {
       await axios.delete(`/api/testimonial/${id}`);

@@ -81,6 +81,138 @@ async function uploadMultipleImages(files: File[], folder: string): Promise<stri
 }
 
 
+// export async function PUT(req: NextRequest) {
+//   await connectToDatabase();
+
+//   const url = new URL(req.url);
+//   const id = url.pathname.split("/").pop();
+
+//   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+//     return NextResponse.json(
+//       { success: false, message: "Invalid or missing Product ID." },
+//       { status: 400, headers: corsHeaders }
+//     );
+//   }
+
+//   try {
+//     const formData = await req.formData();
+//     console.log('form data:', formData)
+//     // Find product first
+//     const product = await Product.findById(id);
+//     if (!product) {
+//       return NextResponse.json(
+//         { success: false, message: "Product not found" },
+//         { status: 404, headers: corsHeaders }
+//       );
+//     }
+
+//     // Build update object dynamically
+//     const updateData: Partial<IProduct> = {};
+
+//     // ✅ Simple text fields
+//     [
+//       "title",
+//       "subTitle",
+//       "description",
+//       "category",
+//       "overviewTitle",
+//       "overviewDesc",
+//       "keyFeatureTitle",
+//       "technologyTitle",
+//       "technologyDesc",
+//     ].forEach((field) => {
+//       if (formData.has(field)) {
+//         updateData[field as keyof IProduct] = formData.get(field)?.toString();
+//       }
+//     });
+
+//     // ✅ Arrays
+//     const arrayFields = ["homeFeatureTags", "keyFeaturePoints", "technologyPoints", "futurePoints"];
+//     arrayFields.forEach((field) => {
+//       if (formData.has(field)) {
+//         try {
+//           updateData[field as keyof IProduct] = JSON.parse(formData.get(field) as string);
+//         } catch {
+//           updateData[field as keyof IProduct] = [];
+//         }
+//       }
+//     });
+
+//     // ✅ Images
+//     const imageFields = [
+//       { name: "mainImage", folder: "/products/main" },
+//       { name: "overviewImage", folder: "/products/overview" },
+//       { name: "keyFeatureImage", folder: "/products/keyFeatures" },
+//       { name: "technologyImage", folder: "/products/technology" },
+//       { name: "futureImage", folder: "/products/future" },
+//     ];
+
+//     for (const { name, folder } of imageFields) {
+//       if (formData.has(name)) {
+//         const file = formData.get(name) as File | null;
+//         if (file && file.size > 0) {
+//           updateData[name as keyof IProduct] = (await uploadSingleImage(file, folder));
+//         }
+//       }
+//     }
+
+//     // ✅ Multiple banner images
+//     const bannerFiles = formData.getAll("bannerImages") as File[];
+//     if (bannerFiles.length > 0) {
+//       const urls = await uploadMultipleImages(bannerFiles, "/products/banner");
+//       updateData["bannerImages"] = urls;
+//     }
+
+//     // ✅ Project Details (array of objects)
+//     if (formData.has("projectDetails")) {
+//       const projectDetailsRaw = JSON.parse(formData.get("projectDetails") as string);
+//       const projectDetails: { title: string; description: string; image: string }[] = [];
+
+//       for (let i = 0; i < projectDetailsRaw.length; i++) {
+//         const detail = projectDetailsRaw[i];
+//         console.log("details:", detail);
+//         // check if image file exists for this index
+//         // const imageFile = formData.get(`projectDetailsImage-${i}`) as File | null;
+//         const imageFileEntry = formData.get(`projectDetailsImage-${i}`) || formData.get(`projectDetailsImages_${i}`);
+
+//         let imageFile: File | null = null;
+//         if (imageFileEntry && imageFileEntry instanceof File) {
+//           imageFile = imageFileEntry;
+//         }
+
+//         let imageUrl = detail.image || ""; // fallback: keep old image
+//         if (imageFile && imageFile.size > 0) {
+//           imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
+//         }
+
+//         projectDetails.push({
+//           title: detail.title,
+//           description: detail.description,
+//           image: imageUrl,
+//         });
+//       }
+
+//       updateData.projectDetails = projectDetails;
+//     }
+
+//     // ✅ Update product
+//     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
+
+//     return NextResponse.json(
+//       { success: true, data: updatedProduct, message: "Product updated successfully." },
+//       { status: 200, headers: corsHeaders }
+//     );
+//   } catch (error) {
+//     console.error("PUT /api/product/[id] error:", error);
+//     return NextResponse.json(
+//       { success: false, message: "Internal Server Error" },
+//       { status: 500, headers: corsHeaders }
+//     );
+//   }
+// }
+
+
+
 export async function PUT(req: NextRequest) {
   await connectToDatabase();
 
@@ -96,8 +228,8 @@ export async function PUT(req: NextRequest) {
 
   try {
     const formData = await req.formData();
-    console.log('form data:', formData)
-    // Find product first
+    console.log("form data:", formData);
+
     const product = await Product.findById(id);
     if (!product) {
       return NextResponse.json(
@@ -106,7 +238,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Build update object dynamically
     const updateData: Partial<IProduct> = {};
 
     // ✅ Simple text fields
@@ -117,7 +248,6 @@ export async function PUT(req: NextRequest) {
       "category",
       "overviewTitle",
       "overviewDesc",
-      "keyFeatureTitle",
       "technologyTitle",
       "technologyDesc",
     ].forEach((field) => {
@@ -126,63 +256,67 @@ export async function PUT(req: NextRequest) {
       }
     });
 
-    // ✅ Arrays
-    const arrayFields = ["homeFeatureTags", "keyFeaturePoints", "technologyPoints", "futurePoints"];
+    // ✅ Arrays of strings
+    const arrayFields = ["homeFeatureTags", "technologyPoints", "futurePoints"];
     arrayFields.forEach((field) => {
       if (formData.has(field)) {
         try {
-          updateData[field as keyof IProduct] = JSON.parse(formData.get(field) as string);
+          updateData[field as keyof IProduct] = JSON.parse(
+            formData.get(field) as string
+          );
         } catch {
           updateData[field as keyof IProduct] = [];
         }
       }
     });
 
-    // ✅ Images
-    const imageFields = [
-      { name: "mainImage", folder: "/products/main" },
-      { name: "overviewImage", folder: "/products/overview" },
-      { name: "keyFeatureImage", folder: "/products/keyFeatures" },
-      { name: "technologyImage", folder: "/products/technology" },
-      { name: "futureImage", folder: "/products/future" },
+    // ✅ Arrays of objects
+    const objectArrayFields = [
+      "heading",
+      "measurableResults",
+      "projectTeam",
+      "keyFeatures",
     ];
-
-    for (const { name, folder } of imageFields) {
-      if (formData.has(name)) {
-        const file = formData.get(name) as File | null;
-        if (file && file.size > 0) {
-          updateData[name as keyof IProduct] = (await uploadSingleImage(file, folder));
+    objectArrayFields.forEach((field) => {
+      if (formData.has(field)) {
+        try {
+          updateData[field as keyof IProduct] = JSON.parse(
+            formData.get(field) as string
+          );
+        } catch {
+          updateData[field as keyof IProduct] = [];
         }
       }
-    }
+    });
 
-    // ✅ Multiple banner images
-    const bannerFiles = formData.getAll("bannerImages") as File[];
-    if (bannerFiles.length > 0) {
-      const urls = await uploadMultipleImages(bannerFiles, "/products/banner");
-      updateData["bannerImages"] = urls;
-    }
-
-    // ✅ Project Details (array of objects)
+    // ✅ Project Details (array of objects with image uploads)
     if (formData.has("projectDetails")) {
-      const projectDetailsRaw = JSON.parse(formData.get("projectDetails") as string);
-      const projectDetails: { title: string; description: string; image: string }[] = [];
+      const projectDetailsRaw = JSON.parse(
+        formData.get("projectDetails") as string
+      );
+      const projectDetails: {
+        title: string;
+        description: string;
+        image: string;
+      }[] = [];
 
       for (let i = 0; i < projectDetailsRaw.length; i++) {
         const detail = projectDetailsRaw[i];
-        console.log("details:", detail);
-        // check if image file exists for this index
-        // const imageFile = formData.get(`projectDetailsImage-${i}`) as File | null;
-        const imageFileEntry = formData.get(`projectDetailsImage-${i}`) || formData.get(`projectDetailsImages_${i}`);
+        const imageFileEntry =
+          formData.get(`projectDetailsImage-${i}`) ||
+          formData.get(`projectDetailsImages_${i}`);
 
         let imageFile: File | null = null;
         if (imageFileEntry && imageFileEntry instanceof File) {
           imageFile = imageFileEntry;
         }
 
-        let imageUrl = detail.image || ""; // fallback: keep old image
+        let imageUrl = detail.image || "";
         if (imageFile && imageFile.size > 0) {
-          imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
+          imageUrl = await uploadSingleImage(
+            imageFile,
+            "/products/projectDetails"
+          );
         }
 
         projectDetails.push({
@@ -195,8 +329,37 @@ export async function PUT(req: NextRequest) {
       updateData.projectDetails = projectDetails;
     }
 
+    // ✅ Single Images
+    const imageFields = [
+      { name: "mainImage", folder: "/products/main" },
+      { name: "overviewImage", folder: "/products/overview" },
+      { name: "technologyImage", folder: "/products/technology" },
+      { name: "futureImage", folder: "/products/future" },
+    ];
+
+    for (const { name, folder } of imageFields) {
+      if (formData.has(name)) {
+        const file = formData.get(name) as File | null;
+        if (file && file.size > 0) {
+          updateData[name as keyof IProduct] = await uploadSingleImage(
+            file,
+            folder
+          );
+        }
+      }
+    }
+
+    // ✅ Multiple banner images
+    const bannerFiles = formData.getAll("bannerImages") as File[];
+    if (bannerFiles.length > 0) {
+      const urls = await uploadMultipleImages(bannerFiles, "/products/banner");
+      updateData["bannerImages"] = urls;
+    }
+
     // ✅ Update product
-    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     return NextResponse.json(
       { success: true, data: updatedProduct, message: "Product updated successfully." },

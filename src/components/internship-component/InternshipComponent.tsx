@@ -371,6 +371,10 @@ interface IInternship {
     rating: string;
     syllabusLink: string;
     description: string;
+    stipend: string;
+    schedule: string;
+    enrolledStudents: string;
+    durationDetails: string;
     benefits: string[];
     eligibility: string[];
     skills: { skillTitle: string; skillIcon: string }[];
@@ -418,6 +422,11 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const [benefits, setBenefits] = useState<string[]>(['']);
     const [eligibility, setEligibility] = useState<string[]>(['']);
     const [description, setDescription] = useState('');
+    const [stipend, setStipend] = useState('');
+    const [schedule, setSchedule] = useState('');
+    const [enrolledStudents, setEnrolledStudents] = useState('');
+    const [durationDetails, setDurationDetails] = useState('');
+
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
     const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
@@ -487,6 +496,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setCurriculum(data.curriculum ?? []);
                     setSummary(data.summary ?? []);
                     setTags(data.tags);
+                    setStipend(data.stipend || '');
+                    setSchedule(data.schedule || '');
+                    setEnrolledStudents(data.enrolledStudents || '');
+                    setDurationDetails(data.durationDetails || '');
                     setFormError(null);
                 } else {
                     setFormError(res.data.message || 'Internship not found.');
@@ -557,6 +570,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         formData.append('category', category);
         formData.append('rating', rating);
         formData.append('syllabusLink', syllabusLink);
+        formData.append('stipend', stipend);
+        formData.append('schedule', schedule);
+        formData.append('enrolledStudents', enrolledStudents);
+        formData.append('durationDetails', durationDetails);
 
         // Arrays
         formData.append('benefits', JSON.stringify(benefits.filter(b => b.trim() !== '')));
@@ -674,6 +691,26 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     <div>
                         <Label htmlFor="mode">Mode</Label>
                         <Input id="mode" type="text" value={mode} onChange={(e) => setMode(e.target.value)} required />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="stipend">Stipend</Label>
+                        <Input id="stipend" type="text" value={stipend} onChange={(e) => setStipend(e.target.value)} required />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="schedule">Schedule</Label>
+                        <Input id="schedule" type="text" value={schedule} onChange={(e) => setSchedule(e.target.value)} required />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="enrolledStudents">Enrolled Students</Label>
+                        <Input id="enrolledStudents" type="text" value={enrolledStudents} onChange={(e) => setEnrolledStudents(e.target.value)} required />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="durationDetails">Duration Details</Label>
+                        <Input id="durationDetails" type="text" value={durationDetails} onChange={(e) => setDurationDetails(e.target.value)} required />
                     </div>
 
                     {/* Benefits */}
