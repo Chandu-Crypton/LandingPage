@@ -70,14 +70,14 @@ export async function PUT(req: NextRequest) {
         const title = formData.get("title")?.toString();
         const description = formData.get("description")?.toString();
         const readtime = formData.get("readtime")?.toString();
-        const featured = formData.get("featured") === 'true';
+        // const featured = formData.get("featured") === 'true';
         const category = formData.get("category")?.toString();
         const bestQuote = formData.get("bestQuote")?.toString();
 
         if (addHeading !== undefined) updateData.addHeading = addHeading;
         if (blogHeading) updateData.blogHeading = blogHeading;
         if (title) updateData.title = title;
-        if(featured) updateData.featured = featured;
+        // if(featured) updateData.featured = featured;
         if (description) updateData.description = description;
         if (readtime) updateData.readtime = readtime;
         if (category) updateData.category = category;

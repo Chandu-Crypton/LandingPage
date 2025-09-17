@@ -33,7 +33,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
     const [description, setDescription] = useState('');
     const [bestQuote, setBestQuote] = useState('');
     const [category, setCategory] = useState('');
-    const [featured, setFeatured] = useState(false);
+    // const [featured, setFeatured] = useState(false);
     const [readtime, setReadtime] = useState('');
     const [tags, setTags] = useState<string[]>([]);
     // const [keyTechnologies, setKeyTechnologies] = useState<{ itemTitle: string; itemPoints: string[]; itemDescription: string; }[]>([]);
@@ -151,7 +151,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
             setTitle(blogData.title || '');
             setBestQuote(blogData.bestQuote || '');
             setCategory(blogData.category || '');
-            setFeatured(blogData.featured || false);
+            // setFeatured(blogData.featured || false);
             setReadtime(blogData.readtime || '');
             setTags(blogData.tags || []);
             setKeyTechnologies(
@@ -258,7 +258,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
         formData.append('description', description);
         formData.append('bestQuote', bestQuote);
         formData.append('category', category);
-        formData.append('featured', String(featured));
+        // formData.append('featured', String(featured));
         formData.append('readtime', readtime);
         formData.append('tags', JSON.stringify(tags));
         formData.append('keyTechnologies', JSON.stringify(keyTechnologies));
@@ -320,7 +320,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
         setTitle('');
         setBestQuote('');
         setCategory('');
-        setFeatured(false);
+        // setFeatured(false);
         setReadtime('');
         setTags([]);
         setKeyTechnologies({ itemTitle: '', itemPoints: [], itemDescription: '' });
@@ -454,7 +454,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
                     </div>
 
                     {/* Featured */}
-                    <div>
+                    {/* <div>
                         <Label htmlFor="featured">Featured</Label>
                         <select
                             id="featured"
@@ -466,7 +466,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
-                    </div>
+                    </div> */}
 
 
                     <div>

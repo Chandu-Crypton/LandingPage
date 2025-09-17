@@ -14,7 +14,7 @@ export interface IFBlog extends Document {
     }[];
     readtime: string;
     category: string;
-    featured: boolean;
+    // featured: boolean;
     tags: string[];
     bestQuote: string;
      keyTechnologies: {
@@ -54,10 +54,10 @@ const FBlogSchema: Schema = new Schema({
         required: true,
         trim: true,
     },
-    featured: {
-        type: Boolean,
-        default: false,
-    },
+    // featured: {
+    //     type: Boolean,
+    //     default: false,
+    // },
     category: {
         type: String,
         required: true,

@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         const description = formData.get('description')?.toString();
         const bestQuote = formData.get('bestQuote')?.toString();
         const category = formData.get('category')?.toString();
-        const featured = formData.get('featured')?.toString() === 'true';
+        // const featured = formData.get('featured')?.toString() === 'true';
         const readtime = formData.get('readtime')?.toString();
         const tagsString = formData.get('tags')?.toString();
         const keyTechnologiesString = formData.get('keyTechnologies')?.toString();
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
             blogHeading,
             title,
             tags,
-            featured,
+            // featured,
             readtime,
             bestQuote,
             keyTechnologies,
