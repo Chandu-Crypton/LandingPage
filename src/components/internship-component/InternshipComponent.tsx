@@ -830,7 +830,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     {/* Mentorship */}
                     <div>
                         <Label htmlFor="mentorship">Mentorship</Label>
-                        <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)} required />
+                        <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)}  />
                     </div>
                    
                     <div>

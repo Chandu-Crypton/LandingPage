@@ -4,6 +4,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IBlog extends Document {
     addHeading?: string;
     blogHeading: string;
+    addCategory?: string;
     title: string;
     description: string;
     mainImage?: string;
@@ -39,6 +40,11 @@ const BlogSchema: Schema = new Schema({
     blogHeading: {
         type: String,
         required: true,
+    },
+    addCategory: {
+        type: String,
+        required: false,
+        trim: true,
     },
     title: {
         type: String,

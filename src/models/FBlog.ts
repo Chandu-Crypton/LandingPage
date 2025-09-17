@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IFBlog extends Document {
     addHeading?: string;
+    addCategory?: string;
     blogHeading: string;
     title: string;
     description: string;
@@ -31,6 +32,11 @@ export interface IFBlog extends Document {
 
 const FBlogSchema: Schema = new Schema({
     addHeading: {
+        type: String,
+        required: false,
+        trim: true,
+    },
+    addCategory: {
         type: String,
         required: false,
         trim: true,

@@ -1520,7 +1520,10 @@ const AppSidebar: React.FC = () => {
                 </div>
 
 
-              
+              <div>    
+                 <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>  FOOTER MANAGEMENT</h2>    
+                  {renderMenuItems(footerItems, "footer")}  
+               </div>
 
                 <div>
                   <h2
@@ -1759,24 +1762,6 @@ const AppSidebar: React.FC = () => {
 
               </>
             )}
-
-
-              <div>
-                  <h2
-                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
-                      }`}
-                  >
-                    {isExpanded || isHovered || isMobileOpen ? (
-                      "FOOTER MANAGEMENT"
-                    ) : (
-                      <HorizontaLDots />
-                    )}
-                  </h2>
-                  {renderMenuItems(footerItems, "footer")}
-                </div>
-
 
             {/* Show special sections only when activeView is 'fetchTrue' OR always show but conditionally render based on activeView */}
             {(activeView === 'fetchTrue' || activeView === 'all') && (
