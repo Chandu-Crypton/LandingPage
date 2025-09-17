@@ -5,7 +5,7 @@ export interface IService extends Document {
     title: string;
     description: string[];
     mainImage: string;
-    icon?: string;
+    icons?: string[];
     bannerImage?: string;
     serviceImage1: string;
     serviceImage2: string;
@@ -17,7 +17,7 @@ export interface IService extends Document {
     technology:{
         title: string,
         icon: string,
-    },
+    }[],
     whyChooseUs:{
         icon: string,
         description: string,
@@ -30,7 +30,7 @@ export interface IService extends Document {
 
 
 const ServiceSchema: Schema<IService> = new Schema<IService>({
-    icon: { type: String, required: false },
+    icons: { type: [String], required: false },
     serviceImage1: { type: String, required: true },
     serviceImage2: { type: String, required: true },
     service: [
@@ -40,10 +40,12 @@ const ServiceSchema: Schema<IService> = new Schema<IService>({
             description: { type: String, required: true },
         }
     ],
-    technology: {   
-        title: { type: String, required: true },
-        icon: { type: String, required: true },
-    },
+    technology: [
+        {
+            title: { type: String, required: true },
+            icon: { type: String, required: true },
+        }
+    ],
     whyChooseUs: [
         {
             icon: { type: String, required: true },

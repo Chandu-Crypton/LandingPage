@@ -46,76 +46,85 @@ export async function GET() {
 }
 
 
-
 export async function POST(req: NextRequest) {
   await connectToDatabase();
 
   try {
     const formData = await req.formData();
 
-    // Helpers
-    const uploadIfExists = async (file: File | null) => {
+    const title = formData.get("title")?.toString();
+    const descriptionString = formData.get("description")?.toString();
+    const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
+
+    // ----- File helpers -----
+    const uploadFile = async (file: File | null, folder = "/service_images") => {
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
         const uploadRes = await imagekit.upload({
           file: buffer,
           fileName: file.name,
-          folder: "/service_images",
+          folder,
         });
         return uploadRes.url;
       }
       return undefined;
     };
 
-    // Text fields
-    const title = formData.get("title")?.toString();
-    const descriptionString = formData.get("description")?.toString();
-    const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
+    // ----- Main & Banner Images -----
+    const mainImageUrl = await uploadFile(formData.get("mainImage") as File | null);
+    const bannerImageUrl = await uploadFile(formData.get("bannerImage") as File | null);
+    const serviceImage1Url = await uploadFile(formData.get("serviceImage1") as File | null);
+    const serviceImage2Url = await uploadFile(formData.get("serviceImage2") as File | null);
 
-    // File fields
-    const mainImageFile = formData.get("mainImage") as File | null;
-    const bannerImageFile = formData.get("bannerImage") as File | null;
-    const serviceImage1File = formData.get("serviceImage1") as File | null;
-    const serviceImage2File = formData.get("serviceImage2") as File | null;
+    // ----- Single icon -----
+    const iconUrl = await uploadFile(formData.get("icon") as File | null);
 
-    const mainImage = await uploadIfExists(mainImageFile);
-    const bannerImage = await uploadIfExists(bannerImageFile);
-    const serviceImage1 = await uploadIfExists(serviceImage1File);
-    const serviceImage2 = await uploadIfExists(serviceImage2File);
-
-    // Arrays & objects
+    // ----- Service Array -----
     const serviceArrayString = formData.get("service")?.toString();
     const serviceArray = serviceArrayString ? JSON.parse(serviceArrayString) : [];
 
+    for (let i = 0; i < serviceArray.length; i++) {
+      const file = formData.get(`serviceItemIcon_${i}`) as File | null;
+      const uploaded = await uploadFile(file);
+      if (uploaded) serviceArray[i].icon = uploaded;
+    }
+
+    // ----- Technology -----
     const technologyString = formData.get("technology")?.toString();
     const technology = technologyString ? JSON.parse(technologyString) : null;
+    if (technology) {
+      const file = formData.get(`technologyIcon_0`) as File | null;
+      const uploaded = await uploadFile(file);
+      if (uploaded) technology.icon = uploaded;
+    }
 
+    // ----- Why Choose Us -----
     const whyChooseUsString = formData.get("whyChooseUs")?.toString();
     const whyChooseUs = whyChooseUsString ? JSON.parse(whyChooseUsString) : [];
 
-    // Validation
-    if (
-      !title ||
-      description.length === 0 ||
-      !mainImage ||
-      !serviceImage1 ||
-      !serviceImage2 ||
-      !technology
-    ) {
+    for (let i = 0; i < whyChooseUs.length; i++) {
+      const file = formData.get(`whyChooseUsIcon_${i}`) as File | null;
+      const uploaded = await uploadFile(file);
+      if (uploaded) whyChooseUs[i].icon = uploaded;
+    }
+
+    // ✅ Validation
+    if (!title || description.length === 0 || !mainImageUrl || !bannerImageUrl) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields." },
+        { success: false, message: "Missing required fields (title, description, mainImage, bannerImage)." },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    // Save
+    // ✅ Create new service
     const newService = await ServiceModel.create({
       title,
       description,
-      mainImage,
-      bannerImage,
-      serviceImage1,
-      serviceImage2,
+      mainImage: mainImageUrl,
+      bannerImage: bannerImageUrl,
+      serviceImage1: serviceImage1Url,
+      serviceImage2: serviceImage2Url,
+      icon: iconUrl,
       service: serviceArray,
       technology,
       whyChooseUs,
@@ -128,20 +137,15 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("POST /api/service error:", error);
     const message = error instanceof Error ? error.message : "Internal Server Error";
-
     if (error instanceof mongoose.Error.ValidationError) {
-      const errors = Object.values(error.errors).map(
-        (err) => (err as mongoose.Error.ValidatorError).message
-      );
+      const errors = Object.values(error.errors).map(err => (err as mongoose.Error.ValidatorError).message);
       return NextResponse.json(
         { success: false, message: "Validation failed: " + errors.join(", ") },
         { status: 400, headers: corsHeaders }
       );
     }
-
     return NextResponse.json(
       { success: false, message },
       { status: 500, headers: corsHeaders }
     );
-  }
-}
+  } }

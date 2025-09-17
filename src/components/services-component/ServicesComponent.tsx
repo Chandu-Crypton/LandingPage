@@ -371,7 +371,6 @@
 
 
 
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -416,19 +415,28 @@ interface TechnologyItem {
     iconPreview: string | null;
 }
 
+interface IconItem {
+    file: File | null;
+    preview: string | null;
+    existingUrl: string | null;
+}
+
 const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) => {
     // States for service fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState<string[]>([]);
-    
+
     // Service items
     const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
-    
+
     // Technology - changed to array to match your schema
     const [technologyItems, setTechnologyItems] = useState<TechnologyItem[]>([]);
-    
+
     // Why choose us
     const [whyChooseUsItems, setWhyChooseUsItems] = useState<WhyChooseUsItem[]>([]);
+
+    // Icons field (array of icons)
+    const [icons, setIcons] = useState<IconItem[]>([]);
 
     // States for image files and their previews
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -452,47 +460,55 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         const populateForm = (serviceData: IService) => {
             setTitle(serviceData.title || '');
             setDescription(serviceData.description || []);
-            
+
             // Service items
-            setServiceItems(serviceData.service?.map(item => ({
-                ...item,
-                iconPreview: item.icon || null,
-                iconFile: null
-            })) || []);
-            
-            // Technology - handle both array and object formats
-            if (Array.isArray(serviceData.technology)) {
-                setTechnologyItems(serviceData.technology.map(item => ({
-                    ...item,
+            // Service items
+            setServiceItems(
+                serviceData.service?.map((item): ServiceItem => ({
+                    icon: item.icon || '',
+                    title: item.title || '',
+                    description: item.description || '',
                     iconPreview: item.icon || null,
                     iconFile: null
-                })) || []);
-            } else if (serviceData.technology) {
-                // Handle case where technology is a single object
-                setTechnologyItems([{
-                    title: serviceData.technology.title || '',
-                    icon: serviceData.technology.icon || '',
-                    iconPreview: serviceData.technology.icon || null,
-                    iconFile: null
-                }]);
-            } else {
-                setTechnologyItems([]);
-            }
+                })) || []
+            );
+
+            // Technology items
+            setTechnologyItems(
+                serviceData.technology.map((item): TechnologyItem => ({
+                        title: item.title || '',
+                        icon: item.icon || '',
+                        iconPreview: item.icon || null,
+                        iconFile: null
+                    }))
+                   
+            );
 
             // Why choose us
-            setWhyChooseUsItems(serviceData.whyChooseUs?.map(item => ({
-                ...item,
-                iconPreview: item.icon || null,
-                iconFile: null
+            setWhyChooseUsItems(
+                serviceData.whyChooseUs?.map((item): WhyChooseUsItem => ({
+                    icon: item.icon || '',
+                    description: item.description || '',
+                    iconPreview: item.icon || null,
+                    iconFile: null
+                })) || []
+            );
+
+
+            // Icons field
+            setIcons(serviceData.icons?.map(icon => ({
+                file: null,
+                preview: null,
+                existingUrl: icon || null
             })) || []);
-            
+
             // Main images
             setMainImagePreview(serviceData.mainImage || null);
-            setIconPreview(serviceData.icon || null);
+            setIconPreview(serviceData.icons?.[0] || null);
             setBannerImagePreview(serviceData.bannerImage || null);
             setServiceImage1Preview(serviceData.serviceImage1 || null);
             setServiceImage2Preview(serviceData.serviceImage2 || null);
-            
+
             setFormError(null);
         };
 
@@ -535,11 +551,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setMainImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
-    const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files ? e.target.files[0] : null;
-        setIconFile(file);
-        setIconPreview(file ? URL.createObjectURL(file) : null);
-    };
+
 
     const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
@@ -557,6 +569,30 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         const file = e.target.files ? e.target.files[0] : null;
         setServiceImage2File(file);
         setServiceImage2Preview(file ? URL.createObjectURL(file) : null);
+    };
+
+    // Icons handlers
+    const handleIconsChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        const newIcons = [...icons];
+        newIcons[index] = {
+            file: file,
+            preview: file ? URL.createObjectURL(file) : newIcons[index].preview,
+            existingUrl: newIcons[index].existingUrl
+        };
+        setIcons(newIcons);
+    };
+
+    const addIcon = () => {
+        setIcons([...icons, {
+            file: null,
+            preview: null,
+            existingUrl: null
+        }]);
+    };
+
+    const removeIcon = (index: number) => {
+        setIcons(icons.filter((_, i) => i !== index));
     };
 
     // Service items handlers
@@ -578,9 +614,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     };
 
     const addServiceItem = () => {
-        setServiceItems([...serviceItems, { 
-            icon: '', 
-            title: '', 
+        setServiceItems([...serviceItems, {
+            icon: '',
+            title: '',
             description: '',
             iconFile: null,
             iconPreview: null
@@ -610,7 +646,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     };
 
     const addTechnology = () => {
-        setTechnologyItems([...technologyItems, { 
+        setTechnologyItems([...technologyItems, {
             title: '',
             icon: '',
             iconFile: null,
@@ -641,8 +677,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     };
 
     const addWhyChooseUsItem = () => {
-        setWhyChooseUsItems([...whyChooseUsItems, { 
-            icon: '', 
+        setWhyChooseUsItems([...whyChooseUsItems, {
+            icon: '',
             description: '',
             iconFile: null,
             iconPreview: null
@@ -664,28 +700,29 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         // Basic fields
         formData.append('title', title);
         formData.append('description', JSON.stringify(description));
-        
+
         // Service items with file handling
         const serviceItemsData = serviceItems.map(item => ({
-            icon: item.iconFile ? '' : item.icon, // Will be replaced with file upload
+            icon: item.iconFile ? "pending" : (item.icon || "pending"),
             title: item.title,
             description: item.description
         }));
-        formData.append('service', JSON.stringify(serviceItemsData));
-        
-        // Technology with file handling
+        formData.append("service", JSON.stringify(serviceItemsData));
+
+        // Technology
         const technologyData = technologyItems.map(item => ({
             title: item.title,
-            icon: item.iconFile ? '' : item.icon // Will be replaced with file upload
+            icon: item.iconFile ? "pending" : (item.icon || "pending")
         }));
-        formData.append('technology', JSON.stringify(technologyData));
-        
-        // Why choose us with file handling
+        formData.append("technology", JSON.stringify(technologyData));
+
+        // Why choose us
         const whyChooseUsData = whyChooseUsItems.map(item => ({
-            icon: item.iconFile ? '' : item.icon, // Will be replaced with file upload
+            icon: item.iconFile ? "pending" : (item.icon || "pending"),
             description: item.description
         }));
-        formData.append('whyChooseUs', JSON.stringify(whyChooseUsData));
+        formData.append("whyChooseUs", JSON.stringify(whyChooseUsData));
+
 
         // Handle main image uploads
         const handleImageAppend = (fieldName: string, file: File | null, preview: string | null) => {
@@ -704,38 +741,40 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         handleImageAppend('serviceImage1', serviceImage1File, serviceImage1Preview);
         handleImageAppend('serviceImage2', serviceImage2File, serviceImage2Preview);
 
-        // Handle technology icons
-        technologyItems.forEach((item, index) => {
-            if (item.iconFile) {
-                formData.append(`technologyIcon_${index}`, item.iconFile);
-            } else if (item.iconPreview) {
-                formData.append(`technologyIcon_${index}`, item.iconPreview);
+        // Handle icons
+        icons.forEach((icon, index) => {
+            if (icon.file) {
+                formData.append(`icons_${index}`, icon.file);
+            } else if (icon.preview) {
+                formData.append(`icons_${index}`, icon.preview);
+            } else if (icon.existingUrl) {
+                formData.append(`icons_${index}`, icon.existingUrl);
             } else if (serviceIdToEdit) {
-                formData.append(`technologyIcon_${index}`, '');
+                formData.append(`icons_${index}`, '');
             }
         });
 
-        // Handle service item icons
+        // Service item icons
         serviceItems.forEach((item, index) => {
             if (item.iconFile) {
                 formData.append(`serviceItemIcon_${index}`, item.iconFile);
-            } else if (item.iconPreview) {
-                formData.append(`serviceItemIcon_${index}`, item.iconPreview);
-            } else if (serviceIdToEdit) {
-                formData.append(`serviceItemIcon_${index}`, '');
             }
         });
 
-        // Handle why choose us icons
+        // Technology icons
+        technologyItems.forEach((item, index) => {
+            if (item.iconFile) {
+                formData.append(`technologyIcon_${index}`, item.iconFile);
+            }
+        });
+
+        // Why choose us icons
         whyChooseUsItems.forEach((item, index) => {
             if (item.iconFile) {
                 formData.append(`whyChooseUsIcon_${index}`, item.iconFile);
-            } else if (item.iconPreview) {
-                formData.append(`whyChooseUsIcon_${index}`, item.iconPreview);
-            } else if (serviceIdToEdit) {
-                formData.append(`whyChooseUsIcon_${index}`, '');
             }
         });
+
 
         try {
             if (serviceIdToEdit) {
@@ -768,7 +807,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setServiceItems([]);
         setTechnologyItems([]);
         setWhyChooseUsItems([]);
-        
+        setIcons([]);
+
         setMainImageFile(null);
         setMainImagePreview(null);
         setIconFile(null);
@@ -779,7 +819,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setServiceImage1Preview(null);
         setServiceImage2File(null);
         setServiceImage2Preview(null);
-        
+
         setFormError(null);
     };
 
@@ -843,7 +883,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
     const renderItemImageUpload = (
         index: number,
-        type: 'service' | 'whyChooseUs' | 'technology',
+        type: 'service' | 'whyChooseUs' | 'technology' | 'icons',
         preview: string | null,
         file: File | null,
         handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -851,8 +891,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     ) => (
         <div>
             <Label>
-                {type === 'service' ? 'Service Item Icon' : 
-                 type === 'whyChooseUs' ? 'Why Choose Us Icon' : 'Technology Icon'}
+                {type === 'service' ? 'Service Item Icon' :
+                    type === 'whyChooseUs' ? 'Why Choose Us Icon' :
+                        type === 'technology' ? 'Technology Icon' : 'Icon'}
             </Label>
             {(preview && !file) && (
                 <div className="mb-2">
@@ -952,6 +993,53 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 disabled={loading}
                             >
                                 Add New Description
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Icons */}
+                    <div>
+                        <Label>Icons</Label>
+                        <div className="space-y-4">
+                            {icons.map((icon, index) => (
+                                <div key={index} className="border p-4 rounded-md">
+                                    <div className="grid grid-cols-1 gap-4 mb-4">
+                                        <div>
+                                            {renderItemImageUpload(
+                                                index,
+                                                'icons',
+                                                icon.preview || icon.existingUrl,
+                                                icon.file,
+                                                (e) => handleIconsChange(index, e),
+                                                () => {
+                                                    const newIcons = [...icons];
+                                                    newIcons[index] = {
+                                                        file: null,
+                                                        preview: null,
+                                                        existingUrl: null
+                                                    };
+                                                    setIcons(newIcons);
+                                                }
+                                            )}
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeIcon(index)}
+                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                        disabled={loading}
+                                    >
+                                        Remove Icon
+                                    </button>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={addIcon}
+                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                disabled={loading}
+                            >
+                                Add Icon
                             </button>
                         </div>
                     </div>
@@ -1151,17 +1239,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         true
                     )}
 
-                    {renderImageUpload(
-                        'icon',
-                        'Icon',
-                        iconFile,
-                        iconPreview,
-                        handleIconChange,
-                        () => {
-                            setIconFile(null);
-                            setIconPreview(null);
-                        }
-                    )}
+
 
                     {renderImageUpload(
                         'bannerImage',
