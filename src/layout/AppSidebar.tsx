@@ -1105,7 +1105,7 @@ const contactItems: NavItem[] = [
       // { name: "Add New Sales Contact", path: "/salescontact-management/Add-SaleContact", pro: false },
       { name: "Add New Display Contact", path: "/displaycontact-management/Add-DisplayContact", pro: false },
       { name: "Candidates Contact List", path: "/contact-management/Contact-List", pro: false },
-      { name: "Sales Contact List", path: "/salecontact-management/SaleContact-List", pro: false },
+      { name: "Sales Contact List", path: "/salescontact-management/SaleContact-List", pro: false },
       { name: "Display Contact List", path: "/displaycontact-management/DisplayContact-List", pro: false },
     ],
   },
@@ -1225,6 +1225,20 @@ const fnewsletterItems: NavItem[] = [
 ];
 
 
+const ourPartnersItems: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Our Partners",
+    subItems: [
+      { name: "Add New Our Partner", path: "/ourpartners-management/Add-OurPartners", pro: false },
+      { name: "Our Partner List", path: "/ourpartners-management/OurPartners-List", pro: false },
+    ],
+    isSpecialSection: true,
+  },
+];
+
+
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
@@ -1286,7 +1300,7 @@ const AppSidebar: React.FC = () => {
       { type: "review", items: reviewItems },
       { type: "faq", items: faqItems },
       { type: "fnewsletter", items: fnewsletterItems },
-
+      { type: "ourpartners", items: ourPartnersItems },
 
     ];
 
@@ -1830,6 +1844,17 @@ const AppSidebar: React.FC = () => {
                     {isExpanded || isHovered || isMobileOpen ? "PACKAGE MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
                   </h2>
                   {renderMenuItems(packageItems, "package")}
+                </div>
+
+
+                 <div>
+                  <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}>
+                    {isExpanded || isHovered || isMobileOpen ? "OURPARTNERS MANAGEMENT" : <PieChartIcon className="text-blue-500" />}
+                  </h2>
+                  {renderMenuItems(ourPartnersItems, "ourpartners")}
                 </div>
               </>
             )}

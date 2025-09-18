@@ -33,6 +33,7 @@ import { SalesContactProvider } from '@/context/SalesContactContext';
 import { DepartmentBoardProvider } from '@/context/DepartmentBoardContext';
 import { DisplayContactProvider } from '@/context/DisplayContactContext';
 import { FNewsLetterProvider } from '@/context/FNewsLetterContext';
+import { OurPartnersProvider } from '@/context/OurPartnersContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -75,15 +76,17 @@ export default function RootLayout({
                                                           <DepartmentBoardProvider>
                                                             <DisplayContactProvider>
                                                               <FNewsLetterProvider>
-                                                                <UserProvider>
-                                                                  <WhyChooseProvider>
-                                                                    <ZoneProvider>
+                                                                <OurPartnersProvider>
+                                                                  <UserProvider>
+                                                                    <WhyChooseProvider>
+                                                                      <ZoneProvider>
 
-                                                                      {children}
+                                                                        {children}
 
-                                                                    </ZoneProvider>
-                                                                  </WhyChooseProvider>
-                                                                </UserProvider>
+                                                                      </ZoneProvider>
+                                                                    </WhyChooseProvider>
+                                                                  </UserProvider>
+                                                                </OurPartnersProvider>
                                                               </FNewsLetterProvider>
                                                             </DisplayContactProvider>
                                                           </DepartmentBoardProvider>
