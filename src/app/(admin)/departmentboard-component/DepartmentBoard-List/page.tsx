@@ -194,7 +194,6 @@
 
 
 
-
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -207,7 +206,6 @@ import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
-// import Select from '@/components/form/Select';
 import { useDepartmentBoard } from '@/context/DepartmentBoardContext';
 import { IBoard } from '@/models/Board';
 import NextImage from 'next/image';
@@ -228,10 +226,17 @@ const BoardListPage: React.FC = () => {
     useEffect(() => {
         const fetchRoles = async () => {
             try {
-                // Adjust this API endpoint to match your backend
                 const response = await axios.get('/api/departmentboard');
-                if (response.data.success) {
-                    setRoles(response.data.roles || []);
+                console.log('Roles API response:', response.data);
+                
+                if (response.data.success && response.data.data) {
+                    // Extract unique roles from the board objects
+                    const uniqueRoles = Array.from(
+                        new Set(response.data.data.map((board: IBoard) => board.role).filter(Boolean))
+                    ) as string[];
+                    
+                    setRoles(uniqueRoles);
+                    console.log('Fetched roles:', uniqueRoles);
                 }
             } catch (err) {
                 console.error('Error fetching roles:', err);
@@ -240,6 +245,7 @@ const BoardListPage: React.FC = () => {
                     new Set(boards.map((board: IBoard) => board.role).filter(Boolean))
                 ) as string[];
                 setRoles(uniqueRoles);
+                console.log('Fallback roles from context:', uniqueRoles);
             }
         };
 
