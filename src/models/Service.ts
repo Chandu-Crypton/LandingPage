@@ -9,6 +9,10 @@ export interface IService extends Document {
     bannerImage?: string;
     serviceImage1: string;
     serviceImage2: string;
+    process:{
+        title: string,
+        description?: string,
+    }[],
     service:{
         icon: string,
         title: string,
@@ -33,6 +37,12 @@ const ServiceSchema: Schema<IService> = new Schema<IService>({
     icons: { type: [String], required: false },
     serviceImage1: { type: String, required: true },
     serviceImage2: { type: String, required: true },
+    process: [
+        {
+            title: { type: String, required: true },
+            description: { type: String, required: false },
+        }
+    ],
     service: [
         {
             icon: { type: String, required: true },

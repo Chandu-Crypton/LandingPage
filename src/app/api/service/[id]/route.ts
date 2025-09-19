@@ -157,15 +157,16 @@ export async function GET(req: Request) {
 // }
 
 
-
 export async function PUT(req: NextRequest) {
-    await connectToDatabase();
+  await connectToDatabase();
 
-    const url = new URL(req.url);
-    const id = url.pathname.split("/").pop();
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
 
   try {
     const formData = await req.formData();
+  
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: "Invalid or missing Service ID." },
@@ -196,13 +197,13 @@ export async function PUT(req: NextRequest) {
       return oldValue;
     };
 
-    // Handle basic fields
+    // Basic fields
     const title = formData.get("title")?.toString() || existingService.title;
     const descriptionString = formData.get("description")?.toString();
     const description: string[] =
       descriptionString ? JSON.parse(descriptionString) : existingService.description;
 
-    // Handle files
+    // Files
     const mainImageFile = formData.get("mainImage") as File | null;
     const bannerImageFile = formData.get("bannerImage") as File | null;
     const serviceImage1File = formData.get("serviceImage1") as File | null;
@@ -213,7 +214,19 @@ export async function PUT(req: NextRequest) {
     const serviceImage1 = await uploadIfExists(serviceImage1File, existingService.serviceImage1);
     const serviceImage2 = await uploadIfExists(serviceImage2File, existingService.serviceImage2);
 
-    // Handle arrays & objects
+    // ✅ Fix process handling
+    const processString = formData.get("process")?.toString();
+    const process =
+      processString && processString.length > 0
+        ? JSON.parse(processString).map(
+            (p: { title?: string; description?: string }) => ({
+              title: p.title?.toString().trim() || "",
+              description: p.description?.toString().trim() || "",
+            })
+          )
+        : existingService.process;
+
+    // Arrays
     const serviceArrayString = formData.get("service")?.toString();
     const serviceArray = serviceArrayString
       ? JSON.parse(serviceArrayString)
@@ -229,7 +242,7 @@ export async function PUT(req: NextRequest) {
       ? JSON.parse(whyChooseUsString)
       : existingService.whyChooseUs;
 
-    // Update document
+    // Update doc
     const updatedService = await ServiceModel.findByIdAndUpdate(
       id,
       {
@@ -239,6 +252,7 @@ export async function PUT(req: NextRequest) {
         bannerImage,
         serviceImage1,
         serviceImage2,
+        process,
         service: serviceArray,
         technology,
         whyChooseUs,
@@ -253,6 +267,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT /api/service/:id error:", error);
     const message = error instanceof Error ? error.message : "Internal Server Error";
+
     if (error instanceof mongoose.Error.ValidationError) {
       const errors = Object.values(error.errors).map(
         (err) => (err as mongoose.Error.ValidatorError).message
@@ -262,9 +277,9 @@ export async function PUT(req: NextRequest) {
         { status: 400, headers: corsHeaders }
       );
     }
+
     return NextResponse.json({ success: false, message }, { status: 500, headers: corsHeaders });
   }
-
 }
 
 

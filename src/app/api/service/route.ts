@@ -46,17 +46,20 @@ export async function GET() {
 }
 
 
+
+
 export async function POST(req: NextRequest) {
   await connectToDatabase();
 
   try {
     const formData = await req.formData();
-
+    console.log("Received formData:", formData);
     const title = formData.get("title")?.toString();
     const descriptionString = formData.get("description")?.toString();
     const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
-
-    // ----- File helpers -----
+    const processString = formData.get('process')?.toString();
+    
+    // ----- File upload helper -----
     const uploadFile = async (file: File | null, folder = "/service_images") => {
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
@@ -76,8 +79,17 @@ export async function POST(req: NextRequest) {
     const serviceImage1Url = await uploadFile(formData.get("serviceImage1") as File | null);
     const serviceImage2Url = await uploadFile(formData.get("serviceImage2") as File | null);
 
-    // ----- Single icon -----
-    const iconUrl = await uploadFile(formData.get("icon") as File | null);
+    // ----- Icons Array (FIXED) -----
+    const icons: string[] = [];
+    let i = 0;
+    while (true) {
+      const file = formData.get(`icons_${i}`) as File | null;
+      if (!file) break;
+      
+      const uploaded = await uploadFile(file);
+      if (uploaded) icons.push(uploaded);
+      i++;
+    }
 
     // ----- Service Array -----
     const serviceArrayString = formData.get("service")?.toString();
@@ -89,13 +101,15 @@ export async function POST(req: NextRequest) {
       if (uploaded) serviceArray[i].icon = uploaded;
     }
 
-    // ----- Technology -----
+    // ----- Technology Array -----
     const technologyString = formData.get("technology")?.toString();
-    const technology = technologyString ? JSON.parse(technologyString) : null;
-    if (technology) {
-      const file = formData.get(`technologyIcon_0`) as File | null;
+    const technology = technologyString ? JSON.parse(technologyString) : [];
+    
+    // Process each technology item
+    for (let i = 0; i < technology.length; i++) {
+      const file = formData.get(`technologyIcon_${i}`) as File | null;
       const uploaded = await uploadFile(file);
-      if (uploaded) technology.icon = uploaded;
+      if (uploaded) technology[i].icon = uploaded;
     }
 
     // ----- Why Choose Us -----
@@ -108,10 +122,30 @@ export async function POST(req: NextRequest) {
       if (uploaded) whyChooseUs[i].icon = uploaded;
     }
 
+    // ----- Process -----
+    let process: { title: string; description: string }[] = [];
+    if (processString) {
+      try {
+        const parsedItems = JSON.parse(processString);
+        if (Array.isArray(parsedItems)) {
+          process = parsedItems.map(item => ({
+            title: item.title ? String(item.title).trim() : '',
+            description: item.description ? String(item.description).trim() : '',
+          })).filter(item => item.title !== '' || item.description !== '');
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse process data JSON:", jsonError);
+        return NextResponse.json(
+          { success: false, message: 'Invalid format for process data.' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+    }
+
     // ✅ Validation
-    if (!title || description.length === 0 || !mainImageUrl || !bannerImageUrl) {
+    if (!title || description.length === 0 || !mainImageUrl || !bannerImageUrl || process.length === 0) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields (title, description, mainImage, bannerImage)." },
+        { success: false, message: "Missing required fields (title, description, mainImage, bannerImage, process)." },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -124,10 +158,11 @@ export async function POST(req: NextRequest) {
       bannerImage: bannerImageUrl,
       serviceImage1: serviceImage1Url,
       serviceImage2: serviceImage2Url,
-      icon: iconUrl,
+      icons, // Now includes all uploaded icons
       service: serviceArray,
       technology,
       whyChooseUs,
+      process,
     });
 
     return NextResponse.json(
@@ -148,4 +183,5 @@ export async function POST(req: NextRequest) {
       { success: false, message },
       { status: 500, headers: corsHeaders }
     );
-  } }
+  }
+}

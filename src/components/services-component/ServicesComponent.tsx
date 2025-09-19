@@ -393,6 +393,11 @@ interface SingleServiceApiResponse {
     message?: string;
 }
 
+interface ProcessItem {
+    title: string;
+    description?: string;
+}
+
 interface ServiceItem {
     icon: string;
     title: string;
@@ -425,6 +430,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     // States for service fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState<string[]>([]);
+
+    // Process items
+    const [processItems, setProcessItems] = useState<ProcessItem[]>([]);
 
     // Service items
     const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
@@ -461,7 +469,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             setTitle(serviceData.title || '');
             setDescription(serviceData.description || []);
 
-            // Service items
+            // Process items
+            setProcessItems(
+                serviceData.process?.map((item): ProcessItem => ({
+                    title: item.title || '',
+                    description: item.description || ''
+                })) || []
+            );
+
             // Service items
             setServiceItems(
                 serviceData.service?.map((item): ServiceItem => ({
@@ -475,13 +490,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
             // Technology items
             setTechnologyItems(
-                serviceData.technology.map((item): TechnologyItem => ({
-                        title: item.title || '',
-                        icon: item.icon || '',
-                        iconPreview: item.icon || null,
-                        iconFile: null
-                    }))
-                   
+                serviceData.technology?.map((item): TechnologyItem => ({
+                    title: item.title || '',
+                    icon: item.icon || '',
+                    iconPreview: item.icon || null,
+                    iconFile: null
+                })) || []
             );
 
             // Why choose us
@@ -493,7 +507,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     iconFile: null
                 })) || []
             );
-
 
             // Icons field
             setIcons(serviceData.icons?.map(icon => ({
@@ -544,14 +557,30 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         }
     }, [serviceIdToEdit, services]);
 
+    // Process handlers
+    const handleProcessChange = (index: number, field: keyof ProcessItem, value: string) => {
+        const newItems = [...processItems];
+        newItems[index] = { ...newItems[index], [field]: value };
+        setProcessItems(newItems);
+    };
+
+    const addProcessItem = () => {
+        setProcessItems([...processItems, {
+            title: '',
+            description: ''
+        }]);
+    };
+
+    const removeProcessItem = (index: number) => {
+        setProcessItems(processItems.filter((_, i) => i !== index));
+    };
+
     // Image change handlers
     const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setMainImageFile(file);
         setMainImagePreview(file ? URL.createObjectURL(file) : null);
     };
-
-
 
     const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
@@ -701,6 +730,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         formData.append('title', title);
         formData.append('description', JSON.stringify(description));
 
+        // Process items
+        formData.append("process", JSON.stringify(processItems));
+
         // Service items with file handling
         const serviceItemsData = serviceItems.map(item => ({
             icon: item.iconFile ? "pending" : (item.icon || "pending"),
@@ -722,7 +754,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             description: item.description
         }));
         formData.append("whyChooseUs", JSON.stringify(whyChooseUsData));
-
 
         // Handle main image uploads
         const handleImageAppend = (fieldName: string, file: File | null, preview: string | null) => {
@@ -775,7 +806,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             }
         });
 
-
         try {
             if (serviceIdToEdit) {
                 const cleanId = serviceIdToEdit.replace(/^\//, "");
@@ -804,6 +834,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const clearForm = () => {
         setTitle('');
         setDescription([]);
+        setProcessItems([]);
         setServiceItems([]);
         setTechnologyItems([]);
         setWhyChooseUsItems([]);
@@ -993,6 +1024,55 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 disabled={loading}
                             >
                                 Add New Description
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Process */}
+                    <div>
+                        <Label>Process</Label>
+                        <div className="space-y-4">
+                            {processItems.map((item, index) => (
+                                <div key={index} className="border p-4 rounded-md">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <Label>Title</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.title}
+                                                onChange={(e) => handleProcessChange(index, 'title', e.target.value)}
+                                                placeholder="Process title"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label>Description (Optional)</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.description || ''}
+                                                onChange={(e) => handleProcessChange(index, 'description', e.target.value)}
+                                                placeholder="Process description"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeProcessItem(index)}
+                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                        disabled={loading}
+                                    >
+                                        Remove Process Item
+                                    </button>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={addProcessItem}
+                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                disabled={loading}
+                            >
+                                Add Process Item
                             </button>
                         </div>
                     </div>
@@ -1238,8 +1318,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         },
                         true
                     )}
-
-
 
                     {renderImageUpload(
                         'bannerImage',
