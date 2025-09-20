@@ -8,10 +8,11 @@ export interface IProduct extends Document {
     description: string,
     homeFeatureTags: string[],
     mainImage: string,
-    bannerImages: string[],
+    bannerImage: string,
+    galleryImages: string[],
     livedemoLink?: string,
 
-    heading:{
+    heading: {
         headingPercentage: string,
         headingDesc: string,
     }[],
@@ -26,17 +27,24 @@ export interface IProduct extends Document {
         role: string,
     }[],
 
-    overviewTitle: string,  
+    overview: {
+        title: string,
+        desc: string,
+    }[],
+
     overviewImage: string,
-    overviewDesc: string,
 
-   keyFeatures: {
-       title: string,
-       description: string,
-       image: string,
-   }[],
+    keyFeatures: {
+        title: string,
+        description: string,
+        image: string,
+    }[],
 
-   
+
+    developmentTimeline?: {
+        title: string,
+        time: string,
+    }[],
 
     technologyTitle: string,
     technologyImage: string,
@@ -49,11 +57,10 @@ export interface IProduct extends Document {
         description: string,
     }[],
 
-    futurePoints:string[],
-    futureImage: string,
+    futurePoints?: string[],
 
 
-   
+
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -87,12 +94,12 @@ const productSchema: Schema = new Schema({
         required: true
     },
 
-   mainImage: {
+    mainImage: {
         type: String,
         required: true
     },
 
-    bannerImages: {
+    galleryImages: {
         type: [String],
         required: true
     },
@@ -106,7 +113,7 @@ const productSchema: Schema = new Schema({
             headingPercentage: { type: String, required: true },
             headingDesc: { type: String, required: true },
         }
-    ],  
+    ],
 
     measurableResults: [
         {
@@ -120,19 +127,22 @@ const productSchema: Schema = new Schema({
             members: { type: String, required: false },
             role: { type: String, required: false },
         }
+    ],
+
+
+    developmentTimeline: [
+        {
+            title: { type: String, required: false },
+            time: { type: String, required: false },
+        }
     ],  
 
+    overview: [{
+        title: { type: String, required: true },
+        desc: { type: String, required: true }
+    }],
 
-
-    overviewTitle: {
-        type: String,
-        required: true
-    },
     overviewImage: {
-        type: String,
-        required: true
-    },
-    overviewDesc: {
         type: String,
         required: true
     },
@@ -162,35 +172,35 @@ const productSchema: Schema = new Schema({
     },
 
 
-projectDetails: [
-    {
-     title: {
-        type: String,
-        required: true, trim: true
-    },
-    image: {
-        type: String,
-        required: true, trim: true
-    },
-    description: {
-        type: String,
-        required: true, trim: true
-    },
-}
-],
-    
+    projectDetails: [
+        {
+            title: {
+                type: String,
+                required: true, trim: true
+            },
+            image: {
+                type: String,
+                required: true, trim: true
+            },
+            description: {
+                type: String,
+                required: true, trim: true
+            },
+        }
+    ],
 
-   futurePoints: {
+
+    futurePoints: {
         type: [String],
-        required: true
+        required: false
     },
-    futureImage: {
+    bannerImage: {
         type: String,
         required: true
     },
-   
 
-   
+
+
 
 }, { timestamps: true });
 

@@ -443,10 +443,6 @@
 
 
 
-
-
-
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -468,6 +464,8 @@ interface ProductFormProps {
   productIdToEdit?: string;
 }
 
+
+
 const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) => {
   // ================= Basic Fields =================
   const [title, setTitle] = useState('');
@@ -481,8 +479,11 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
 
-  const [bannerImageFiles, setBannerImageFiles] = useState<File[]>([]);
-  const [bannerImagePreviews, setBannerImagePreviews] = useState<string[]>([]);
+  const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+  const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
+
+  const [galleryImageFiles, setGalleryImageFiles] = useState<File[]>([]);
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState<string[]>([]);
 
   // ================= Heading =================
   const [headings, setHeadings] = useState<{ headingPercentage: string; headingDesc: string }[]>([
@@ -499,16 +500,36 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
     { members: '', role: '' },
   ]);
 
+  // ================= Development Timeline =================
+  const [developmentTimeline, setDevelopmentTimeline] = useState<{ title: string; time: string }[]>([
+    { title: '', time: '' },
+  ]);
+
   // ================= Overview =================
-  const [overviewTitle, setOverviewTitle] = useState('');
-  const [overviewDesc, setOverviewDesc] = useState('');
+  const [overview, setOverview] = useState<{ title: string; desc: string }[]>([
+    { title: '', desc: '' },
+  ]);
   const [overviewImageFile, setOverviewImageFile] = useState<File | null>(null);
   const [overviewImagePreview, setOverviewImagePreview] = useState<string | null>(null);
 
   // ================= Key Features =================
-  const [keyFeatures, setKeyFeatures] = useState<{ title: string; description: string; imageFile: File | null; imagePreview: string | null }[]>([
-    { title: '', description: '', imageFile: null, imagePreview: null },
-  ]);
+  // ✅ Define a reusable type for items with images
+interface ImageItem {
+  title: string;
+  description: string;
+  imageFile: File | null;
+  imagePreview: string | null;
+}
+
+// ================= Key Features =================
+const [keyFeatures, setKeyFeatures] = useState<ImageItem[]>([
+  { title: '', description: '', imageFile: null, imagePreview: null },
+]);
+
+// ================= Project Details =================
+const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
+  { title: '', description: '', imageFile: null, imagePreview: null },
+]);
 
   // ================= Technology =================
   const [technologyTitle, setTechnologyTitle] = useState('');
@@ -518,20 +539,20 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
   const [technologyImagePreview, setTechnologyImagePreview] = useState<string | null>(null);
 
   // ================= Project Details =================
-  const [projectDetails, setProjectDetails] = useState<
-    { title: string; description: string; imageFile: File | null; imagePreview: string | null }[]
-  >([{ title: '', description: '', imageFile: null, imagePreview: null }]);
+  // const [projectDetails, setProjectDetails] = useState<
+  //   { title: string; description: string; imageFile: File | null; imagePreview: string | null }[]
+  // >([{ title: '', description: '', imageFile: null, imagePreview: null }]);
 
   // ================= Future =================
   const [futurePoints, setFuturePoints] = useState<string[]>(['']);
-  const [futureImageFile, setFutureImageFile] = useState<File | null>(null);
-  const [futureImagePreview, setFutureImagePreview] = useState<string | null>(null);
 
   // ================= Common =================
   const { addProduct, updateProduct, products } = useProduct();
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const router = useRouter();
+
+  
 
   // ================= Preload when editing =================
   useEffect(() => {
@@ -548,14 +569,15 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
         setLivedemoLink(data.livedemoLink || '');
 
         setMainImagePreview(data.mainImage);
-        setBannerImagePreviews(data.bannerImages || []);
+        setBannerImagePreview(data.bannerImage);
+        setGalleryImagePreviews(data.galleryImages || []);
 
         setHeadings(data.heading || [{ headingPercentage: '', headingDesc: '' }]);
         setMeasurableResults(data.measurableResults || [{ title: '', description: '' }]);
         setProjectTeam(data.projectTeam || [{ members: '', role: '' }]);
+        setDevelopmentTimeline(data.developmentTimeline || [{ title: '', time: '' }]);
 
-        setOverviewTitle(data.overviewTitle);
-        setOverviewDesc(data.overviewDesc);
+        setOverview(data.overview || [{ title: '', desc: '' }]);
         setOverviewImagePreview(data.overviewImage);
 
         setKeyFeatures(
@@ -582,7 +604,6 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
         );
 
         setFuturePoints(data.futurePoints || ['']);
-        setFutureImagePreview(data.futureImage);
       };
 
       if (productToEditFromContext) {
@@ -615,27 +636,35 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
     if (mainImageFile) formData.append('mainImage', mainImageFile);
     else if (mainImagePreview) formData.append('mainImage', mainImagePreview);
 
-    bannerImageFiles.forEach(file => formData.append('bannerImages', file));
-    if (!bannerImageFiles.length && bannerImagePreviews.length) {
-      formData.append('bannerImages_existing', JSON.stringify(bannerImagePreviews));
+    if (bannerImageFile) formData.append('bannerImage', bannerImageFile);
+    else if (bannerImagePreview) formData.append('bannerImage', bannerImagePreview);
+
+    galleryImageFiles.forEach(file => formData.append('galleryImages', file));
+    if (!galleryImageFiles.length && galleryImagePreviews.length) {
+      formData.append('galleryImages_existing', JSON.stringify(galleryImagePreviews));
     }
 
-    // Heading
+    // Arrays
     formData.append('heading', JSON.stringify(headings));
-
-    // Measurable Results
     formData.append('measurableResults', JSON.stringify(measurableResults));
-
-    // Project Team
     formData.append('projectTeam', JSON.stringify(projectTeam));
+    formData.append('developmentTimeline', JSON.stringify(developmentTimeline));
+    formData.append('overview', JSON.stringify(overview));
+    formData.append('technologyPoints', JSON.stringify(technologyPoints));
+    formData.append('futurePoints', JSON.stringify(futurePoints));
 
-    // Overview
-    formData.append('overviewTitle', overviewTitle);
-    formData.append('overviewDesc', overviewDesc);
+    // Single image fields
     if (overviewImageFile) formData.append('overviewImage', overviewImageFile);
     else if (overviewImagePreview) formData.append('overviewImage', overviewImagePreview);
 
-    // Key Features
+    if (technologyImageFile) formData.append('technologyImage', technologyImageFile);
+    else if (technologyImagePreview) formData.append('technologyImage', technologyImagePreview);
+
+    // Text fields
+    formData.append('technologyTitle', technologyTitle);
+    formData.append('technologyDesc', technologyDesc);
+
+    // Key Features with images
     keyFeatures.forEach((kf, i) => {
       if (kf.imageFile) {
         formData.append(`keyFeatureImage_${i}`, kf.imageFile);
@@ -652,17 +681,10 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
       )
     );
 
-    // Technology
-    formData.append('technologyTitle', technologyTitle);
-    formData.append('technologyDesc', technologyDesc);
-    formData.append('technologyPoints', JSON.stringify(technologyPoints));
-    if (technologyImageFile) formData.append('technologyImage', technologyImageFile);
-    else if (technologyImagePreview) formData.append('technologyImage', technologyImagePreview);
-
-    // Project Details
+    // Project Details with images
     projectDetails.forEach((pd, i) => {
       if (pd.imageFile) {
-        formData.append(`projectDetailsImages_${i}`, pd.imageFile);
+        formData.append(`projectDetailsImage_${i}`, pd.imageFile);
       }
     });
     formData.append(
@@ -671,15 +693,10 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
         projectDetails.map((pd, i) => ({
           title: pd.title,
           description: pd.description,
-          image: pd.imagePreview || `projectDetailsImages_${i}`,
+          image: pd.imagePreview || `projectDetailsImage_${i}`,
         }))
       )
     );
-
-    // Future
-    formData.append('futurePoints', JSON.stringify(futurePoints));
-    if (futureImageFile) formData.append('futureImage', futureImageFile);
-    else if (futureImagePreview) formData.append('futureImage', futureImagePreview);
 
     try {
       if (productIdToEdit) {
@@ -712,63 +729,67 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
     setter(prev => [...prev, '']);
   };
 
-  const handleHeadingChange = (index: number, field: 'headingPercentage' | 'headingDesc', value: string) => {
-    setHeadings(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+  const removeArrayField = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
+    setter(prev => prev.filter((_, i) => i !== index));
   };
 
-  const addHeading = () => {
-    setHeadings(prev => [...prev, { headingPercentage: '', headingDesc: '' }]);
+ const handleObjectArrayChange = <T extends object>(
+  setter: React.Dispatch<React.SetStateAction<T[]>>,
+  index: number,
+  field: keyof T,
+  value: string
+) => {
+  setter(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+};
+
+  const addObjectArrayField = <T extends object>(setter: React.Dispatch<React.SetStateAction<T[]>>, template: T) => {
+    setter(prev => [...prev, { ...template }]);
   };
 
-  const handleMeasurableResultChange = (index: number, field: 'title' | 'description', value: string) => {
-    setMeasurableResults(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+
+  const removeObjectArrayField = <T extends object>(setter: React.Dispatch<React.SetStateAction<T[]>>, index: number) => {
+    setter(prev => prev.filter((_, i) => i !== index));
   };
 
-  const addMeasurableResult = () => {
-    setMeasurableResults(prev => [...prev, { title: '', description: '' }]);
-  };
-
-  const handleProjectTeamChange = (index: number, field: 'members' | 'role', value: string) => {
-    setProjectTeam(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
-  };
-
-  const addProjectTeam = () => {
-    setProjectTeam(prev => [...prev, { members: '', role: '' }]);
-  };
-
-  const handleKeyFeatureChange = (
-    index: number,
-    field: 'title' | 'description' | 'imageFile' | 'imagePreview',
-    value: string | File | null
+  const handleImageUpload = (
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | null>>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setKeyFeatures(prev =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
-    );
+    const file = event.target.files?.[0] || null;
+    if (file) {
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
-  const addKeyFeature = () => {
-    setKeyFeatures(prev => [
-      ...prev,
-      { title: '', description: '', imageFile: null, imagePreview: null },
-    ]);
-  };
-
-  const handleProjectDetailChange = (
-    index: number,
-    field: 'title' | 'description' | 'imageFile' | 'imagePreview',
-    value: string | File | null
+  const handleMultipleImageUpload = (
+    setFiles: React.Dispatch<React.SetStateAction<File[]>>,
+    setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setProjectDetails(prev =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
-    );
+    const files = Array.from(event.target.files || []);
+    if (files.length > 0) {
+      setFiles(prev => [...prev, ...files]);
+      setPreviews(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
+    }
   };
 
-  const addProjectDetail = () => {
-    setProjectDetails(prev => [
-      ...prev,
-      { title: '', description: '', imageFile: null, imagePreview: null },
-    ]);
-  };
+ const handleItemImageUpload = <T extends { imageFile: File | null; imagePreview: string | null }>(
+  setter: React.Dispatch<React.SetStateAction<T[]>>,
+  index: number,
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0] || null;
+  if (file) {
+    setter(prev =>
+      prev.map((item, i) =>
+        i === index ? { ...item, imageFile: file, imagePreview: URL.createObjectURL(file) } : item
+      )
+    );
+  }
+};
+
 
   // ================= UI =================
   return (
@@ -812,22 +833,77 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
           <div>
             <Label>Main Image</Label>
             {mainImagePreview && <img src={mainImagePreview} alt="preview" className="h-24 mb-2" />}
-            <input type="file" onChange={e => setMainImageFile(e.target.files?.[0] || null)} />
+            <input 
+              type="file" 
+              onChange={(e) => handleImageUpload(setMainImageFile, setMainImagePreview, e)} 
+            />
           </div>
 
-          {/* Banner Images */}
+          {/* Banner Image */}
           <div>
-            <Label>Banner Images</Label>
+            <Label>Banner Image</Label>
+            {bannerImagePreview && <img src={bannerImagePreview} alt="banner" className="h-24 mb-2" />}
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(setBannerImageFile, setBannerImagePreview, e)}
+            />
+          </div>
+
+          {/* Gallery Images */}
+          <div>
+            <Label>Gallery Images</Label>
             <div className="flex gap-2 flex-wrap mb-2">
-              {bannerImagePreviews.map((img, i) => (
-                <img key={i} src={img} alt="banner" className="h-24" />
+              {galleryImagePreviews.map((img, i) => (
+                <div key={i} className="relative">
+                  <img src={img} alt="gallery" className="h-24" />
+                  <button
+                    type="button"
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    onClick={() => {
+                      setGalleryImagePreviews(prev => prev.filter((_, idx) => idx !== i));
+                      setGalleryImageFiles(prev => prev.filter((_, idx) => idx !== i));
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
             <input
               type="file"
               multiple
-              onChange={e => setBannerImageFiles(Array.from(e.target.files || []))}
+              onChange={(e) => handleMultipleImageUpload(setGalleryImageFiles, setGalleryImagePreviews, e)}
             />
+          </div>
+
+          {/* Home Feature Tags */}
+          <div>
+            <Label>Home Feature Tags</Label>
+            {homeFeatureTags.map((tag, i) => (
+              <div key={i} className="flex gap-2 mb-2">
+                <Input
+                  value={tag}
+                  onChange={e => handleArrayChange(setHomeFeatureTags, i, e.target.value)}
+                  placeholder="Feature tag"
+                />
+                {homeFeatureTags.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded"
+                    onClick={() => removeArrayField(setHomeFeatureTags, i)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="px-3 py-1 bg-gray-300 rounded mt-2"
+              onClick={() => addArrayField(setHomeFeatureTags)}
+            >
+              + Add Tag
+            </button>
           </div>
 
           {/* Heading */}
@@ -837,21 +913,30 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
               <div key={i} className="border p-2 mb-2 rounded">
                 <Input
                   value={heading.headingPercentage}
-                  onChange={e => handleHeadingChange(i, 'headingPercentage', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setHeadings, i, 'headingPercentage', e.target.value)}
                   placeholder="Percentage"
                   className="mb-1"
                 />
                 <Input
                   value={heading.headingDesc}
-                  onChange={e => handleHeadingChange(i, 'headingDesc', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setHeadings, i, 'headingDesc', e.target.value)}
                   placeholder="Description"
                 />
+                {headings.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setHeadings, i)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               className="px-3 py-1 bg-gray-300 rounded"
-              onClick={addHeading}
+              onClick={() => addObjectArrayField(setHeadings, { headingPercentage: '', headingDesc: '' })}
             >
               + Add Heading
             </button>
@@ -864,21 +949,30 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
               <div key={i} className="border p-2 mb-2 rounded">
                 <Input
                   value={result.title}
-                  onChange={e => handleMeasurableResultChange(i, 'title', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setMeasurableResults, i, 'title', e.target.value)}
                   placeholder="Title"
                   className="mb-1"
                 />
                 <Input
                   value={result.description}
-                  onChange={e => handleMeasurableResultChange(i, 'description', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setMeasurableResults, i, 'description', e.target.value)}
                   placeholder="Description"
                 />
+                {measurableResults.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setMeasurableResults, i)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               className="px-3 py-1 bg-gray-300 rounded"
-              onClick={addMeasurableResult}
+              onClick={() => addObjectArrayField(setMeasurableResults, { title: '', description: '' })}
             >
               + Add Measurable Result
             </button>
@@ -891,44 +985,114 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
               <div key={i} className="border p-2 mb-2 rounded">
                 <Input
                   value={member.members}
-                  onChange={e => handleProjectTeamChange(i, 'members', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setProjectTeam, i, 'members', e.target.value)}
                   placeholder="Member Name"
                   className="mb-1"
                 />
                 <Input
                   value={member.role}
-                  onChange={e => handleProjectTeamChange(i, 'role', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setProjectTeam, i, 'role', e.target.value)}
                   placeholder="Role"
                 />
+                {projectTeam.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setProjectTeam, i)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               className="px-3 py-1 bg-gray-300 rounded"
-              onClick={addProjectTeam}
+              onClick={() => addObjectArrayField(setProjectTeam, { members: '', role: '' })}
             >
               + Add Team Member
             </button>
           </div>
 
+          {/* Development Timeline */}
+          <div>
+            <Label>Development Timeline</Label>
+            {developmentTimeline.map((timeline, i) => (
+              <div key={i} className="border p-2 mb-2 rounded">
+                <Input
+                  value={timeline.title}
+                  onChange={e => handleObjectArrayChange(setDevelopmentTimeline, i, 'title', e.target.value)}
+                  placeholder="Title"
+                  className="mb-1"
+                />
+                <Input
+                  value={timeline.time}
+                  onChange={e => handleObjectArrayChange(setDevelopmentTimeline, i, 'time', e.target.value)}
+                  placeholder="Time"
+                />
+                {developmentTimeline.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setDevelopmentTimeline, i)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="px-3 py-1 bg-gray-300 rounded"
+              onClick={() => addObjectArrayField(setDevelopmentTimeline, { title: '', time: '' })}
+            >
+              + Add Timeline Item
+            </button>
+          </div>
+
           {/* Overview */}
           <div>
-            <Label>Overview Title</Label>
-            <Input value={overviewTitle} onChange={e => setOverviewTitle(e.target.value)} required />
+            <Label>Overview</Label>
+            {overview.map((item, i) => (
+              <div key={i} className="border p-2 mb-2 rounded">
+                <Input
+                  value={item.title}
+                  onChange={e => handleObjectArrayChange(setOverview, i, 'title', e.target.value)}
+                  placeholder="Title"
+                  className="mb-1"
+                />
+                <Input
+                  value={item.desc}
+                  onChange={e => handleObjectArrayChange(setOverview, i, 'desc', e.target.value)}
+                  placeholder="Description"
+                />
+                {overview.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setOverview, i)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="px-3 py-1 bg-gray-300 rounded"
+              onClick={() => addObjectArrayField(setOverview, { title: '', desc: '' })}
+            >
+              + Add Overview Item
+            </button>
           </div>
-          <div>
-            <Label>Overview Description</Label>
-            <textarea
-              className="w-full border rounded p-2"
-              value={overviewDesc}
-              onChange={e => setOverviewDesc(e.target.value)}
-              required
-            />
-          </div>
+
           <div>
             <Label>Overview Image</Label>
             {overviewImagePreview && <img src={overviewImagePreview} alt="overview" className="h-24 mb-2" />}
-            <input type="file" onChange={e => setOverviewImageFile(e.target.files?.[0] || null)} />
+            <input 
+              type="file" 
+              onChange={(e) => handleImageUpload(setOverviewImageFile, setOverviewImagePreview, e)} 
+            />
           </div>
 
           {/* Key Features */}
@@ -938,29 +1102,51 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
               <div key={i} className="border p-2 mb-2 rounded">
                 <Input
                   value={feature.title}
-                  onChange={e => handleKeyFeatureChange(i, 'title', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setKeyFeatures, i, 'title', e.target.value)}
                   placeholder="Title"
                   className="mb-1"
                 />
                 <Input
                   value={feature.description}
-                  onChange={e => handleKeyFeatureChange(i, 'description', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setKeyFeatures, i, 'description', e.target.value)}
                   placeholder="Description"
                   className="mb-1"
                 />
-                {feature.imagePreview && <img src={feature.imagePreview} className="h-24 mb-1" />}
+                {feature.imagePreview && (
+                  <div className="relative inline-block">
+                    <img src={feature.imagePreview} className="h-24 mb-1" alt="feature" />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      onClick={() => {
+                        setKeyFeatures(prev => prev.map((item, idx) => 
+                          idx === i ? { ...item, imageFile: null, imagePreview: null } : item
+                        ));
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
                 <input
                   type="file"
-                  onChange={e =>
-                    handleKeyFeatureChange(i, 'imageFile', e.target.files?.[0] || null)
-                  }
+                  onChange={(e) => handleItemImageUpload(setKeyFeatures, i, e)}
                 />
+                {keyFeatures.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setKeyFeatures, i)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               className="px-3 py-1 bg-gray-300 rounded"
-              onClick={addKeyFeature}
+              onClick={() => setKeyFeatures(prev => [...prev, { title: '', description: '', imageFile: null, imagePreview: null }])}
             >
               + Add Key Feature
             </button>
@@ -983,16 +1169,26 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
           <div>
             <Label>Technology Points</Label>
             {technologyPoints.map((point, i) => (
-              <Input
-                key={i}
-                value={point}
-                onChange={e => handleArrayChange(setTechnologyPoints, i, e.target.value)}
-                className="mb-2"
-              />
+              <div key={i} className="flex gap-2 mb-2">
+                <Input
+                  value={point}
+                  onChange={e => handleArrayChange(setTechnologyPoints, i, e.target.value)}
+                  placeholder="Technology point"
+                />
+                {technologyPoints.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded"
+                    onClick={() => removeArrayField(setTechnologyPoints, i)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             ))}
             <button
               type="button"
-              className="px-3 py-1 bg-gray-300 rounded"
+              className="px-3 py-1 bg-gray-300 rounded mt-2"
               onClick={() => addArrayField(setTechnologyPoints)}
             >
               + Add Point
@@ -1001,7 +1197,10 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
           <div>
             <Label>Technology Image</Label>
             {technologyImagePreview && <img src={technologyImagePreview} alt="tech" className="h-24 mb-2" />}
-            <input type="file" onChange={e => setTechnologyImageFile(e.target.files?.[0] || null)} />
+            <input 
+              type="file" 
+              onChange={(e) => handleImageUpload(setTechnologyImageFile, setTechnologyImagePreview, e)} 
+            />
           </div>
 
           {/* Project Details */}
@@ -1011,76 +1210,83 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
               <div key={i} className="border p-2 mb-2 rounded">
                 <Input
                   value={detail.title}
-                  onChange={e => handleProjectDetailChange(i, 'title', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setProjectDetails, i, 'title', e.target.value)}
                   placeholder="Title"
                   className="mb-1"
                 />
                 <textarea
                   value={detail.description}
-                  onChange={e => handleProjectDetailChange(i, 'description', e.target.value)}
+                  onChange={e => handleObjectArrayChange(setProjectDetails, i, 'description', e.target.value)}
                   placeholder="Description"
                   className="w-full border rounded p-1 mb-1"
                 />
-                {detail.imagePreview && <img src={detail.imagePreview} className="h-24 mb-1" />}
+                {detail.imagePreview && (
+                  <div className="relative inline-block">
+                    <img src={detail.imagePreview} className="h-24 mb-1" alt="project detail" />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      onClick={() => {
+                        setProjectDetails(prev => prev.map((item, idx) => 
+                          idx === i ? { ...item, imageFile: null, imagePreview: null } : item
+                        ));
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
                 <input
                   type="file"
-                  onChange={e =>
-                    handleProjectDetailChange(i, 'imageFile', e.target.files?.[0] || null)
-                  }
+                  onChange={(e) => handleItemImageUpload(setProjectDetails, i, e)}
                 />
+                {projectDetails.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded mt-1"
+                    onClick={() => removeObjectArrayField(setProjectDetails, i)}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               className="px-3 py-1 bg-gray-300 rounded"
-              onClick={addProjectDetail}
+              onClick={() => setProjectDetails(prev => [...prev, { title: '', description: '', imageFile: null, imagePreview: null }])}
             >
               + Add Project Detail
             </button>
           </div>
 
-          {/* Future */}
+          {/* Future Points */}
           <div>
             <Label>Future Points</Label>
             {futurePoints.map((point, i) => (
-              <Input
-                key={i}
-                value={point}
-                onChange={e => handleArrayChange(setFuturePoints, i, e.target.value)}
-                className="mb-2"
-              />
+              <div key={i} className="flex gap-2 mb-2">
+                <Input
+                  value={point}
+                  onChange={e => handleArrayChange(setFuturePoints, i, e.target.value)}
+                  placeholder="Future point"
+                />
+                {futurePoints.length > 1 && (
+                  <button
+                    type="button"
+                    className="px-3 py-1 bg-red-500 text-white rounded"
+                    onClick={() => removeArrayField(setFuturePoints, i)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             ))}
             <button
               type="button"
-              className="px-3 py-1 bg-gray-300 rounded"
+              className="px-3 py-1 bg-gray-300 rounded mt-2"
               onClick={() => addArrayField(setFuturePoints)}
             >
               + Add Point
-            </button>
-          </div>
-          <div>
-            <Label>Future Image</Label>
-            {futureImagePreview && <img src={futureImagePreview} alt="future" className="h-24 mb-2" />}
-            <input type="file" onChange={e => setFutureImageFile(e.target.files?.[0] || null)} />
-          </div>
-
-          {/* Home Feature Tags */}
-          <div>
-            <Label>Home Feature Tags</Label>
-            {homeFeatureTags.map((tag, i) => (
-              <Input
-                key={i}
-                value={tag}
-                onChange={e => handleArrayChange(setHomeFeatureTags, i, e.target.value)}
-                className="mb-2"
-              />
-            ))}
-            <button
-              type="button"
-              className="px-3 py-1 bg-gray-300 rounded"
-              onClick={() => addArrayField(setHomeFeatureTags)}
-            >
-              + Add Tag
             </button>
           </div>
 
