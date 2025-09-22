@@ -986,7 +986,7 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
                 <Input
                   value={member.members}
                   onChange={e => handleObjectArrayChange(setProjectTeam, i, 'members', e.target.value)}
-                  placeholder="Member Name"
+                  placeholder="Members Count"
                   className="mb-1"
                 />
                 <Input
