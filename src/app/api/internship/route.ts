@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-        console.log("form data:", formData)
+        // console.log("form data:", formData)
         // Helper to parse JSON-like fields safely
         const parseJSON = <T>(field: FormDataEntryValue | null): T | [] => {
             if (!field) return [];

@@ -352,6 +352,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import axios from 'axios';
 
+
 interface InternshipFormProps {
     internshipIdToEdit?: string;
 }
@@ -473,6 +474,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                 );
                 if (res.data.success && res.data.data) {
                     const data = res.data.data;
+                    console.log('Fetched internship data:', data);
                     setTitle(data.title);
                     setSubtitle(data.subtitle);
                     setFee(data.fee);
@@ -481,8 +483,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setBenefits(data.benefits.length ? data.benefits : ['']);
                     setEligibility(data.eligibility.length ? data.eligibility : ['']);
                     setDescription(data.description);
-                    setMainImagePreview(data.mainImage || null);
+                    setMainImageFile(null); // Reset file input
+                    setMainImagePreview(data.mainImage || null); // Only set the preview URL
                     setBannerImagePreview(data.bannerImage || null);
+                    setBannerImageFile(null); // Reset file input
                     setInternship(data.internship);
                     setLevel(data.level);
                     setProjects(data.projects);

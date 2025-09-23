@@ -117,7 +117,7 @@ const InternshipListPage: React.FC = () => {
                   <th className="px-5 py-3 text-left">Eligibility</th>
                   <th className="px-5 py-3 text-left">Description</th> */}
                   <th className="px-5 py-3 text-left">Main Image</th>
-                  <th className="px-5 py-3 text-left">Created At</th>
+                  <th className="px-5 py-3 text-left">Category</th>
                   <th className="px-5 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -147,8 +147,11 @@ const InternshipListPage: React.FC = () => {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      {internship.createdAt ? new Date(internship.createdAt).toLocaleDateString() : 'N/A'}
+                      {internship.category || 'N/A'}
                     </td>
+                    {/* <td className="px-5 py-3">
+                      {internship.createdAt ? new Date(internship.createdAt).toLocaleDateString() : 'N/A'}
+                    </td> */}
                     <td className="px-5 py-3">
                       <div className="flex justify-center gap-2">
                         <Link
