@@ -1167,7 +1167,7 @@ const fcontactItems: NavItem[] = [
     icon: <PieChartIcon />, // Use existing icon with blue color
     name: "Contact",
     subItems: [
-      { name: "Add New Contact", path: "/fcontact-management/Add-FContact", pro: false },
+      // { name: "Add New Contact", path: "/fcontact-management/Add-FContact", pro: false },
       { name: "Contact List", path: "/fcontact-management/FContact-List", pro: false },
     ],
     isSpecialSection: true,
