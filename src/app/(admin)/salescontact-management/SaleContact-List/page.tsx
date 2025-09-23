@@ -10,6 +10,12 @@ import Link from 'next/link';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 
+
+// Excel
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+
 interface ISalesContact {
   _id: string;
   firstName: string;
@@ -162,6 +168,32 @@ const SalesContactListPage: React.FC = () => {
     return null;
   };
 
+
+  
+    // Export to Excel
+    const exportToExcel = () => {
+      if (!filteredContacts.length) return alert('No data to export.');
+  
+      // Map data for Excel
+      const data = filteredContacts.map((c) => ({
+        'First Name': c.firstName,
+        'Last Name': c.lastName,
+        'Email': c.email,
+        'Phone Number': c.phoneNumber,
+        'Message': c.message,
+        'Created At': c.createdAt ? new Date(c.createdAt).toLocaleString() : '',
+      }));
+  
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Contacts');
+  
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      saveAs(blob, `Contacts_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Contact Management</h1>
@@ -295,6 +327,17 @@ const SalesContactListPage: React.FC = () => {
           badgeIcon={ArrowUpIcon}
         />
       </div>
+
+       {/* Export Button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={exportToExcel}
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+        >
+          Export to Excel
+        </button>
+      </div>
+
 
       {/* Table */}
       <ComponentCard title="Sales Contact List">
