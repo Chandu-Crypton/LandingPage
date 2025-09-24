@@ -103,6 +103,7 @@ const FaqListPage: React.FC = () => {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="text-gray-600 border-b border-gray-200">
+                  <th className="px-5 py-3 text-left">Module</th>
                   <th className="px-5 py-3 text-left">Question</th>
                   <th className="px-5 py-3 text-left">Answer</th>
                   <th className="px-5 py-3 text-left">Icon</th>
@@ -117,6 +118,7 @@ const FaqListPage: React.FC = () => {
                       key={`${faq._id}-${idx}`}
                       className="border-t hover:bg-gray-50 transition"
                     >
+                      <td className="px-5 py-3">{faq.module || 'N/A'}</td>
                       <td className="px-5 py-3 font-semibold">{q.question}</td>
                       <td className="px-5 py-3 max-w-[250px] truncate">
                         {q.answer}

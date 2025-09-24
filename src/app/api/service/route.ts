@@ -54,6 +54,8 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     console.log("Received formData:", formData);
+    const modules = formData.get("module")?.toString();
+    const names = formData.get("name")?.toString();
     const title = formData.get("title")?.toString();
     const descriptionString = formData.get("description")?.toString();
     const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
@@ -78,6 +80,7 @@ export async function POST(req: NextRequest) {
     const bannerImageUrl = await uploadFile(formData.get("bannerImage") as File | null);
     const serviceImage1Url = await uploadFile(formData.get("serviceImage1") as File | null);
     const serviceImage2Url = await uploadFile(formData.get("serviceImage2") as File | null);
+    const serviceIconsUrl = await uploadFile(formData.get("serviceIcon") as File | null);
 
     // ----- Icons Array (FIXED) -----
     const icons: string[] = [];
@@ -152,6 +155,9 @@ export async function POST(req: NextRequest) {
 
     // ✅ Create new service
     const newService = await ServiceModel.create({
+      module: modules,
+      name: names,
+      serviceIcon: serviceIconsUrl,
       title,
       description,
       mainImage: mainImageUrl,

@@ -198,6 +198,8 @@ export async function PUT(req: NextRequest) {
     };
 
     // Basic fields
+    const modules = formData.get("module")?.toString() || existingService.module;
+    const name = formData.get("name")?.toString() || existingService.name;
     const title = formData.get("title")?.toString() || existingService.title;
     const descriptionString = formData.get("description")?.toString();
     const description: string[] =
@@ -208,7 +210,10 @@ export async function PUT(req: NextRequest) {
     const bannerImageFile = formData.get("bannerImage") as File | null;
     const serviceImage1File = formData.get("serviceImage1") as File | null;
     const serviceImage2File = formData.get("serviceImage2") as File | null;
+     const serviceIconFile = formData.get("serviceIcon") as File | null;
 
+    // Upload files if new ones provided, else keep old URLs
+    const serviceIcon = await uploadIfExists(serviceIconFile, existingService.serviceIcon);
     const mainImage = await uploadIfExists(mainImageFile, existingService.mainImage);
     const bannerImage = await uploadIfExists(bannerImageFile, existingService.bannerImage);
     const serviceImage1 = await uploadIfExists(serviceImage1File, existingService.serviceImage1);
@@ -246,6 +251,9 @@ export async function PUT(req: NextRequest) {
     const updatedService = await ServiceModel.findByIdAndUpdate(
       id,
       {
+        modules,
+        name,
+        serviceIcon,
         title,
         description,
         mainImage,

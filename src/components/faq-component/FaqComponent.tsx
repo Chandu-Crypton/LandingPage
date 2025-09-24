@@ -13,6 +13,7 @@ interface FaqFormProps {
 
 interface IFaq {
     _id?: string;
+    module?: string;
     question: { icon: string; question: string; answer: string }[];
 
 }
@@ -33,10 +34,10 @@ const FaqFormComponent: React.FC<FaqFormProps> = ({ faqIdToEdit }) => {
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
+    // Module
+    const [module, setModule] = useState('');
 
     // Arrays
-
-
     const [question, setQuestion] = useState<Question[]>([
         { question: "", answer: "", icon: null }
     ]);
@@ -55,8 +56,9 @@ const FaqFormComponent: React.FC<FaqFormProps> = ({ faqIdToEdit }) => {
                 );
                 if (res.data.success && res.data.data) {
                     const data = res.data.data;
-
+                    console.log('FAQ DATA FOR EDIT:', data);
                     setQuestion(data.question ?? []);
+                    setModule(data.module ?? '');
                     setFormError(null);
                 } else {
                     setFormError(res.data.message || 'Faq not found.');
@@ -115,7 +117,7 @@ const FaqFormComponent: React.FC<FaqFormProps> = ({ faqIdToEdit }) => {
 
         // Basic fields
 
-
+        formData.append("module", module);
 
 
         // Summary
@@ -162,6 +164,13 @@ const FaqFormComponent: React.FC<FaqFormProps> = ({ faqIdToEdit }) => {
                     {/* Summary */}
                     <div>
                         <Label>FAQs</Label>
+                        <Label>Module</Label>
+                        <Input
+                            placeholder="Module"
+                            value={module}
+                            onChange={(e) => setModule(e.target.value)}
+                        />
+                        
                         {question.map((s, idx) => (
                             <div key={idx} className="border p-3 mb-3 rounded space-y-2">
                                 <Input

@@ -63,6 +63,10 @@ export async function PUT(req: NextRequest) {
     const formData = await req.formData();
     const updateData: Partial<IFaq> = {};
 
+    // --- Basic string fields ---
+    const modules = formData.get("module")?.toString();
+    if (modules) updateData.module = modules;
+
     // --- Questions array update ---
     const questionsString = formData.get("question")?.toString();
     if (questionsString) {
@@ -82,6 +86,7 @@ export async function PUT(req: NextRequest) {
           updateData.question = await Promise.all(
             parsedQuestions.map(
               async (
+
                 q: { question: string; answer: string; icon?: string },
                 idx: number
               ) => {

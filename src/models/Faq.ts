@@ -2,6 +2,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 
 export interface IFaq extends Document {
+    module?: string,
     question:{
         icon: string,
         question: string,
@@ -14,7 +15,11 @@ export interface IFaq extends Document {
 }
 
 const faqSchema: Schema = new Schema ({
-
+        module: {
+        type : String,
+        required : false,
+        trim: true,
+    },
 
 
     question: [{

@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
         };
 
 
+        // Basic string fields
+        const modules = formData.get("module")?.toString();
 
        
         const question = parseJSON<{ question: string; answer: string }[]>(
@@ -82,6 +84,7 @@ export async function POST(req: NextRequest) {
         }
 
         const newFaq = await Faq.create({
+            module: modules,
             question: questionSummary,
         });
 

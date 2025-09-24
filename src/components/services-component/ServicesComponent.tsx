@@ -373,7 +373,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import ComponentCard from '@/components/common/ComponentCard';
@@ -430,6 +430,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     // States for service fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState<string[]>([]);
+    const [modules, setModules] = useState('');
+    const [addModules, setAddModules] = useState('');
+    const [localModules, setLocalModules] = useState<string[]>([]);
+    const [names, setNames] = useState('');
+    const [serviceIconFile, setServiceIconFile] = useState<File | null>(null);
+    const [serviceIconPreview, setServiceIconPreview] = useState<string | null>(null);
 
     // Process items
     const [processItems, setProcessItems] = useState<ProcessItem[]>([]);
@@ -466,6 +472,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     // Effect to populate form fields when editing an existing service
     useEffect(() => {
         const populateForm = (serviceData: IService) => {
+            setModules(serviceData.module || '');
+            setNames(serviceData.name || '');
             setTitle(serviceData.title || '');
             setDescription(serviceData.description || []);
 
@@ -516,6 +524,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             })) || []);
 
             // Main images
+            setServiceIconPreview(serviceData.serviceIcon || null);
             setMainImagePreview(serviceData.mainImage || null);
             setIconPreview(serviceData.icons?.[0] || null);
             setBannerImagePreview(serviceData.bannerImage || null);
@@ -576,6 +585,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     };
 
     // Image change handlers
+    const handleServiceIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        setServiceIconFile(file);
+        setServiceIconPreview(file ? URL.createObjectURL(file) : null);
+    };
+
     const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setMainImageFile(file);
@@ -718,6 +733,48 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setWhyChooseUsItems(whyChooseUsItems.filter((_, i) => i !== index));
     };
 
+    const predefinedModules = useMemo(() => ([
+        "Development",
+        "Design",
+        "Video",
+    ]), []);
+
+    const handleAddCustomHeading = () => {
+        const trimmedHeading = addModules.trim();
+
+        if (!trimmedHeading) {
+            alert("Please enter a module heading to add.");
+            return;
+        }
+
+        const allCurrentlyVisibleHeadings = Array.from(new Set([
+            ...predefinedModules,
+            ...services.map(blog => blog.module).filter(Boolean) as string[],
+            ...localModules
+        ]));
+
+        if (allCurrentlyVisibleHeadings.includes(trimmedHeading)) {
+            alert("This heading already exists! Please choose from the list or enter a unique heading.");
+            return;
+        }
+
+        setLocalModules(prev => [...prev, trimmedHeading]);
+        setModules(trimmedHeading);
+        setAddModules(''); // Clear the input field
+    };
+
+    const allModules = useMemo(() => {
+            const existingAddHeadingsFromBlogs = services
+                .map(blog => blog.module)
+                .filter(Boolean) as string[];
+    
+            return Array.from(new Set([
+                ...predefinedModules,
+                ...existingAddHeadingsFromBlogs,
+                ...localModules
+            ]));
+        }, [predefinedModules, services, localModules]);
+
     // Main form submission handler
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -728,6 +785,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
         // Basic fields
         formData.append('title', title);
+        formData.append('module', modules);
+        formData.append('name', names);
         formData.append('description', JSON.stringify(description));
 
         // Process items
@@ -765,7 +824,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 formData.append(fieldName, '');
             }
         };
-
+        handleImageAppend('serviceIcon', serviceIconFile, serviceIconPreview);
         handleImageAppend('mainImage', mainImageFile, mainImagePreview);
         handleImageAppend('icon', iconFile, iconPreview);
         handleImageAppend('bannerImage', bannerImageFile, bannerImagePreview);
@@ -833,13 +892,15 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
     const clearForm = () => {
         setTitle('');
+        setModules('');
+        setNames('');
         setDescription([]);
         setProcessItems([]);
         setServiceItems([]);
         setTechnologyItems([]);
         setWhyChooseUsItems([]);
         setIcons([]);
-
+        setServiceIconFile(null);
         setMainImageFile(null);
         setMainImagePreview(null);
         setIconFile(null);
@@ -978,16 +1039,81 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Title */}
                     <div>
-                        <Label htmlFor="title">Service Title</Label>
+                        <div>
+                            <Label htmlFor="addHeadingInput">Add New Module Heading</Label>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    id="addHeadingInput"
+                                    type="text"
+                                    value={addModules}
+                                    onChange={(e) => setAddModules(e.target.value)}
+                                    placeholder="Enter new module heading ..."
+                                    className="flex-grow"
+                                    disabled={loading}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddCustomHeading}
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Adding...' : 'Add Module'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="blogHeadingSelect">Module Heading</Label>
+                            <select
+                                id="modules"
+                                value={modules}
+                                onChange={(e) => setModules(e.target.value)}
+                                className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                required
+                                disabled={loading}
+                            >
+                                <option value="">Select Module Heading</option>
+                                {allModules.map((heading, index) => (
+                                    <option key={index} value={heading}>
+                                        {heading}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+
+                        {/* <Label htmlFor="modules">Service Modules</Label>
                         <Input
-                            id="title"
+                            id="modules"
                             type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter service title"
+                            value={modules}
+                            onChange={(e) => setModules(e.target.value)}
+                            placeholder="Enter service modules"
                             required
                             disabled={loading}
-                        />
+                        /> */}
+
+                        <div className="mt-4">
+                            <Input
+                                id="name"
+                                type="text"
+                                value={names}
+                                onChange={(e) => setNames(e.target.value)}
+                                placeholder="Enter service name"
+                                required
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <Input
+                                id="title"
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Enter service title"
+                                disabled={loading}
+                            />
+                        </div>
                     </div>
 
                     {/* Description */}
@@ -1306,6 +1432,21 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Main Image Uploads */}
+                    {renderImageUpload(
+                        'serviceIcon',
+                        'Service Icon',
+                        serviceIconFile,
+                        serviceIconPreview,
+                        handleServiceIconChange,
+                        () => {
+                            setServiceIconFile(null);
+                            setServiceIconPreview(null);
+                        },
+                        true
+                    )}
+
+
+
                     {renderImageUpload(
                         'mainImage',
                         'Main Image',

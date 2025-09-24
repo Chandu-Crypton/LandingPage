@@ -2,6 +2,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 
 export interface IService extends Document {
+    module?: string;
+    name?: string;
+    serviceIcon?: string;
     title: string;
     description: string[];
     mainImage: string;
@@ -34,6 +37,9 @@ export interface IService extends Document {
 
 
 const ServiceSchema: Schema<IService> = new Schema<IService>({
+    module: { type: String, required: false },
+    name: { type: String, required: false },
+    serviceIcon: { type: String, required: false },
     icons: { type: [String], required: false },
     serviceImage1: { type: String, required: true },
     serviceImage2: { type: String, required: true },
