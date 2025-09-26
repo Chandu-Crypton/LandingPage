@@ -1019,6 +1019,9 @@ const aboutItems: NavItem[] = [
     subItems: [
       { name: "Add New About", path: "/about-management/Add-About", pro: false },
       { name: "About List", path: "/about-management/About-List", pro: false },
+      { name: "Add New Gallery", path: "/gallery-management/Add-Gallery", pro: false },
+      { name: "Gallery List", path: "/gallery-management/Gallery-List", pro: false },
+
     ],
   },
 ];

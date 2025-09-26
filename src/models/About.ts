@@ -13,6 +13,7 @@ export interface IAbout extends Document {
     __v?: number;
 }
 
+
 const aboutSchema: Schema = new Schema ({
 
       title: {
