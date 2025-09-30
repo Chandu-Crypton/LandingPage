@@ -1,6 +1,6 @@
 // 'use client';
 
-// import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect, useMemo } from 'react';
 // import Input from '@/components/form/input/InputField';
 // import Label from '@/components/form/Label';
 // import ComponentCard from '@/components/common/ComponentCard';
@@ -20,43 +20,146 @@
 //     message?: string;
 // }
 
+// interface ProcessItem {
+//     title: string;
+//     description?: string;
+// }
+
+// interface ServiceItem {
+//     icon: string;
+//     title: string;
+//     description: string;
+//     iconFile: File | null;
+//     iconPreview: string | null;
+// }
+
+// interface WhyChooseUsItem {
+//     icon: string;
+//     description: string;
+//     iconFile: File | null;
+//     iconPreview: string | null;
+// }
+
+// interface TechnologyItem {
+//     title: string;
+//     icon: string;
+//     iconFile: File | null;
+//     iconPreview: string | null;
+// }
+
+// interface IconItem {
+//     file: File | null;
+//     preview: string | null;
+//     existingUrl: string | null;
+// }
+
 // const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) => {
-
-
-//     // States for other service fields
+//     // States for service fields
 //     const [title, setTitle] = useState('');
 //     const [description, setDescription] = useState<string[]>([]);
+//     const [modules, setModules] = useState('');
+//     const [addModules, setAddModules] = useState('');
+//     const [localModules, setLocalModules] = useState<string[]>([]);
+//     const [names, setNames] = useState('');
+//     const [serviceIconFile, setServiceIconFile] = useState<File | null>(null);
+//     const [serviceIconPreview, setServiceIconPreview] = useState<string | null>(null);
 
+//     // Process items
+//     const [processItems, setProcessItems] = useState<ProcessItem[]>([]);
+
+//     // Service items
+//     const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
+
+//     // Technology - changed to array to match your schema
+//     const [technologyItems, setTechnologyItems] = useState<TechnologyItem[]>([]);
+
+//     // Why choose us
+//     const [whyChooseUsItems, setWhyChooseUsItems] = useState<WhyChooseUsItem[]>([]);
+
+//     // Icons field (array of icons)
+//     const [icons, setIcons] = useState<IconItem[]>([]);
 
 //     // States for image files and their previews
 //     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
 //     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+//     const [iconFile, setIconFile] = useState<File | null>(null);
+//     const [iconPreview, setIconPreview] = useState<string | null>(null);
 //     const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
 //     const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
+//     const [serviceImage1File, setServiceImage1File] = useState<File | null>(null);
+//     const [serviceImage1Preview, setServiceImage1Preview] = useState<string | null>(null);
+//     const [serviceImage2File, setServiceImage2File] = useState<File | null>(null);
+//     const [serviceImage2Preview, setServiceImage2Preview] = useState<string | null>(null);
 
 //     const router = useRouter();
 //     const { addService, updateService, services } = useService();
 //     const [loading, setLoading] = useState(false);
 //     const [formError, setFormError] = useState<string | null>(null);
 
-
-
-
-
-//     // 
-
 //     // Effect to populate form fields when editing an existing service
 //     useEffect(() => {
 //         const populateForm = (serviceData: IService) => {
+//             setModules(serviceData.module || '');
+//             setNames(serviceData.name || '');
 //             setTitle(serviceData.title || '');
 //             setDescription(serviceData.description || []);
+
+//             // Process items
+//             setProcessItems(
+//                 serviceData.process?.map((item): ProcessItem => ({
+//                     title: item.title || '',
+//                     description: item.description || ''
+//                 })) || []
+//             );
+
+//             // Service items
+//             setServiceItems(
+//                 serviceData.service?.map((item): ServiceItem => ({
+//                     icon: item.icon || '',
+//                     title: item.title || '',
+//                     description: item.description || '',
+//                     iconPreview: item.icon || null,
+//                     iconFile: null
+//                 })) || []
+//             );
+
+//             // Technology items
+//             setTechnologyItems(
+//                 serviceData.technology?.map((item): TechnologyItem => ({
+//                     title: item.title || '',
+//                     icon: item.icon || '',
+//                     iconPreview: item.icon || null,
+//                     iconFile: null
+//                 })) || []
+//             );
+
+//             // Why choose us
+//             setWhyChooseUsItems(
+//                 serviceData.whyChooseUs?.map((item): WhyChooseUsItem => ({
+//                     icon: item.icon || '',
+//                     description: item.description || '',
+//                     iconPreview: item.icon || null,
+//                     iconFile: null
+//                 })) || []
+//             );
+
+//             // Icons field
+//             setIcons(serviceData.icons?.map(icon => ({
+//                 file: null,
+//                 preview: null,
+//                 existingUrl: icon || null
+//             })) || []);
+
+//             // Main images
+//             setServiceIconPreview(serviceData.serviceIcon || null);
 //             setMainImagePreview(serviceData.mainImage || null);
+//             setIconPreview(serviceData.icons?.[0] || null);
 //             setBannerImagePreview(serviceData.bannerImage || null);
+//             setServiceImage1Preview(serviceData.serviceImage1 || null);
+//             setServiceImage2Preview(serviceData.serviceImage2 || null);
+
 //             setFormError(null);
 //         };
-
-
-
 
 //         if (serviceIdToEdit) {
 //             const cleanId = serviceIdToEdit.replace(/^\//, "");
@@ -68,17 +171,17 @@
 //                 console.log("Service data from context:", serviceToEditFromContext);
 //                 populateForm(serviceToEditFromContext);
 //             } else {
-//                 // If not found in context, fetch from API (e.g., if page was refreshed directly on edit URL)
+//                 // If not found in context, fetch from API
 //                 setLoading(true);
 //                 const fetchSingleService = async () => {
 //                     try {
-//                         const res = await axios.get<SingleServiceApiResponse>(`/api/service?id=${cleanId}`); // Use query param for GET by ID
+//                         const res = await axios.get<SingleServiceApiResponse>(`/api/service?id=${cleanId}`);
 //                         if (res.data.success && res.data.data) {
 //                             populateForm(res.data.data);
 //                         } else {
 //                             setFormError(res.data.message || 'Service entry not found.');
 //                         }
-//                     } catch (err) { // Type the catch error for AxiosError
+//                     } catch (err) {
 //                         console.error('Error fetching single service data:', err);
 //                         setFormError('Failed to load service data for editing.');
 //                     } finally {
@@ -90,6 +193,30 @@
 //         }
 //     }, [serviceIdToEdit, services]);
 
+//     // Process handlers
+//     const handleProcessChange = (index: number, field: keyof ProcessItem, value: string) => {
+//         const newItems = [...processItems];
+//         newItems[index] = { ...newItems[index], [field]: value };
+//         setProcessItems(newItems);
+//     };
+
+//     const addProcessItem = () => {
+//         setProcessItems([...processItems, {
+//             title: '',
+//             description: ''
+//         }]);
+//     };
+
+//     const removeProcessItem = (index: number) => {
+//         setProcessItems(processItems.filter((_, i) => i !== index));
+//     };
+
+//     // Image change handlers
+//     const handleServiceIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         setServiceIconFile(file);
+//         setServiceIconPreview(file ? URL.createObjectURL(file) : null);
+//     };
 
 //     const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //         const file = e.target.files ? e.target.files[0] : null;
@@ -101,10 +228,179 @@
 //         const file = e.target.files ? e.target.files[0] : null;
 //         setBannerImageFile(file);
 //         setBannerImagePreview(file ? URL.createObjectURL(file) : null);
-//     }
+//     };
 
+//     const handleServiceImage1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         setServiceImage1File(file);
+//         setServiceImage1Preview(file ? URL.createObjectURL(file) : null);
+//     };
 
+//     const handleServiceImage2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         setServiceImage2File(file);
+//         setServiceImage2Preview(file ? URL.createObjectURL(file) : null);
+//     };
 
+//     // Icons handlers
+//     const handleIconsChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         const newIcons = [...icons];
+//         newIcons[index] = {
+//             file: file,
+//             preview: file ? URL.createObjectURL(file) : newIcons[index].preview,
+//             existingUrl: newIcons[index].existingUrl
+//         };
+//         setIcons(newIcons);
+//     };
+
+//     const addIcon = () => {
+//         setIcons([...icons, {
+//             file: null,
+//             preview: null,
+//             existingUrl: null
+//         }]);
+//     };
+
+//     const removeIcon = (index: number) => {
+//         setIcons(icons.filter((_, i) => i !== index));
+//     };
+
+//     // Service items handlers
+//     const handleServiceItemChange = (index: number, field: keyof ServiceItem, value: string) => {
+//         const newItems = [...serviceItems];
+//         newItems[index] = { ...newItems[index], [field]: value };
+//         setServiceItems(newItems);
+//     };
+
+//     const handleServiceItemIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         const newItems = [...serviceItems];
+//         newItems[index] = {
+//             ...newItems[index],
+//             iconFile: file,
+//             iconPreview: file ? URL.createObjectURL(file) : newItems[index].iconPreview
+//         };
+//         setServiceItems(newItems);
+//     };
+
+//     const addServiceItem = () => {
+//         setServiceItems([...serviceItems, {
+//             icon: '',
+//             title: '',
+//             description: '',
+//             iconFile: null,
+//             iconPreview: null
+//         }]);
+//     };
+
+//     const removeServiceItem = (index: number) => {
+//         setServiceItems(serviceItems.filter((_, i) => i !== index));
+//     };
+
+//     // Technology handlers
+//     const handleTechnologyChange = (index: number, field: keyof TechnologyItem, value: string) => {
+//         const newItems = [...technologyItems];
+//         newItems[index] = { ...newItems[index], [field]: value };
+//         setTechnologyItems(newItems);
+//     };
+
+//     const handleTechnologyIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         const newItems = [...technologyItems];
+//         newItems[index] = {
+//             ...newItems[index],
+//             iconFile: file,
+//             iconPreview: file ? URL.createObjectURL(file) : newItems[index].iconPreview
+//         };
+//         setTechnologyItems(newItems);
+//     };
+
+//     const addTechnology = () => {
+//         setTechnologyItems([...technologyItems, {
+//             title: '',
+//             icon: '',
+//             iconFile: null,
+//             iconPreview: null
+//         }]);
+//     };
+
+//     const removeTechnology = (index: number) => {
+//         setTechnologyItems(technologyItems.filter((_, i) => i !== index));
+//     };
+
+//     // Why choose us handlers
+//     const handleWhyChooseUsChange = (index: number, field: keyof WhyChooseUsItem, value: string) => {
+//         const newItems = [...whyChooseUsItems];
+//         newItems[index] = { ...newItems[index], [field]: value };
+//         setWhyChooseUsItems(newItems);
+//     };
+
+//     const handleWhyChooseUsIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+//         const file = e.target.files ? e.target.files[0] : null;
+//         const newItems = [...whyChooseUsItems];
+//         newItems[index] = {
+//             ...newItems[index],
+//             iconFile: file,
+//             iconPreview: file ? URL.createObjectURL(file) : newItems[index].iconPreview
+//         };
+//         setWhyChooseUsItems(newItems);
+//     };
+
+//     const addWhyChooseUsItem = () => {
+//         setWhyChooseUsItems([...whyChooseUsItems, {
+//             icon: '',
+//             description: '',
+//             iconFile: null,
+//             iconPreview: null
+//         }]);
+//     };
+
+//     const removeWhyChooseUsItem = (index: number) => {
+//         setWhyChooseUsItems(whyChooseUsItems.filter((_, i) => i !== index));
+//     };
+
+//     const predefinedModules = useMemo(() => ([
+//         "Development",
+//         "Design",
+//         "Video",
+//     ]), []);
+
+//     const handleAddCustomHeading = () => {
+//         const trimmedHeading = addModules.trim();
+
+//         if (!trimmedHeading) {
+//             alert("Please enter a module heading to add.");
+//             return;
+//         }
+
+//         const allCurrentlyVisibleHeadings = Array.from(new Set([
+//             ...predefinedModules,
+//             ...services.map(blog => blog.module).filter(Boolean) as string[],
+//             ...localModules
+//         ]));
+
+//         if (allCurrentlyVisibleHeadings.includes(trimmedHeading)) {
+//             alert("This heading already exists! Please choose from the list or enter a unique heading.");
+//             return;
+//         }
+
+//         setLocalModules(prev => [...prev, trimmedHeading]);
+//         setModules(trimmedHeading);
+//         setAddModules(''); // Clear the input field
+//     };
+
+//     const allModules = useMemo(() => {
+//             const existingAddHeadingsFromBlogs = services
+//                 .map(blog => blog.module)
+//                 .filter(Boolean) as string[];
+
+//             return Array.from(new Set([
+//                 ...predefinedModules,
+//                 ...existingAddHeadingsFromBlogs,
+//                 ...localModules
+//             ]));
+//         }, [predefinedModules, services, localModules]);
 
 //     // Main form submission handler
 //     const handleSubmit = async (e: React.FormEvent) => {
@@ -114,29 +410,87 @@
 
 //         const formData = new FormData();
 
-
-
+//         // Basic fields
 //         formData.append('title', title);
+//         formData.append('module', modules);
+//         formData.append('name', names);
 //         formData.append('description', JSON.stringify(description));
 
+//         // Process items
+//         formData.append("process", JSON.stringify(processItems));
 
-//         // Handle main image: new file, existing URL, or clear
-//         if (mainImageFile) {
-//             formData.append('mainImage', mainImageFile);
-//         } else if (mainImagePreview) { // No new file, but there's an existing preview (URL)
-//             formData.append('mainImage', mainImagePreview);
-//         } else if (serviceIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
-//             formData.append('mainImage', '');
-//         }
-//         // Handle banner image: new file, existing URL, or clear
-//         if (bannerImageFile) {
-//             formData.append('bannerImage', bannerImageFile);
-//         } else if (bannerImagePreview) { // No new file, but there's an existing preview (URL)
-//             formData.append('bannerImage', bannerImagePreview);
-//         } else if (serviceIdToEdit) { // If editing and no new file or preview, assume user wants to clear it
-//             formData.append('bannerImage', '');
-//         }
+//         // Service items with file handling
+//         const serviceItemsData = serviceItems.map(item => ({
+//             icon: item.iconFile ? "pending" : (item.icon || "pending"),
+//             title: item.title,
+//             description: item.description
+//         }));
+//         formData.append("service", JSON.stringify(serviceItemsData));
 
+//         // Technology
+//         const technologyData = technologyItems.map(item => ({
+//             title: item.title,
+//             icon: item.iconFile ? "pending" : (item.icon || "pending")
+//         }));
+//         formData.append("technology", JSON.stringify(technologyData));
+
+//         // Why choose us
+//         const whyChooseUsData = whyChooseUsItems.map(item => ({
+//             icon: item.iconFile ? "pending" : (item.icon || "pending"),
+//             description: item.description
+//         }));
+//         formData.append("whyChooseUs", JSON.stringify(whyChooseUsData));
+
+//         // Handle main image uploads
+//         const handleImageAppend = (fieldName: string, file: File | null, preview: string | null) => {
+//             if (file) {
+//                 formData.append(fieldName, file);
+//             } else if (preview) {
+//                 formData.append(fieldName, preview);
+//             } else if (serviceIdToEdit) {
+//                 formData.append(fieldName, '');
+//             }
+//         };
+//         handleImageAppend('serviceIcon', serviceIconFile, serviceIconPreview);
+//         handleImageAppend('mainImage', mainImageFile, mainImagePreview);
+//         handleImageAppend('icon', iconFile, iconPreview);
+//         handleImageAppend('bannerImage', bannerImageFile, bannerImagePreview);
+//         handleImageAppend('serviceImage1', serviceImage1File, serviceImage1Preview);
+//         handleImageAppend('serviceImage2', serviceImage2File, serviceImage2Preview);
+
+//         // Handle icons
+//         icons.forEach((icon, index) => {
+//             if (icon.file) {
+//                 formData.append(`icons_${index}`, icon.file);
+//             } else if (icon.preview) {
+//                 formData.append(`icons_${index}`, icon.preview);
+//             } else if (icon.existingUrl) {
+//                 formData.append(`icons_${index}`, icon.existingUrl);
+//             } else if (serviceIdToEdit) {
+//                 formData.append(`icons_${index}`, '');
+//             }
+//         });
+
+//         // Service item icons
+//         serviceItems.forEach((item, index) => {
+//             if (item.iconFile) {
+//                 formData.append(`serviceItemIcon_${index}`, item.iconFile);
+//             }
+//         });
+
+//         // Technology icons
+//         technologyItems.forEach((item, index) => {
+//             if (item.iconFile) {
+//                 formData.append(`technologyIcon_${index}`, item.iconFile);
+//             }
+//         });
+
+//         // Why choose us icons
+//         whyChooseUsItems.forEach((item, index) => {
+//             if (item.iconFile) {
+//                 formData.append(`whyChooseUsIcon_${index}`, item.iconFile);
+//             }
+//         });
 
 //         try {
 //             if (serviceIdToEdit) {
@@ -149,9 +503,8 @@
 //                 clearForm();
 //             }
 //             router.push('/service-management/Service-List');
-//         } catch (err) { // Catch any error
+//         } catch (err) {
 //             console.error('Submission failed:', err);
-//             // More robust error handling
 //             if (axios.isAxiosError(err)) {
 //                 setFormError(err.response?.data?.message || 'An error occurred during submission.');
 //             } else if (err instanceof Error) {
@@ -164,43 +517,233 @@
 //         }
 //     };
 
-
 //     const clearForm = () => {
-
 //         setTitle('');
+//         setModules('');
+//         setNames('');
 //         setDescription([]);
+//         setProcessItems([]);
+//         setServiceItems([]);
+//         setTechnologyItems([]);
+//         setWhyChooseUsItems([]);
+//         setIcons([]);
+//         setServiceIconFile(null);
 //         setMainImageFile(null);
 //         setMainImagePreview(null);
+//         setIconFile(null);
+//         setIconPreview(null);
 //         setBannerImageFile(null);
 //         setBannerImagePreview(null);
+//         setServiceImage1File(null);
+//         setServiceImage1Preview(null);
+//         setServiceImage2File(null);
+//         setServiceImage2Preview(null);
+
 //         setFormError(null);
 //     };
+
+//     const renderImageUpload = (
+//         id: string,
+//         label: string,
+//         file: File | null,
+//         preview: string | null,
+//         handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+//         handleRemove: () => void,
+//         required: boolean = false
+//     ) => (
+//         <div>
+//             <Label htmlFor={id}>{label}</Label>
+//             {(preview && !file) && (
+//                 <div className="mb-2">
+//                     <p className="text-sm text-gray-600">Current Image:</p>
+//                     <Image
+//                         src={preview}
+//                         alt={`${label} Preview`}
+//                         width={100}
+//                         height={100}
+//                         className="h-20 w-20 object-cover rounded-md shadow-sm"
+//                         unoptimized={true}
+//                     />
+//                     <button
+//                         type="button"
+//                         onClick={handleRemove}
+//                         className="mt-2 text-red-500 hover:text-red-700 text-sm"
+//                         disabled={loading}
+//                     >
+//                         Remove Current Image
+//                     </button>
+//                 </div>
+//             )}
+//             {file && (
+//                 <div className="mb-2">
+//                     <p className="text-sm text-gray-600">New Image Preview:</p>
+//                     <Image
+//                         src={URL.createObjectURL(file)}
+//                         alt={`New ${label} Preview`}
+//                         width={100}
+//                         height={100}
+//                         className="h-20 w-20 object-cover rounded-md shadow-sm"
+//                         unoptimized={true}
+//                     />
+//                     <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
+//                 </div>
+//             )}
+//             <input
+//                 id={id}
+//                 type="file"
+//                 accept="image/*"
+//                 onChange={handleChange}
+//                 className="w-full border rounded p-2"
+//                 required={required && !serviceIdToEdit && !preview && !file}
+//                 disabled={loading}
+//             />
+//         </div>
+//     );
+
+//     const renderItemImageUpload = (
+//         index: number,
+//         type: 'service' | 'whyChooseUs' | 'technology' | 'icons',
+//         preview: string | null,
+//         file: File | null,
+//         handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+//         handleRemove: () => void
+//     ) => (
+//         <div>
+//             <Label>
+//                 {type === 'service' ? 'Service Item Icon' :
+//                     type === 'whyChooseUs' ? 'Why Choose Us Icon' :
+//                         type === 'technology' ? 'Technology Icon' : 'Icon'}
+//             </Label>
+//             {(preview && !file) && (
+//                 <div className="mb-2">
+//                     <p className="text-sm text-gray-600">Current Icon:</p>
+//                     <Image
+//                         src={preview}
+//                         alt={`Icon Preview`}
+//                         width={80}
+//                         height={80}
+//                         className="h-16 w-16 object-cover rounded-md shadow-sm"
+//                         unoptimized={true}
+//                     />
+//                     <button
+//                         type="button"
+//                         onClick={handleRemove}
+//                         className="mt-2 text-red-500 hover:text-red-700 text-sm"
+//                         disabled={loading}
+//                     >
+//                         Remove Icon
+//                     </button>
+//                 </div>
+//             )}
+//             {file && (
+//                 <div className="mb-2">
+//                     <p className="text-sm text-gray-600">New Icon Preview:</p>
+//                     <Image
+//                         src={URL.createObjectURL(file)}
+//                         alt={`New Icon Preview`}
+//                         width={80}
+//                         height={80}
+//                         className="h-16 w-16 object-cover rounded-md shadow-sm"
+//                         unoptimized={true}
+//                     />
+//                     <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
+//                 </div>
+//             )}
+//             <input
+//                 type="file"
+//                 accept="image/*"
+//                 onChange={handleChange}
+//                 className="w-full border rounded p-2 text-sm"
+//                 disabled={loading}
+//             />
+//         </div>
+//     );
 
 //     return (
 //         <div className="container mx-auto px-4 py-8">
 //             <ComponentCard title={serviceIdToEdit ? 'Edit Service Entry' : 'Add New Service Entry'}>
 //                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
 //                 <form onSubmit={handleSubmit} className="space-y-6">
-
-
-
-
 //                     {/* Title */}
 //                     <div>
-//                         <Label htmlFor="title">Service Title</Label>
+//                         <div>
+//                             <Label htmlFor="addHeadingInput">Add New Module Heading</Label>
+//                             <div className="flex items-center gap-2">
+//                                 <Input
+//                                     id="addHeadingInput"
+//                                     type="text"
+//                                     value={addModules}
+//                                     onChange={(e) => setAddModules(e.target.value)}
+//                                     placeholder="Enter new module heading ..."
+//                                     className="flex-grow"
+//                                     disabled={loading}
+//                                 />
+//                                 <button
+//                                     type="button"
+//                                     onClick={handleAddCustomHeading}
+//                                     className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0"
+//                                     disabled={loading}
+//                                 >
+//                                     {loading ? 'Adding...' : 'Add Module'}
+//                                 </button>
+//                             </div>
+//                         </div>
+
+//                         <div>
+//                             <Label htmlFor="blogHeadingSelect">Module Heading</Label>
+//                             <select
+//                                 id="modules"
+//                                 value={modules}
+//                                 onChange={(e) => setModules(e.target.value)}
+//                                 className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+//                                 required
+//                                 disabled={loading}
+//                             >
+//                                 <option value="">Select Module Heading</option>
+//                                 {allModules.map((heading, index) => (
+//                                     <option key={index} value={heading}>
+//                                         {heading}
+//                                     </option>
+//                                 ))}
+//                             </select>
+//                         </div>
+
+
+//                         {/* <Label htmlFor="modules">Service Modules</Label>
 //                         <Input
-//                             id="title"
+//                             id="modules"
 //                             type="text"
-//                             value={title}
-//                             onChange={(e) => setTitle(e.target.value)}
-//                             placeholder="Enter service title"
+//                             value={modules}
+//                             onChange={(e) => setModules(e.target.value)}
+//                             placeholder="Enter service modules"
 //                             required
 //                             disabled={loading}
-//                         />
+//                         /> */}
+
+//                         <div className="mt-4">
+//                             <Input
+//                                 id="name"
+//                                 type="text"
+//                                 value={names}
+//                                 onChange={(e) => setNames(e.target.value)}
+//                                 placeholder="Enter service name"
+//                                 required
+//                                 disabled={loading}
+//                             />
+//                         </div>
+//                         <div className="mt-4">
+//                             <Input
+//                                 id="title"
+//                                 type="text"
+//                                 value={title}
+//                                 onChange={(e) => setTitle(e.target.value)}
+//                                 placeholder="Enter service title"
+//                                 disabled={loading}
+//                             />
+//                         </div>
 //                     </div>
 
 //                     {/* Description */}
-
 //                     <div>
 //                         <Label>Description</Label>
 //                         <div className="space-y-2">
@@ -238,116 +781,349 @@
 //                         </div>
 //                     </div>
 
-
-//                     {/* Main Image */}
+//                     {/* Process */}
 //                     <div>
-//                         <Label htmlFor="mainImage">Main Image</Label>
-//                         {(mainImagePreview && !mainImageFile) && (
-//                             <div className="mb-2">
-//                                 <p className="text-sm text-gray-600">Current Image:</p>
-//                                 <Image
-//                                     src={mainImagePreview}
-//                                     alt="Main Image Preview"
-//                                     width={300}
-//                                     height={200}
-//                                     className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-//                                     unoptimized={true}
-//                                 />
-//                                 <button
-//                                     type="button"
-//                                     onClick={() => {
-//                                         setMainImagePreview(null);
-//                                         setMainImageFile(null);
-//                                     }}
-//                                     className="mt-2 text-red-500 hover:text-red-700 text-sm"
-//                                     disabled={loading}
-//                                 >
-//                                     Remove Current Image
-//                                 </button>
-//                             </div>
-//                         )}
-//                         {mainImageFile && (
-//                             <div className="mb-2">
-//                                 <p className="text-sm text-gray-600">New Image Preview:</p>
-//                                 <Image
-//                                     src={URL.createObjectURL(mainImageFile)}
-//                                     alt="New Main Image Preview"
-//                                     width={300}
-//                                     height={200}
-//                                     className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-//                                     unoptimized={true}
-//                                 />
-//                                 <p className="text-xs text-gray-500 mt-1">Selected: {mainImageFile.name}</p>
-//                             </div>
-//                         )}
-//                         <input
-//                             id="mainImage"
-//                             type="file"
-//                             accept="image/*"
-//                             onChange={handleMainImageChange}
-//                             className="w-full border rounded p-2"
-//                             required={!serviceIdToEdit || (!mainImagePreview && !mainImageFile)}
-//                             disabled={loading}
-//                         />
+//                         <Label>Process</Label>
+//                         <div className="space-y-4">
+//                             {processItems.map((item, index) => (
+//                                 <div key={index} className="border p-4 rounded-md">
+//                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+//                                         <div>
+//                                             <Label>Title</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.title}
+//                                                 onChange={(e) => handleProcessChange(index, 'title', e.target.value)}
+//                                                 placeholder="Process title"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                         <div>
+//                                             <Label>Description (Optional)</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.description || ''}
+//                                                 onChange={(e) => handleProcessChange(index, 'description', e.target.value)}
+//                                                 placeholder="Process description"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => removeProcessItem(index)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                                         disabled={loading}
+//                                     >
+//                                         Remove Process Item
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 onClick={addProcessItem}
+//                                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                                 disabled={loading}
+//                             >
+//                                 Add Process Item
+//                             </button>
+//                         </div>
 //                     </div>
 
+//                     {/* Icons */}
+//                     <div>
+//                         <Label>Icons</Label>
+//                         <div className="space-y-4">
+//                             {icons.map((icon, index) => (
+//                                 <div key={index} className="border p-4 rounded-md">
+//                                     <div className="grid grid-cols-1 gap-4 mb-4">
+//                                         <div>
+//                                             {renderItemImageUpload(
+//                                                 index,
+//                                                 'icons',
+//                                                 icon.preview || icon.existingUrl,
+//                                                 icon.file,
+//                                                 (e) => handleIconsChange(index, e),
+//                                                 () => {
+//                                                     const newIcons = [...icons];
+//                                                     newIcons[index] = {
+//                                                         file: null,
+//                                                         preview: null,
+//                                                         existingUrl: null
+//                                                     };
+//                                                     setIcons(newIcons);
+//                                                 }
+//                                             )}
+//                                         </div>
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => removeIcon(index)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                                         disabled={loading}
+//                                     >
+//                                         Remove Icon
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 onClick={addIcon}
+//                                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                                 disabled={loading}
+//                             >
+//                                 Add Icon
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Service Items */}
+//                     <div>
+//                         <Label>Service Items</Label>
+//                         <div className="space-y-4">
+//                             {serviceItems.map((item, index) => (
+//                                 <div key={index} className="border p-4 rounded-md">
+//                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+//                                         <div>
+//                                             {renderItemImageUpload(
+//                                                 index,
+//                                                 'service',
+//                                                 item.iconPreview,
+//                                                 item.iconFile,
+//                                                 (e) => handleServiceItemIconChange(index, e),
+//                                                 () => {
+//                                                     const newItems = [...serviceItems];
+//                                                     newItems[index] = {
+//                                                         ...newItems[index],
+//                                                         iconFile: null,
+//                                                         iconPreview: null
+//                                                     };
+//                                                     setServiceItems(newItems);
+//                                                 }
+//                                             )}
+//                                         </div>
+//                                         <div>
+//                                             <Label>Title</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.title}
+//                                                 onChange={(e) => handleServiceItemChange(index, 'title', e.target.value)}
+//                                                 placeholder="Service item title"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                         <div className="md:col-span-2">
+//                                             <Label>Description</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.description}
+//                                                 onChange={(e) => handleServiceItemChange(index, 'description', e.target.value)}
+//                                                 placeholder="Service item description"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => removeServiceItem(index)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                                         disabled={loading}
+//                                     >
+//                                         Remove Service Item
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 onClick={addServiceItem}
+//                                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                                 disabled={loading}
+//                             >
+//                                 Add Service Item
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Technology */}
+//                     <div>
+//                         <Label>Technology</Label>
+//                         <div className="space-y-4">
+//                             {technologyItems.map((item, index) => (
+//                                 <div key={index} className="border p-4 rounded-md">
+//                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+//                                         <div>
+//                                             {renderItemImageUpload(
+//                                                 index,
+//                                                 'technology',
+//                                                 item.iconPreview,
+//                                                 item.iconFile,
+//                                                 (e) => handleTechnologyIconChange(index, e),
+//                                                 () => {
+//                                                     const newItems = [...technologyItems];
+//                                                     newItems[index] = {
+//                                                         ...newItems[index],
+//                                                         iconFile: null,
+//                                                         iconPreview: null
+//                                                     };
+//                                                     setTechnologyItems(newItems);
+//                                                 }
+//                                             )}
+//                                         </div>
+//                                         <div className="md:col-span-2">
+//                                             <Label>Title</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.title}
+//                                                 onChange={(e) => handleTechnologyChange(index, 'title', e.target.value)}
+//                                                 placeholder="Technology title"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => removeTechnology(index)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                                         disabled={loading}
+//                                     >
+//                                         Remove Technology
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 onClick={addTechnology}
+//                                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                                 disabled={loading}
+//                             >
+//                                 Add Technology
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Why Choose Us */}
+//                     <div>
+//                         <Label>Why Choose Us</Label>
+//                         <div className="space-y-4">
+//                             {whyChooseUsItems.map((item, index) => (
+//                                 <div key={index} className="border p-4 rounded-md">
+//                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+//                                         <div>
+//                                             {renderItemImageUpload(
+//                                                 index,
+//                                                 'whyChooseUs',
+//                                                 item.iconPreview,
+//                                                 item.iconFile,
+//                                                 (e) => handleWhyChooseUsIconChange(index, e),
+//                                                 () => {
+//                                                     const newItems = [...whyChooseUsItems];
+//                                                     newItems[index] = {
+//                                                         ...newItems[index],
+//                                                         iconFile: null,
+//                                                         iconPreview: null
+//                                                     };
+//                                                     setWhyChooseUsItems(newItems);
+//                                                 }
+//                                             )}
+//                                         </div>
+//                                         <div className="md:col-span-2">
+//                                             <Label>Description</Label>
+//                                             <Input
+//                                                 type="text"
+//                                                 value={item.description}
+//                                                 onChange={(e) => handleWhyChooseUsChange(index, 'description', e.target.value)}
+//                                                 placeholder="Why choose us description"
+//                                                 disabled={loading}
+//                                             />
+//                                         </div>
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => removeWhyChooseUsItem(index)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                                         disabled={loading}
+//                                     >
+//                                         Remove Item
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 onClick={addWhyChooseUsItem}
+//                                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                                 disabled={loading}
+//                             >
+//                                 Add Why Choose Us Item
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Main Image Uploads */}
+//                     {renderImageUpload(
+//                         'serviceIcon',
+//                         'Service Icon',
+//                         serviceIconFile,
+//                         serviceIconPreview,
+//                         handleServiceIconChange,
+//                         () => {
+//                             setServiceIconFile(null);
+//                             setServiceIconPreview(null);
+//                         },
+//                         true
+//                     )}
 
 
 
+//                     {renderImageUpload(
+//                         'mainImage',
+//                         'Main Image',
+//                         mainImageFile,
+//                         mainImagePreview,
+//                         handleMainImageChange,
+//                         () => {
+//                             setMainImageFile(null);
+//                             setMainImagePreview(null);
+//                         },
+//                         true
+//                     )}
 
-//                    {/* Banner Image */}
-//                    <div>
-//                        <Label htmlFor="bannerImage">Banner Image</Label>
-//                        {(bannerImagePreview && !bannerImageFile) && (
-//                            <div className="mb-2">
-//                                <p className="text-sm text-gray-600">Current Image:</p>
-//                                <Image
-//                                    src={bannerImagePreview}
-//                                    alt="Banner Image Preview"
-//                                    width={300}
-//                                    height={200}
-//                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-//                                    unoptimized={true}
-//                                />
-//                                <button
-//                                    type="button"
-//                                    onClick={() => {
-//                                        setBannerImagePreview(null);
-//                                        setBannerImageFile(null);
-//                                    }}
-//                                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
-//                                    disabled={loading}
-//                                >
-//                                    Remove Current Image
-//                                </button>
-//                            </div>
-//                        )}
-//                        {bannerImageFile && (
-//                            <div className="mb-2">
-//                                <p className="text-sm text-gray-600">New Image Preview:</p>
-//                                <Image
-//                                    src={URL.createObjectURL(bannerImageFile)}
-//                                    alt="New Banner Image Preview"
-//                                    width={300}
-//                                    height={200}
-//                                    className="h-auto w-auto max-w-xs rounded-md shadow-sm object-cover"
-//                                    unoptimized={true}
-//                                />
-//                                <p className="text-xs text-gray-500 mt-1">Selected: {bannerImageFile.name}</p>
-//                            </div>
-//                        )}
-//                        <input
-//                            id="bannerImage"
-//                            type="file"
-//                            accept="image/*"
-//                            onChange={handleBannerImageChange}
-//                            className="w-full border rounded p-2"
-//                            required={!serviceIdToEdit || (!bannerImagePreview && !bannerImageFile)}
-//                            disabled={loading}
-//                        />
-//                    </div>
+//                     {renderImageUpload(
+//                         'bannerImage',
+//                         'Banner Image',
+//                         bannerImageFile,
+//                         bannerImagePreview,
+//                         handleBannerImageChange,
+//                         () => {
+//                             setBannerImageFile(null);
+//                             setBannerImagePreview(null);
+//                         }
+//                     )}
 
+//                     {renderImageUpload(
+//                         'serviceImage1',
+//                         'Service Image 1',
+//                         serviceImage1File,
+//                         serviceImage1Preview,
+//                         handleServiceImage1Change,
+//                         () => {
+//                             setServiceImage1File(null);
+//                             setServiceImage1Preview(null);
+//                         },
+//                         true
+//                     )}
 
+//                     {renderImageUpload(
+//                         'serviceImage2',
+//                         'Service Image 2',
+//                         serviceImage2File,
+//                         serviceImage2Preview,
+//                         handleServiceImage2Change,
+//                         () => {
+//                             setServiceImage2File(null);
+//                             setServiceImage2Preview(null);
+//                         },
+//                         true
+//                     )}
 
 //                     {/* Submit Button */}
 //                     <div className="pt-4 flex justify-end">
@@ -366,6 +1142,11 @@
 // };
 
 // export default ServiceFormComponent;
+
+
+
+
+
 
 
 
@@ -469,7 +1250,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
-    // Effect to populate form fields when editing an existing service
+    // ==================== EFFECTS ====================
     useEffect(() => {
         const populateForm = (serviceData: IService) => {
             setModules(serviceData.module || '');
@@ -566,6 +1347,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         }
     }, [serviceIdToEdit, services]);
 
+    // ==================== HANDLERS ====================
     // Process handlers
     const handleProcessChange = (index: number, field: keyof ProcessItem, value: string) => {
         const newItems = [...processItems];
@@ -733,6 +1515,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setWhyChooseUsItems(whyChooseUsItems.filter((_, i) => i !== index));
     };
 
+    // ==================== MODULES MANAGEMENT ====================
     const predefinedModules = useMemo(() => ([
         "Development",
         "Design",
@@ -764,18 +1547,18 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     };
 
     const allModules = useMemo(() => {
-            const existingAddHeadingsFromBlogs = services
-                .map(blog => blog.module)
-                .filter(Boolean) as string[];
-    
-            return Array.from(new Set([
-                ...predefinedModules,
-                ...existingAddHeadingsFromBlogs,
-                ...localModules
-            ]));
-        }, [predefinedModules, services, localModules]);
+        const existingAddHeadingsFromBlogs = services
+            .map(blog => blog.module)
+            .filter(Boolean) as string[];
 
-    // Main form submission handler
+        return Array.from(new Set([
+            ...predefinedModules,
+            ...existingAddHeadingsFromBlogs,
+            ...localModules
+        ]));
+    }, [predefinedModules, services, localModules]);
+
+    // ==================== FORM SUBMISSION ====================
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
@@ -915,6 +1698,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setFormError(null);
     };
 
+    // ==================== RENDER HELPERS ====================
     const renderImageUpload = (
         id: string,
         label: string,
@@ -924,23 +1708,23 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         handleRemove: () => void,
         required: boolean = false
     ) => (
-        <div>
-            <Label htmlFor={id}>{label}</Label>
+        <div className="border p-4 rounded-lg bg-gray-50">
+            <Label htmlFor={id} className="text-lg font-semibold">{label}</Label>
             {(preview && !file) && (
-                <div className="mb-2">
-                    <p className="text-sm text-gray-600">Current Image:</p>
+                <div className="mb-3">
+                    <p className="text-sm text-gray-600 mb-2">Current Image:</p>
                     <Image
                         src={preview}
                         alt={`${label} Preview`}
                         width={100}
                         height={100}
-                        className="h-20 w-20 object-cover rounded-md shadow-sm"
+                        className="h-20 w-20 object-cover rounded-md shadow-sm border"
                         unoptimized={true}
                     />
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                        className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
                         disabled={loading}
                     >
                         Remove Current Image
@@ -948,14 +1732,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 </div>
             )}
             {file && (
-                <div className="mb-2">
-                    <p className="text-sm text-gray-600">New Image Preview:</p>
+                <div className="mb-3">
+                    <p className="text-sm text-gray-600 mb-2">New Image Preview:</p>
                     <Image
                         src={URL.createObjectURL(file)}
                         alt={`New ${label} Preview`}
                         width={100}
                         height={100}
-                        className="h-20 w-20 object-cover rounded-md shadow-sm"
+                        className="h-20 w-20 object-cover rounded-md shadow-sm border"
                         unoptimized={true}
                     />
                     <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
@@ -966,7 +1750,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 type="file"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full border rounded p-2"
+                className="w-full border rounded p-2 bg-white"
                 required={required && !serviceIdToEdit && !preview && !file}
                 disabled={loading}
             />
@@ -981,27 +1765,27 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
         handleRemove: () => void
     ) => (
-        <div>
-            <Label>
+        <div className="border p-3 rounded bg-white">
+            <Label className="font-medium">
                 {type === 'service' ? 'Service Item Icon' :
                     type === 'whyChooseUs' ? 'Why Choose Us Icon' :
                         type === 'technology' ? 'Technology Icon' : 'Icon'}
             </Label>
             {(preview && !file) && (
                 <div className="mb-2">
-                    <p className="text-sm text-gray-600">Current Icon:</p>
+                    <p className="text-sm text-gray-600 mb-1">Current Icon:</p>
                     <Image
                         src={preview}
                         alt={`Icon Preview`}
                         width={80}
                         height={80}
-                        className="h-16 w-16 object-cover rounded-md shadow-sm"
+                        className="h-16 w-16 object-cover rounded-md shadow-sm border"
                         unoptimized={true}
                     />
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="mt-2 text-red-500 hover:text-red-700 text-sm"
+                        className="mt-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
                         disabled={loading}
                     >
                         Remove Icon
@@ -1010,13 +1794,13 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             )}
             {file && (
                 <div className="mb-2">
-                    <p className="text-sm text-gray-600">New Icon Preview:</p>
+                    <p className="text-sm text-gray-600 mb-1">New Icon Preview:</p>
                     <Image
                         src={URL.createObjectURL(file)}
                         alt={`New Icon Preview`}
                         width={80}
                         height={80}
-                        className="h-16 w-16 object-cover rounded-md shadow-sm"
+                        className="h-16 w-16 object-cover rounded-md shadow-sm border"
                         unoptimized={true}
                     />
                     <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
@@ -1026,21 +1810,57 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 type="file"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full border rounded p-2 text-sm"
+                className="w-full border rounded p-2 text-sm bg-white"
                 disabled={loading}
             />
         </div>
     );
 
+    // ==================== MAIN RENDER ====================
     return (
         <div className="container mx-auto px-4 py-8">
             <ComponentCard title={serviceIdToEdit ? 'Edit Service Entry' : 'Add New Service Entry'}>
-                {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Title */}
-                    <div>
-                        <div>
-                            <Label htmlFor="addHeadingInput">Add New Module Heading</Label>
+                {formError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <p className="text-red-700 text-center">{formError}</p>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Basic Information Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Basic Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <Label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
+                                <Input
+                                    id="title"
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Enter service title"
+                                    disabled={loading}
+                                    className="w-full"
+                                />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Service Name</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    value={names}
+                                    onChange={(e) => setNames(e.target.value)}
+                                    placeholder="Enter service name"
+                                    required
+                                    disabled={loading}
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <Label htmlFor="addHeadingInput" className="block text-sm font-medium text-gray-700 mb-2">Add New Module Heading</Label>
                             <div className="flex items-center gap-2">
                                 <Input
                                     id="addHeadingInput"
@@ -1054,7 +1874,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 <button
                                     type="button"
                                     onClick={handleAddCustomHeading}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0 whitespace-nowrap"
                                     disabled={loading}
                                 >
                                     {loading ? 'Adding...' : 'Add Module'}
@@ -1062,13 +1882,13 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             </div>
                         </div>
 
-                        <div>
-                            <Label htmlFor="blogHeadingSelect">Module Heading</Label>
+                        <div className="mt-4">
+                            <Label htmlFor="modules" className="block text-sm font-medium text-gray-700 mb-2">Module Heading</Label>
                             <select
                                 id="modules"
                                 value={modules}
                                 onChange={(e) => setModules(e.target.value)}
-                                className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                 required
                                 disabled={loading}
                             >
@@ -1080,48 +1900,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 ))}
                             </select>
                         </div>
-
-
-                        {/* <Label htmlFor="modules">Service Modules</Label>
-                        <Input
-                            id="modules"
-                            type="text"
-                            value={modules}
-                            onChange={(e) => setModules(e.target.value)}
-                            placeholder="Enter service modules"
-                            required
-                            disabled={loading}
-                        /> */}
-
-                        <div className="mt-4">
-                            <Input
-                                id="name"
-                                type="text"
-                                value={names}
-                                onChange={(e) => setNames(e.target.value)}
-                                placeholder="Enter service name"
-                                required
-                                disabled={loading}
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <Input
-                                id="title"
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Enter service title"
-                                disabled={loading}
-                            />
-                        </div>
                     </div>
 
-                    {/* Description */}
-                    <div>
-                        <Label>Description</Label>
-                        <div className="space-y-2">
+                    {/* Description Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
+                        <div className="space-y-3">
                             {description.map((tag, index) => (
-                                <div key={index} className="flex gap-2 items-center">
+                                <div key={index} className="flex gap-2 items-center border border-gray-300 rounded-lg p-4 bg-gray-50">
                                     <Input
                                         type="text"
                                         value={tag}
@@ -1132,319 +1918,30 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         }}
                                         placeholder={`Description ${index + 1}`}
                                         disabled={loading}
+                                        className="flex-1"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setDescription(description.filter((_, i) => i !== index))}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                        className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                                         disabled={loading}
                                     >
                                         Remove
                                     </button>
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-4">
                             <button
                                 type="button"
                                 onClick={() => setDescription([...description, ""])}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
                                 disabled={loading}
                             >
-                                Add New Description
+                                + Add New Description
                             </button>
                         </div>
                     </div>
-
-                    {/* Process */}
-                    <div>
-                        <Label>Process</Label>
-                        <div className="space-y-4">
-                            {processItems.map((item, index) => (
-                                <div key={index} className="border p-4 rounded-md">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <Label>Title</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.title}
-                                                onChange={(e) => handleProcessChange(index, 'title', e.target.value)}
-                                                placeholder="Process title"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label>Description (Optional)</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.description || ''}
-                                                onChange={(e) => handleProcessChange(index, 'description', e.target.value)}
-                                                placeholder="Process description"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeProcessItem(index)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                        disabled={loading}
-                                    >
-                                        Remove Process Item
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addProcessItem}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                disabled={loading}
-                            >
-                                Add Process Item
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Icons */}
-                    <div>
-                        <Label>Icons</Label>
-                        <div className="space-y-4">
-                            {icons.map((icon, index) => (
-                                <div key={index} className="border p-4 rounded-md">
-                                    <div className="grid grid-cols-1 gap-4 mb-4">
-                                        <div>
-                                            {renderItemImageUpload(
-                                                index,
-                                                'icons',
-                                                icon.preview || icon.existingUrl,
-                                                icon.file,
-                                                (e) => handleIconsChange(index, e),
-                                                () => {
-                                                    const newIcons = [...icons];
-                                                    newIcons[index] = {
-                                                        file: null,
-                                                        preview: null,
-                                                        existingUrl: null
-                                                    };
-                                                    setIcons(newIcons);
-                                                }
-                                            )}
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeIcon(index)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                        disabled={loading}
-                                    >
-                                        Remove Icon
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addIcon}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                disabled={loading}
-                            >
-                                Add Icon
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Service Items */}
-                    <div>
-                        <Label>Service Items</Label>
-                        <div className="space-y-4">
-                            {serviceItems.map((item, index) => (
-                                <div key={index} className="border p-4 rounded-md">
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                        <div>
-                                            {renderItemImageUpload(
-                                                index,
-                                                'service',
-                                                item.iconPreview,
-                                                item.iconFile,
-                                                (e) => handleServiceItemIconChange(index, e),
-                                                () => {
-                                                    const newItems = [...serviceItems];
-                                                    newItems[index] = {
-                                                        ...newItems[index],
-                                                        iconFile: null,
-                                                        iconPreview: null
-                                                    };
-                                                    setServiceItems(newItems);
-                                                }
-                                            )}
-                                        </div>
-                                        <div>
-                                            <Label>Title</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.title}
-                                                onChange={(e) => handleServiceItemChange(index, 'title', e.target.value)}
-                                                placeholder="Service item title"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label>Description</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.description}
-                                                onChange={(e) => handleServiceItemChange(index, 'description', e.target.value)}
-                                                placeholder="Service item description"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeServiceItem(index)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                        disabled={loading}
-                                    >
-                                        Remove Service Item
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addServiceItem}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                disabled={loading}
-                            >
-                                Add Service Item
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Technology */}
-                    <div>
-                        <Label>Technology</Label>
-                        <div className="space-y-4">
-                            {technologyItems.map((item, index) => (
-                                <div key={index} className="border p-4 rounded-md">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                        <div>
-                                            {renderItemImageUpload(
-                                                index,
-                                                'technology',
-                                                item.iconPreview,
-                                                item.iconFile,
-                                                (e) => handleTechnologyIconChange(index, e),
-                                                () => {
-                                                    const newItems = [...technologyItems];
-                                                    newItems[index] = {
-                                                        ...newItems[index],
-                                                        iconFile: null,
-                                                        iconPreview: null
-                                                    };
-                                                    setTechnologyItems(newItems);
-                                                }
-                                            )}
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label>Title</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.title}
-                                                onChange={(e) => handleTechnologyChange(index, 'title', e.target.value)}
-                                                placeholder="Technology title"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeTechnology(index)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                        disabled={loading}
-                                    >
-                                        Remove Technology
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addTechnology}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                disabled={loading}
-                            >
-                                Add Technology
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Why Choose Us */}
-                    <div>
-                        <Label>Why Choose Us</Label>
-                        <div className="space-y-4">
-                            {whyChooseUsItems.map((item, index) => (
-                                <div key={index} className="border p-4 rounded-md">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                        <div>
-                                            {renderItemImageUpload(
-                                                index,
-                                                'whyChooseUs',
-                                                item.iconPreview,
-                                                item.iconFile,
-                                                (e) => handleWhyChooseUsIconChange(index, e),
-                                                () => {
-                                                    const newItems = [...whyChooseUsItems];
-                                                    newItems[index] = {
-                                                        ...newItems[index],
-                                                        iconFile: null,
-                                                        iconPreview: null
-                                                    };
-                                                    setWhyChooseUsItems(newItems);
-                                                }
-                                            )}
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label>Description</Label>
-                                            <Input
-                                                type="text"
-                                                value={item.description}
-                                                onChange={(e) => handleWhyChooseUsChange(index, 'description', e.target.value)}
-                                                placeholder="Why choose us description"
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeWhyChooseUsItem(index)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                        disabled={loading}
-                                    >
-                                        Remove Item
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addWhyChooseUsItem}
-                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                disabled={loading}
-                            >
-                                Add Why Choose Us Item
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Main Image Uploads */}
-                    {renderImageUpload(
-                        'serviceIcon',
-                        'Service Icon',
-                        serviceIconFile,
-                        serviceIconPreview,
-                        handleServiceIconChange,
-                        () => {
-                            setServiceIconFile(null);
-                            setServiceIconPreview(null);
-                        },
-                        true
-                    )}
-
 
 
                     {renderImageUpload(
@@ -1472,22 +1969,64 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         }
                     )}
 
-                    {renderImageUpload(
-                        'serviceImage1',
-                        'Service Image 1',
-                        serviceImage1File,
-                        serviceImage1Preview,
-                        handleServiceImage1Change,
-                        () => {
-                            setServiceImage1File(null);
-                            setServiceImage1Preview(null);
-                        },
-                        true
-                    )}
+                    {/* Process Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Process</h3>
+                        <div className="space-y-3">
+                            {processItems.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.title}
+                                                onChange={(e) => handleProcessChange(index, 'title', e.target.value)}
+                                                placeholder="Process title"
+                                                disabled={loading}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.description || ''}
+                                                onChange={(e) => handleProcessChange(index, 'description', e.target.value)}
+                                                placeholder="Process description"
+                                                disabled={loading}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeProcessItem(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            Remove Process Item
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addProcessItem}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                disabled={loading}
+                            >
+                                + Add Process Item
+                            </button>
+                        </div>
+                    </div>
 
                     {renderImageUpload(
                         'serviceImage2',
-                        'Service Image 2',
+                        'Process Item Image',
                         serviceImage2File,
                         serviceImage2Preview,
                         handleServiceImage2Change,
@@ -1498,11 +2037,341 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         true
                     )}
 
+                    {/* Icons Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Icons</h3>
+                        <div className="space-y-3">
+                            {icons.map((icon, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                    {renderItemImageUpload(
+                                        index,
+                                        'icons',
+                                        icon.preview || icon.existingUrl,
+                                        icon.file,
+                                        (e) => handleIconsChange(index, e),
+                                        () => {
+                                            const newIcons = [...icons];
+                                            newIcons[index] = {
+                                                file: null,
+                                                preview: null,
+                                                existingUrl: null
+                                            };
+                                            setIcons(newIcons);
+                                        }
+                                    )}
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeIcon(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            Remove Icon
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addIcon}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                disabled={loading}
+                            >
+                                + Add Icon
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Service Items Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Service Items</h3>
+                        <div className="space-y-3">
+                            {serviceItems.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                        <div className="lg:col-span-1">
+                                            {renderItemImageUpload(
+                                                index,
+                                                'service',
+                                                item.iconPreview,
+                                                item.iconFile,
+                                                (e) => handleServiceItemIconChange(index, e),
+                                                () => {
+                                                    const newItems = [...serviceItems];
+                                                    newItems[index] = {
+                                                        ...newItems[index],
+                                                        iconFile: null,
+                                                        iconPreview: null
+                                                    };
+                                                    setServiceItems(newItems);
+                                                }
+                                            )}
+                                        </div>
+                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
+                                                <Input
+                                                    type="text"
+                                                    value={item.title}
+                                                    onChange={(e) => handleServiceItemChange(index, 'title', e.target.value)}
+                                                    placeholder="Service item title"
+                                                    disabled={loading}
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <Label className="block text-sm font-medium text-gray-700 mb-2">Description</Label>
+                                                <Input
+                                                    type="text"
+                                                    value={item.description}
+                                                    onChange={(e) => handleServiceItemChange(index, 'description', e.target.value)}
+                                                    placeholder="Service item description"
+                                                    disabled={loading}
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeServiceItem(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            Remove Service Item
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addServiceItem}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                disabled={loading}
+                            >
+                                + Add Service Item
+                            </button>
+                        </div>
+                    </div>
+
+                    {renderImageUpload(
+                        'serviceImage1',
+                        'Services Image',
+                        serviceImage1File,
+                        serviceImage1Preview,
+                        handleServiceImage1Change,
+                        () => {
+                            setServiceImage1File(null);
+                            setServiceImage1Preview(null);
+                        },
+                        true
+                    )}
+
+
+                    {/* Technology Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Technology</h3>
+                        <div className="space-y-3">
+                            {technologyItems.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                        <div className="lg:col-span-1">
+                                            {renderItemImageUpload(
+                                                index,
+                                                'technology',
+                                                item.iconPreview,
+                                                item.iconFile,
+                                                (e) => handleTechnologyIconChange(index, e),
+                                                () => {
+                                                    const newItems = [...technologyItems];
+                                                    newItems[index] = {
+                                                        ...newItems[index],
+                                                        iconFile: null,
+                                                        iconPreview: null
+                                                    };
+                                                    setTechnologyItems(newItems);
+                                                }
+                                            )}
+                                        </div>
+                                        <div className="lg:col-span-2">
+                                            <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.title}
+                                                onChange={(e) => handleTechnologyChange(index, 'title', e.target.value)}
+                                                placeholder="Technology title"
+                                                disabled={loading}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTechnology(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            Remove Technology
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addTechnology}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                disabled={loading}
+                            >
+                                + Add Technology
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Why Choose Us Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Why Choose Us</h3>
+                        <div className="space-y-3">
+                            {whyChooseUsItems.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                        <div className="lg:col-span-1">
+                                            {renderItemImageUpload(
+                                                index,
+                                                'whyChooseUs',
+                                                item.iconPreview,
+                                                item.iconFile,
+                                                (e) => handleWhyChooseUsIconChange(index, e),
+                                                () => {
+                                                    const newItems = [...whyChooseUsItems];
+                                                    newItems[index] = {
+                                                        ...newItems[index],
+                                                        iconFile: null,
+                                                        iconPreview: null
+                                                    };
+                                                    setWhyChooseUsItems(newItems);
+                                                }
+                                            )}
+                                        </div>
+                                        <div className="lg:col-span-2">
+                                            <Label className="block text-sm font-medium text-gray-700 mb-2">Description</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.description}
+                                                onChange={(e) => handleWhyChooseUsChange(index, 'description', e.target.value)}
+                                                placeholder="Why choose us description"
+                                                disabled={loading}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeWhyChooseUsItem(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            disabled={loading}
+                                        >
+                                            Remove Item
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addWhyChooseUsItem}
+                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                disabled={loading}
+                            >
+                                + Add Why Choose Us Item
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Images Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Images</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {renderImageUpload(
+                                'serviceIcon',
+                                'Service Icon',
+                                serviceIconFile,
+                                serviceIconPreview,
+                                handleServiceIconChange,
+                                () => {
+                                    setServiceIconFile(null);
+                                    setServiceIconPreview(null);
+                                },
+                                true
+                            )}
+
+                            {/* {renderImageUpload(
+                                'mainImage',
+                                'Main Image',
+                                mainImageFile,
+                                mainImagePreview,
+                                handleMainImageChange,
+                                () => {
+                                    setMainImageFile(null);
+                                    setMainImagePreview(null);
+                                },
+                                true
+                            )}
+
+                            {renderImageUpload(
+                                'bannerImage',
+                                'Banner Image',
+                                bannerImageFile,
+                                bannerImagePreview,
+                                handleBannerImageChange,
+                                () => {
+                                    setBannerImageFile(null);
+                                    setBannerImagePreview(null);
+                                }
+                            )} */}
+
+                            {/* {renderImageUpload(
+                                'serviceImage1',
+                                'Service Image 1',
+                                serviceImage1File,
+                                serviceImage1Preview,
+                                handleServiceImage1Change,
+                                () => {
+                                    setServiceImage1File(null);
+                                    setServiceImage1Preview(null);
+                                },
+                                true
+                            )} */}
+
+                            {/* {renderImageUpload(
+                                'serviceImage2',
+                                'Service Image 2',
+                                serviceImage2File,
+                                serviceImage2Preview,
+                                handleServiceImage2Change,
+                                () => {
+                                    setServiceImage2File(null);
+                                    setServiceImage2Preview(null);
+                                },
+                                true
+                            )} */}
+                        </div>
+                    </div>
+
                     {/* Submit Button */}
-                    <div className="pt-4 flex justify-end">
+                    <div className="flex justify-end pt-6 border-t">
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold text-lg"
                             disabled={loading}
                         >
                             {loading ? 'Submitting...' : serviceIdToEdit ? 'Update Service' : 'Add Service'}

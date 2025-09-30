@@ -1134,6 +1134,7 @@ const newsletterItems: NavItem[] = [
     subItems: [
       { name: "Add New Newsletter", path: "/newsletter-management/Add-NewsLetter", pro: false },
       { name: "Newsletter List", path: "/newsletter-management/NewsLetter-List", pro: false },
+        { name: "Subscribers List", path: "/newsletter-management/Subscribe-List", pro: false },
     ],
   },
 ];
