@@ -3,7 +3,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 
 export interface ISalesContact extends Document {
     firstName: string,
-    lastName: string,
+    // lastName: string,
     email: string,
     phoneNumber: string,
     message: string,
@@ -20,10 +20,10 @@ const SalesContactSchema: Schema = new Schema ({
         required : true
       },
 
-    lastName: {
-        type : String,
-        required : true
-    },
+    // lastName: {
+    //     type : String,
+    //     required : true
+    // },
 
     email: {
         type: String,

@@ -11,7 +11,7 @@ const corsHeaders = {
 
 interface IContact {
     firstName?: string;
-    lastName?: string;
+    // lastName?: string;
     email?: string;
     phoneNumber?: number;
   
@@ -91,9 +91,9 @@ export async function PUT(req: Request) {
         if (body.firstName !== undefined && typeof body.firstName === 'string') {
             updateData.firstName = body.firstName;
         }
-        if (body.lastName !== undefined && typeof body.lastName === 'string') {
-            updateData.lastName = body.lastName;
-        }
+        // if (body.lastName !== undefined && typeof body.lastName === 'string') {
+        //     updateData.lastName = body.lastName;
+        // }
 
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json(

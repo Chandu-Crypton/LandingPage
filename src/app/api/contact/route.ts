@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
         const {
             firstName,
-            lastName,
+            // lastName,
             email,
             phoneNumber,
             message
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
 
         if (!firstName || typeof firstName !== 'string' ||
-            !lastName || typeof lastName !== 'string' ||
+            // !lastName || typeof lastName !== 'string' ||
             !email || typeof email !== 'string' ||
             !phoneNumber || typeof phoneNumber !== 'string' ||
             !message || typeof message !== 'string') {
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         // If no document exists, create a new one
         const newEntry = await Contact.create({
             firstName,
-            lastName,
+            // lastName,
             email,
             phoneNumber,
             message

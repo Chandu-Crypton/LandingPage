@@ -15,7 +15,7 @@ interface ContactFormProps {
 
 const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
   const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  // const [lastName, setLastName] = useState('');
   const [message, setMessage] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -35,7 +35,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
         setPhoneNumber(contactToEdit.phoneNumber);
         setEmail(contactToEdit.email);
         setFirstName(contactToEdit.firstName);
-        setLastName(contactToEdit.lastName);
+        // setLastName(contactToEdit.lastName);
         setMessage(contactToEdit.message);
       } else {
         const fetchSingleContact = async () => {
@@ -48,7 +48,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
               setPhoneNumber(fetched.phoneNumber);
               setEmail(fetched.email);
               setFirstName(fetched.firstName);
-              setLastName(fetched.lastName);
+              // setLastName(fetched.lastName);
               setMessage(fetched.message);
             } else {
               setError(data.message || 'Contact data not found.');
@@ -70,7 +70,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
     e.preventDefault();
     setLoading(true);
 
-    const contactData = { phoneNumber, email, firstName, lastName, message };
+    const contactData = { phoneNumber, email, firstName,  message };
 
     try {
       if (contactIdToEdit) {
@@ -94,7 +94,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
     setPhoneNumber('');
     setEmail('');
     setFirstName('');
-    setLastName('');
+    // setLastName('');
     setMessage('');
   };
 
@@ -128,7 +128,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label htmlFor="lastName">Last Name</Label>
             <Input
               id="lastName"
@@ -137,7 +137,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Enter last name"
             />
-          </div>
+          </div> */}
 
           <div>
             <Label htmlFor="email">Email</Label>

@@ -8,7 +8,7 @@ import { IContact } from '@/models/Contact';
 
 export type ContactInput = {
   firstName: string;
-  lastName: string;
+  // lastName: string;
   email: string;
   phoneNumber: string;
   message: string;

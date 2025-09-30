@@ -165,7 +165,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     const formData = await req.formData();
-  
+    console.log("Received formData for PUT:", formData);
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -183,7 +183,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Helpers: upload file if exists
+    // Helper: upload file if exists
     const uploadIfExists = async (file: File | null, oldValue?: string) => {
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
@@ -210,7 +210,7 @@ export async function PUT(req: NextRequest) {
     const bannerImageFile = formData.get("bannerImage") as File | null;
     const serviceImage1File = formData.get("serviceImage1") as File | null;
     const serviceImage2File = formData.get("serviceImage2") as File | null;
-     const serviceIconFile = formData.get("serviceIcon") as File | null;
+    const serviceIconFile = formData.get("serviceIcon") as File | null;
 
     // Upload files if new ones provided, else keep old URLs
     const serviceIcon = await uploadIfExists(serviceIconFile, existingService.serviceIcon);
@@ -231,27 +231,105 @@ export async function PUT(req: NextRequest) {
           )
         : existingService.process;
 
-    // Arrays
+    // ✅ Fix icons array (MISSING IN YOUR ORIGINAL PUT)
+    const icons: string[] = [];
+    let iconIndex = 0;
+    while (true) {
+      const file = formData.get(`icons_${iconIndex}`) as File | null;
+      if (!file) break;
+      
+      const uploaded = await uploadIfExists(file);
+      if (uploaded) {
+        icons.push(uploaded);
+      } else {
+        // Preserve existing icon if no new file uploaded
+        if (existingService.icons && existingService.icons[iconIndex]) {
+          icons.push(existingService.icons[iconIndex]);
+        }
+      }
+      iconIndex++;
+    }
+
+    // If no new icons provided, use existing ones
+    const finalIcons = icons.length > 0 ? icons : existingService.icons;
+
+    // ✅ Fix service array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
     const serviceArrayString = formData.get("service")?.toString();
     const serviceArray = serviceArrayString
       ? JSON.parse(serviceArrayString)
       : existingService.service;
 
+    // Process service array icons
+    if (serviceArray && Array.isArray(serviceArray)) {
+      for (let i = 0; i < serviceArray.length; i++) {
+        const file = formData.get(`serviceItemIcon_${i}`) as File | null;
+        if (file && file.size > 0) {
+          const uploaded = await uploadIfExists(file);
+          if (uploaded) {
+            serviceArray[i].icon = uploaded;
+          }
+        } else if (!serviceArray[i].icon) {
+          // Preserve existing icon if no new file and no icon in parsed data
+          if (existingService.service && existingService.service[i] && existingService.service[i].icon) {
+            serviceArray[i].icon = existingService.service[i].icon;
+          }
+        }
+      }
+    }
+
+    // ✅ Fix technology array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
     const technologyString = formData.get("technology")?.toString();
     const technology = technologyString
       ? JSON.parse(technologyString)
       : existingService.technology;
 
+    // Process technology array icons
+    if (technology && Array.isArray(technology)) {
+      for (let i = 0; i < technology.length; i++) {
+        const file = formData.get(`technologyIcon_${i}`) as File | null;
+        if (file && file.size > 0) {
+          const uploaded = await uploadIfExists(file);
+          if (uploaded) {
+            technology[i].icon = uploaded;
+          }
+        } else if (!technology[i].icon) {
+          // Preserve existing icon
+          if (existingService.technology && existingService.technology[i] && existingService.technology[i].icon) {
+            technology[i].icon = existingService.technology[i].icon;
+          }
+        }
+      }
+    }
+
+    // ✅ Fix whyChooseUs array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
     const whyChooseUsString = formData.get("whyChooseUs")?.toString();
     const whyChooseUs = whyChooseUsString
       ? JSON.parse(whyChooseUsString)
       : existingService.whyChooseUs;
 
+    // Process whyChooseUs array icons
+    if (whyChooseUs && Array.isArray(whyChooseUs)) {
+      for (let i = 0; i < whyChooseUs.length; i++) {
+        const file = formData.get(`whyChooseUsIcon_${i}`) as File | null;
+        if (file && file.size > 0) {
+          const uploaded = await uploadIfExists(file);
+          if (uploaded) {
+            whyChooseUs[i].icon = uploaded;
+          }
+        } else if (!whyChooseUs[i].icon) {
+          // Preserve existing icon
+          if (existingService.whyChooseUs && existingService.whyChooseUs[i] && existingService.whyChooseUs[i].icon) {
+            whyChooseUs[i].icon = existingService.whyChooseUs[i].icon;
+          }
+        }
+      }
+    }
+
     // Update doc
     const updatedService = await ServiceModel.findByIdAndUpdate(
       id,
       {
-        modules,
+        module: modules, // Fixed: was "modules" but should match schema field name
         name,
         serviceIcon,
         title,
@@ -260,13 +338,21 @@ export async function PUT(req: NextRequest) {
         bannerImage,
         serviceImage1,
         serviceImage2,
-        process,
+        icons: finalIcons, // ✅ Now included
         service: serviceArray,
         technology,
         whyChooseUs,
+        process,
       },
-      { new: true }
+      { new: true, runValidators: true } // ✅ Added runValidators
     );
+
+    if (!updatedService) {
+      return NextResponse.json(
+        { success: false, message: "Failed to update service" },
+        { status: 500, headers: corsHeaders }
+      );
+    }
 
     return NextResponse.json(
       { success: true, data: updatedService, message: "Service updated successfully." },
@@ -289,8 +375,6 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: false, message }, { status: 500, headers: corsHeaders });
   }
 }
-
-
 
 export async function DELETE(req: NextRequest) {
     await connectToDatabase();
