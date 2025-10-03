@@ -54,7 +54,7 @@ const BoardListPage: React.FC = () => {
 
         return boards.filter((board: IBoard) => {
             if (board.fullName.toLowerCase().includes(lower)) return true;
-            if (board.description.toLowerCase().includes(lower)) return true;
+            // if (board.description.toLowerCase().includes(lower)) return true;
             if (board.role.toLowerCase().includes(lower)) return true;
             return false;
         });
@@ -120,7 +120,7 @@ const BoardListPage: React.FC = () => {
                                         <td className="px-5 py-3 font-semibold">{board.fullName}</td>
                                         <td className="px-5 py-3">{board.role}</td>
                                         <td className="px-4 py-3 break-words max-w-[150px]">
-                                            <a href={board.socialLink} target="_blank" rel="noopener noreferrer" className='text-blue-500 hover:underline'>View</a>
+                                            <a href={board.linkedIn} target="_blank" rel="noopener noreferrer" className='text-blue-500 hover:underline'>View</a>
                                         </td>
 
                                         <td className="px-4 py-3 break-words max-w-[150px]">{board.description}</td>
