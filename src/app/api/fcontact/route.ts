@@ -66,8 +66,6 @@ export async function POST(req: NextRequest) {
             !lastName || typeof lastName !== 'string' ||
             !email || typeof email !== 'string' ||
             !phoneNumber || typeof phoneNumber !== 'string' ||
-            !interested || !Array.isArray(interested) ||
-            interested.some(i => typeof i !== 'string') ||
             !message || typeof message !== 'string') {
             return NextResponse.json(
                 { success: false, message: 'Contact information is required.' },
