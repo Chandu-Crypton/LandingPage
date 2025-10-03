@@ -108,7 +108,7 @@ const BoardListPage: React.FC = () => {
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Full Name</th>
                                     <th className="px-5 py-3 text-left">Role</th>
-                                    <th className="px-5 py-3 text-left">Social Link</th>
+                                    <th className="px-5 py-3 text-left">Linked In</th>
                                     <th className="px-5 py-3 text-left">Description</th>
                                     <th className="px-5 py-3 text-left">Main Image</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
