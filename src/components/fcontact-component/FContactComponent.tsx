@@ -40,7 +40,7 @@ const FContactForm: React.FC<FContactFormProps> = ({ fcontactIdToEdit }) => {
       if (contactToEdit) {
         setPhoneNumber(contactToEdit.phoneNumber);
         setEmail(contactToEdit.email);
-        setInterested(contactToEdit.interested);
+        setInterested(contactToEdit.interested || ['']);
         setFirstName(contactToEdit.firstName);
         setLastName(contactToEdit.lastName);
         setMessage(contactToEdit.message);
@@ -56,7 +56,7 @@ const FContactForm: React.FC<FContactFormProps> = ({ fcontactIdToEdit }) => {
               const fetched = data.data;
               setPhoneNumber(fetched.phoneNumber);
               setEmail(fetched.email);
-              setInterested(fetched.interested);
+              setInterested(fetched.interested || ['']);
               setFirstName(fetched.firstName);
               setLastName(fetched.lastName);
               setMessage(fetched.message);

@@ -51,6 +51,7 @@ export async function GET() {
 
 
 
+
 export async function POST(req: NextRequest) {
     await connectToDatabase();
 
@@ -58,13 +59,15 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const fullName = formData.get('fullName')?.toString(); 
         const role = formData.get('role')?.toString();
-        const socialLink = formData.get('socialLink')?.toString();
+        const linkedIn = formData.get('linkedIn')?.toString();
+        const facebook = formData.get('facebook')?.toString();
+        const instagram = formData.get('instagram')?.toString();
         const description = formData.get('description')?.toString();
         const mainImageFile = formData.get('mainImage') as File | null;
    
 
         // Basic validation for REQUIRED fields
-        if (!fullName || !role || !socialLink || !description) {
+        if (!fullName || !role || !linkedIn || !description) {
             return NextResponse.json(
                 { success: false, message: 'Missing required fields (fullName, role, socialLink, description).' },
                 { status: 400, headers: corsHeaders }
@@ -87,7 +90,9 @@ export async function POST(req: NextRequest) {
         const newBlog = await Board.create({
             fullName,
             role,
-            socialLink,
+            linkedIn,
+            facebook,
+            instagram,
             description,
             mainImage: mainImageUrl,
         });

@@ -80,8 +80,8 @@ const JobListPage: React.FC = () => {
     return jobs.filter((job) =>
       job.title.toLowerCase().includes(lowercasedSearchTerm) ||
       job.department.toLowerCase().includes(lowercasedSearchTerm) ||
-      job.location.toLowerCase().includes(lowercasedSearchTerm) ||
-      job.jobDescription.toLowerCase().includes(lowercasedSearchTerm)
+      job.location.toLowerCase().includes(lowercasedSearchTerm) 
+      // job.jobDescription.toLowerCase().includes(lowercasedSearchTerm)
     );
   }, [jobs, searchTerm]);
 

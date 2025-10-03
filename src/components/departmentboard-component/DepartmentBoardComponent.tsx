@@ -228,7 +228,9 @@ interface IBoard {
   _id?: string;
   fullName: string;
   role: string;
-  socialLink: string;
+  linkedIn: string;
+  facebook: string;
+  instagram: string;
   description: string;
   mainImage?: string;
 }
@@ -239,7 +241,9 @@ const DepartmentBoardFormComponent: React.FC<BoardFormProps> = ({ boardIdToEdit 
   // States
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState('');
-  const [socialLink, setSocialLink] = useState('');
+  const [linkedIn, setLinkedIn] = useState('');
+  const [facebook, setFacebook] = useState('');
+  const [instagram, setInstagram] = useState('');
   const [description, setDescription] = useState('');
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -285,7 +289,9 @@ const DepartmentBoardFormComponent: React.FC<BoardFormProps> = ({ boardIdToEdit 
           const data = res.data.data;
           setFullName(data.fullName);
           setRole(data.role);
-          setSocialLink(data.socialLink);
+          setLinkedIn(data.linkedIn);
+          setFacebook(data.facebook);
+          setInstagram(data.instagram);
           setDescription(data.description);
           setMainImagePreview(data.mainImage || null);
         } else {
@@ -325,7 +331,9 @@ const DepartmentBoardFormComponent: React.FC<BoardFormProps> = ({ boardIdToEdit 
     const formData = new FormData();
     formData.append('fullName', fullName);
     formData.append('role', role);
-    formData.append('socialLink', socialLink);
+    formData.append('linkedIn', linkedIn);
+    formData.append('facebook', facebook);
+    formData.append('instagram', instagram);
     formData.append('description', description);
 
     if (mainImageFile) {
@@ -414,12 +422,32 @@ const DepartmentBoardFormComponent: React.FC<BoardFormProps> = ({ boardIdToEdit 
 
           {/* Social Link */}
           <div>
-            <Label htmlFor="socialLink">Social Link</Label>
+            <Label htmlFor="linkedIn">Linked In</Label>
             <Input
-              id="socialLink"
+              id="linkedIn"
               type="text"
-              value={socialLink}
-              onChange={(e) => setSocialLink(e.target.value)}
+              value={linkedIn}
+              onChange={(e) => setLinkedIn(e.target.value)}
+            />
+          </div>
+
+            <div>
+            <Label htmlFor="facebook">Facebook</Label>
+            <Input
+              id="facebook"
+              type="text"
+              value={facebook}
+              onChange={(e) => setFacebook(e.target.value)}
+            />
+          </div>
+
+            <div>
+            <Label htmlFor="instagram">Instagram</Label>
+            <Input
+              id="instagram"
+              type="text"
+              value={instagram}
+              onChange={(e) => setInstagram(e.target.value)}
             />
           </div>
 
@@ -451,10 +479,10 @@ const DepartmentBoardFormComponent: React.FC<BoardFormProps> = ({ boardIdToEdit 
                 />
               </div>
             )}
-            <input 
-              type="file" 
-              id="mainImage" 
-              accept="image/*" 
+            <input
+              type="file"
+              id="mainImage"
+              accept="image/*"
               onChange={handleMainImageChange}
               className="w-full border rounded p-2"
             />

@@ -189,7 +189,7 @@ const ProductListPage: React.FC = () => {
                         {product.category}
                       </td>
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                        {product.description}
+                        {product.description.substring(0,100)}...
                       </td>
                       <td className="px-5 py-3 text-gray-700 dark:text-gray-300">
                         {product.mainImage ? (

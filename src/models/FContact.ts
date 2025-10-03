@@ -6,7 +6,7 @@ export interface IFContact extends Document {
     lastName: string,
     email: string,
     phoneNumber: string,
-    interested: string[],
+    interested?: string[],
     message: string,
     isDeleted?: boolean;
     createdAt?: string;
@@ -38,7 +38,7 @@ const fContactSchema: Schema = new Schema ({
 
     interested: {
         type: [String],
-        required: true
+     
     },
 
     message:{

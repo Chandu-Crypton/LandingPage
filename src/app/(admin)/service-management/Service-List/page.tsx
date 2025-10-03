@@ -73,7 +73,7 @@ const ServiceListPage: React.FC = () => {
         // check title and description
         if (service.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
         if (service.description.some(desc => desc.toLowerCase().includes(lowercasedSearchTerm))) return true;
-
+          if (service.module?.toLowerCase().includes(lowercasedSearchTerm)) return true;
        
         return false;
     });
@@ -142,7 +142,7 @@ const ServiceListPage: React.FC = () => {
                                 {filteredServices.map((service: IService) => (
                                     <tr key={service._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{service.title}</td>
-                                        <td className="px-5 py-3">{service.description.join(", ")}</td>
+                                        <td className="px-5 py-3 ">{service.description.join(", ")}</td>
                                         <td className="px-5 py-3">
                                             {service.mainImage ? (
                                                 <NextImage

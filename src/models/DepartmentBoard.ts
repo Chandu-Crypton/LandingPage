@@ -5,8 +5,10 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IDepartmentBoard extends Document {
     fullName: string;
     role: string;
-    socialLink: string;
-    description: string;
+    linkedIn?: string;
+    facebook?: string;
+    instagram?: string;
+    description?: string;
     mainImage: string;
     isDeleted?: boolean;
     createdAt?: Date;
@@ -26,14 +28,24 @@ const DepartmentBoardSchema: Schema = new Schema({
         required: true,
         trim: true,
     },
-    socialLink: {
+    linkedIn: {
         type: String,
-        required: true,
+        required: false,
+        trim: true,
+    },
+     facebook: {
+        type: String,
+        required: false,
+        trim: true,
+    },
+     instagram: {
+        type: String,
+        required: false,
         trim: true,
     },
     description: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
     },
     mainImage: {

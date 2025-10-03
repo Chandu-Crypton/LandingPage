@@ -36,6 +36,7 @@ import { FNewsLetterProvider } from '@/context/FNewsLetterContext';
 import { OurPartnersProvider } from '@/context/OurPartnersContext';
 import { GalleryProvider } from '@/context/GalleryContext';
 
+
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -79,6 +80,7 @@ export default function RootLayout({
                                                               <FNewsLetterProvider>
                                                                 <OurPartnersProvider>
                                                                   <GalleryProvider>
+                                                                    
                                                                     <UserProvider>
                                                                       <WhyChooseProvider>
                                                                         <ZoneProvider>
@@ -88,6 +90,7 @@ export default function RootLayout({
                                                                         </ZoneProvider>
                                                                       </WhyChooseProvider>
                                                                     </UserProvider>
+                                                                  
                                                                   </GalleryProvider>
                                                                 </OurPartnersProvider>
                                                               </FNewsLetterProvider>

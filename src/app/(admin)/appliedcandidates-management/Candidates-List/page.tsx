@@ -413,7 +413,7 @@ const AppliedCandidatesListPage: React.FC = () => {
                                                     href={`/appliedcandidates-management/Candidates-List/${candidate._id}`}
                                                     className="p-1.5 text-blue-500 border border-blue-500 rounded hover:bg-blue-500 hover:text-white"
                                                 >
-                                                    <EyeIcon size={14} />
+                                                    <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
                                                     href={`/appliedcandidates-management/Add-Candidates?page=edit&id=/${candidate._id}`}

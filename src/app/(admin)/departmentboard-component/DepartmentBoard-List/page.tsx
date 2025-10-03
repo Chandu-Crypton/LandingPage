@@ -394,9 +394,9 @@ const BoardListPage: React.FC = () => {
                                         <td className="px-5 py-3 font-semibold">{board.fullName}</td>
                                         <td className="px-5 py-3">{board.role}</td>
                                         <td className="px-4 py-3 break-words max-w-[150px]">
-                                            {board.socialLink ? (
+                                            {board.linkedIn ? (
                                                 <a 
-                                                    href={board.socialLink} 
+                                                    href={board.linkedIn} 
                                                     target="_blank" 
                                                     rel="noopener noreferrer" 
                                                     className='text-blue-500 hover:underline'

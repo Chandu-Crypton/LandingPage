@@ -67,12 +67,16 @@ export async function PUT(req: NextRequest) {
         // --- Text Fields ---
         const fullName = formData.get("fullName")?.toString();
         const role = formData.get("role")?.toString();
-        const socialLink = formData.get("socialLink")?.toString();
+        const linkedIn = formData.get("linkedIn")?.toString();
+        const facebook = formData.get("facebook")?.toString();
+        const instagram = formData.get("instagram")?.toString();
         const description = formData.get("description")?.toString();
 
         if (fullName) updateData.fullName = fullName;
         if (role) updateData.role = role;
-        if (socialLink) updateData.socialLink = socialLink;
+        if (linkedIn) updateData.linkedIn = linkedIn;
+        if (facebook) updateData.facebook = facebook;
+        if (instagram) updateData.instagram = instagram;
         if (description) updateData.description = description;
 
         // --- Main Image ---
@@ -126,7 +130,6 @@ export async function PUT(req: NextRequest) {
         );
     }
 }
-
 
 
 export async function DELETE(req: NextRequest) {

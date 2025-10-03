@@ -72,18 +72,19 @@ const BlogListPage: React.FC = () => {
     return blogs.filter((blog) => {
         // check title and description
         if (blog.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
-        if (blog.description.toLowerCase().includes(lowercasedSearchTerm)) return true;
+        if (blog.category.toLowerCase().includes(lowercasedSearchTerm)) return true;
 
         // check inside items.itemDescription array
-        if (blog.items.some(item =>
-            item.itemDescription.some(desc =>
-                desc.toLowerCase().includes(lowercasedSearchTerm)
-            )
-        )) return true;
+        // if (blog.items.some(item =>
+        //     item.itemDescription.some(desc =>
+        //         desc.toLowerCase().includes(lowercasedSearchTerm)
+        //     )
+        // )) return true;
 
         return false;
     });
 }, [blogs, searchTerm]);
+
 
 
     return (
@@ -151,7 +152,7 @@ const BlogListPage: React.FC = () => {
                                         <td className="px-5 py-3 font-semibold">{blog.title}</td>
                                         <td className="px-5 py-3 ">{blog.blogHeading}</td>
                                         <td className="px-5 py-3">{blog.category}</td>
-                                        <td className="px-5 py-3">{blog.description}</td>
+                                        <td className="px-5 py-3">{blog.description.substring(0,60)}...</td>
                                        
                                         <td className="px-5 py-3">
                                             {blog.mainImage ? (

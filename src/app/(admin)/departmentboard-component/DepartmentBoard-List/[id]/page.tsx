@@ -131,7 +131,7 @@ const BoardDetailPage: React.FC = () => {
           <p><strong>Description:</strong> {board.description}</p>
           <p><strong>Role:</strong> {board.role}</p>
           <p><strong>Social Link:</strong>
-        <a href={board.socialLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Visit</a>
+        <a href={board.linkedIn} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Visit</a>
            </p>   
 
          
