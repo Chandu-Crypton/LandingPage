@@ -133,9 +133,9 @@ const AboutDetailPage: React.FC = () => {
 
                 {/* Main About Details */}
                 <div className="space-y-6 text-gray-700 dark:text-gray-300">
-                    <p><strong>Description:</strong>  {about.description.map((paragraph, index) => (
+                    <div><strong>Description:</strong>  {about.description.map((paragraph, index) => (
                         <p key={index}>{paragraph}</p>
-                    ))}</p>
+                    ))}</div>
 
                     {/* Main Image */}
                     <div>

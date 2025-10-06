@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Basic string fields
+        const internshipType = formData.get("internshipType")?.toString();
         const title = formData.get("title")?.toString();
         const subtitle = formData.get("subtitle")?.toString();
         const description = formData.get("description")?.toString();
@@ -185,7 +186,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Validate required fields
-        if (!title  || !duration || !mode || !category || !rating) {
+        if (!internshipType || !title  || !duration || !mode || !category || !rating) {
             return NextResponse.json(
                 { success: false, message: "Missing required fields." },
                 { status: 400, headers: corsHeaders }
@@ -194,6 +195,7 @@ export async function POST(req: NextRequest) {
 
         // Create new internship doc
         const newInternship = await Internship.create({
+            internshipType,
             title,
             subtitle,
             description,

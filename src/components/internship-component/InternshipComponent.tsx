@@ -359,6 +359,7 @@ interface InternshipFormProps {
 
 interface IInternship {
     _id?: string;
+    internshipType: string;
     title: string;
     subtitle: string;
     fee: string;
@@ -415,6 +416,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const router = useRouter();
 
     // Form states
+    const [internshipType, setInternshipType] = useState('');
     const [title, setTitle] = useState('');
     const [subtitle, setSubtitle] = useState('');
     const [fee, setFee] = useState('');
@@ -475,6 +477,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                 if (res.data.success && res.data.data) {
                     const data = res.data.data;
                     console.log('Fetched internship data:', data);
+                    setInternshipType(data.internshipType);
                     setTitle(data.title);
                     setSubtitle(data.subtitle);
                     setFee(data.fee);
@@ -561,6 +564,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         const formData = new FormData();
 
         // Basic fields
+        formData.append('internshipType', internshipType);
         formData.append('title', title);
         formData.append('subtitle', subtitle);
         formData.append('fee', fee);
@@ -648,6 +652,23 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
             <ComponentCard title={internshipIdToEdit ? 'Edit Internship' : 'Add New Internship'}>
                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
+
+                    {/* InternshipType */}
+                    <div>
+                        <Label htmlFor="internshipType">Internship Type</Label>
+                        <select
+                            id="internshipType"
+                            value={internshipType}
+                            onChange={(e) => setInternshipType(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required
+                        >
+                            <option value="">Select Internship Type</option>
+                            <option value="paid internship">Paid Internship</option>
+                            <option value="normal internship">Normal Internship</option>
+                        </select>
+                    </div>
+
                     {/* Title */}
                     <div>
                         <Label htmlFor="title">Title</Label>
@@ -670,12 +691,12 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <Input id="category" type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
                     </div>
 
-                     <div>
+                    <div>
                         <Label htmlFor="syllabus">Syllabus Link</Label>
                         <Input id="syllabus" type="text" value={syllabusLink} onChange={(e) => setSyllabusLink(e.target.value)} required />
                     </div>
-                      
-                       <div>
+
+                    <div>
                         <Label htmlFor="fee">Level</Label>
                         <Input id="level" type="text" value={level} onChange={(e) => setLevel(e.target.value)} required />
                     </div>
@@ -834,9 +855,9 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     {/* Mentorship */}
                     <div>
                         <Label htmlFor="mentorship">Mentorship</Label>
-                        <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)}  />
+                        <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)} />
                     </div>
-                   
+
                     <div>
                         <Label htmlFor="internship">Internship</Label>
                         <Input id="internship" type="text" value={internship} onChange={(e) => setInternship(e.target.value)} required />

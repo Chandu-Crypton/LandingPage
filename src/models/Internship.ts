@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IInternship extends Document {
+  internshipType: string;
   skills: {
     skillTitle: string;
     skillIcon: string;
@@ -50,6 +51,7 @@ export interface IInternship extends Document {
 
 const InternshipSchema: Schema = new Schema(
   {
+    internshipType: { type: String, required: true, trim: true },
     title: { type: String, required: true, trim: true },
     subtitle: { type: String, required: false, trim: true },
     fee: { type: String, required: false, trim: true },

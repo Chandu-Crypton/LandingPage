@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest) {
 
         // --- Text Fields ---
         const textFields = [
-            "title", "subtitle", "fee", "description", "mode", "duration", "durationDetails",
+           "internshipType", "title", "subtitle", "fee", "description", "mode", "duration", "durationDetails",
             "stipend", "schedule", "enrolledStudents", "mentorship", "internship", "level",
             "projects", "syllabusLink", "category", "rating"
         ];
