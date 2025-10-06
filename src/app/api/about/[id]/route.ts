@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     }
 
     try {
-     
+
         const about = await About.findById(id);
 
         if (!about) {
@@ -69,10 +69,10 @@ export async function PUT(req: Request) {
         );
     }
 
-   
+
 
     try {
-       
+
 
         const formData = await req.formData();
 
@@ -82,7 +82,10 @@ export async function PUT(req: Request) {
         const title = formData.get('title');
         const mainImage = formData.get('mainImage');
         const bannerImage = formData.get('bannerImage');
-        const description = formData.get('description');
+        const descriptionString = formData.get("description")?.toString();
+        const description: string[] =
+            descriptionString ? JSON.parse(descriptionString) : updateData.description;
+
         const typeData = formData.get('typeData'); // Assuming typeData is a string field
 
         if (title && typeof title === 'string') updateData.title = title;
@@ -120,7 +123,7 @@ export async function PUT(req: Request) {
                 // OPTIONAL: Consider deleting the old image file from ImageKit here
             }
         }
-      
+
 
         // Handle bannerImage file upload or URL
         if (bannerImage) { // Check if the bannerImage field was provided at all
@@ -189,7 +192,7 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.pathname.split("/").pop();
 
-    
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
             { success: false, message: 'Invalid or missing ID.' },
@@ -198,7 +201,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     try {
-       
+
         const blogToDelete = await About.findById(id);
 
         if (!blogToDelete) {
@@ -208,7 +211,7 @@ export async function DELETE(req: NextRequest) {
             );
         }
 
-     
+
 
         const deletedAbout = await About.findByIdAndDelete(id);
 

@@ -53,11 +53,12 @@ export async function POST(req: NextRequest) {
         const title = formData.get('title');
         const mainImage = formData.get('mainImage');
         const bannerImage = formData.get('bannerImage');
-        const description = formData.get('description');
+        const descriptionString = formData.get("description")?.toString();
+        const description: string[] = descriptionString ? JSON.parse(descriptionString) : [];
         const typeData = formData.get('typeData');
        
         if (typeof title !== 'string' || !title.trim() ||
-            typeof description !== 'string' || !description.trim() ||
+             description.length === 0 ||
             typeof typeData !== 'string' || !typeData.trim()
           ) {
             return NextResponse.json(
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
             title: title as string,
             mainImage: mainImageUrl,
             bannerImage: bannerImageUrl,
-            description: description as string,
+            description,
             typeData: typeData as string
    
         });

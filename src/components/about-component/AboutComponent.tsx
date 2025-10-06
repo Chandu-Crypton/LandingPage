@@ -24,7 +24,7 @@ interface SingleAboutApiResponse {
 
 const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+     const [description, setDescription] = useState<string[]>([]);
     const [typeData, setTypeData] = useState('');
     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
     const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
@@ -101,7 +101,7 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('description', description);
+         formData.append('description', JSON.stringify(description));
         formData.append('typeData', typeData);
         if (mainImageFile) {
             formData.append('mainImage', mainImageFile);
@@ -144,7 +144,7 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
 
     const clearForm = () => {
         setTitle('');
-        setDescription('');
+        setDescription([]);
         setTypeData('');
         setMainImageFile(null);
         setMainImagePreview(null);
@@ -171,7 +171,7 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
                     </div>
 
                     {/* Description */}
-                    <div>
+                    {/* <div>
                         <Label htmlFor="description">About Description</Label>
                         <Input
                             id="description"
@@ -181,7 +181,48 @@ const AboutFormComponent: React.FC<AboutFormProps> = ({ aboutIdToEdit }) => {
                             placeholder="Enter blog description"
                             required
                         />
-                    </div>
+                    </div> */}
+
+                      <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                                            <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
+                                            <div className="space-y-3">
+                                                {description.map((tag, index) => (
+                                                    <div key={index} className="flex gap-2 items-center border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                                        <Input
+                                                            type="text"
+                                                            value={tag}
+                                                            onChange={(e) => {
+                                                                const newTags = [...description];
+                                                                newTags[index] = e.target.value;
+                                                                setDescription(newTags);
+                                                            }}
+                                                            placeholder={`Description ${index + 1}`}
+                                                            disabled={loading}
+                                                            className="flex-1"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setDescription(description.filter((_, i) => i !== index))}
+                                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                            disabled={loading}
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-4">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setDescription([...description, ""])}
+                                                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                                    disabled={loading}
+                                                >
+                                                    + Add New Description
+                                                </button>
+                                            </div>
+                                        </div>
+                    
 
                     {/* Main Image */}
                     <div>

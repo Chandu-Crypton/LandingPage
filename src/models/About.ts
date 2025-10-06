@@ -5,7 +5,7 @@ export interface IAbout extends Document {
     title: string,
     bannerImage?: string,
     mainImage: string,
-    description: string,
+    description: string[],
     typeData: string,
     isDeleted?: boolean;
     createdAt?: string;
@@ -32,7 +32,7 @@ const aboutSchema: Schema = new Schema ({
     },
 
     description: {
-        type: String,
+        type: [String],
         required : true
     },
 
