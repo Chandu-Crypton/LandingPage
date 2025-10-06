@@ -59,7 +59,7 @@ const AboutListPage: React.FC = () => {
         const lowercasedSearchTerm = searchTerm.toLowerCase();
         return abouts.filter((about) =>
             about.title.toLowerCase().includes(lowercasedSearchTerm) ||
-            about.description.toLowerCase().includes(lowercasedSearchTerm) ||
+            // about.description.toLowerCase().includes(lowercasedSearchTerm) ||
             about.typeData.toLowerCase().includes(lowercasedSearchTerm)
         );
     }, [abouts, searchTerm]);

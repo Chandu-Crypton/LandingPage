@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios'; 
+import axios from 'axios';
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TrashBinIcon } from '@/icons'; // Assuming TrashBinIcon is correctly imported
@@ -133,7 +133,9 @@ const AboutDetailPage: React.FC = () => {
 
                 {/* Main About Details */}
                 <div className="space-y-6 text-gray-700 dark:text-gray-300">
-                    <p><strong>Description:</strong> {about.description}</p>
+                    <p><strong>Description:</strong>  {about.description.map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                    ))}</p>
 
                     {/* Main Image */}
                     <div>
@@ -156,7 +158,7 @@ const AboutDetailPage: React.FC = () => {
 
                     {/* Banner Image */}
                     <div>
-                        <strong>Banner Image:</strong>  
+                        <strong>Banner Image:</strong>
                         {about.bannerImage ? (
                             <div className="mt-2">
                                 <NextImage
@@ -175,7 +177,7 @@ const AboutDetailPage: React.FC = () => {
 
                     <p><strong>Type Data:</strong> {about.typeData}</p>
 
-                   
+
 
                     <p><strong>Created At:</strong> {about.createdAt ? new Date(about.createdAt).toLocaleString() : 'N/A'}</p>
                     <p><strong>Last Updated:</strong> {about.updatedAt ? new Date(about.updatedAt).toLocaleString() : 'N/A'}</p>
