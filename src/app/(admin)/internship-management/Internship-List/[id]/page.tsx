@@ -323,6 +323,7 @@ const InternshipDetailPage: React.FC = () => {
 
         {/* Basic Info */}
         <div className="space-y-4 text-gray-700 dark:text-gray-300">
+            <p><strong>Internship Type:</strong> {internship?.internshipType}</p>
           <p><strong>Subtitle:</strong> {internship.subtitle}</p>
           <p><strong>Description:</strong> {internship.description}</p>
           <p><strong>Mode:</strong> {internship.mode}</p>

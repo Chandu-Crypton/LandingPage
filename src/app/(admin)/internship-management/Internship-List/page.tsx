@@ -112,7 +112,7 @@ const InternshipListPage: React.FC = () => {
                   <th className="px-5 py-3 text-left">Subtitle</th>
                   <th className="px-5 py-3 text-left">Fee</th>
                   <th className="px-5 py-3 text-left">Duration</th>
-                  <th className="px-5 py-3 text-left">Mode</th>
+                  <th className="px-5 py-3 text-left">Internship Type</th>
                   {/* <th className="px-5 py-3 text-left">Benefits</th>
                   <th className="px-5 py-3 text-left">Eligibility</th>
                   <th className="px-5 py-3 text-left">Description</th> */}
@@ -128,7 +128,7 @@ const InternshipListPage: React.FC = () => {
                     <td className="px-5 py-3">{internship.subtitle}</td>
                     <td className="px-5 py-3">{internship.fee}</td>
                     <td className="px-5 py-3">{internship.duration}</td>
-                    <td className="px-5 py-3">{internship.mode?.substring(0, 10)}...</td>
+                    <td className="px-5 py-3">{internship.internshipType?.substring(0, 10)}...</td>
                     {/* <td className="px-5 py-3">{internship.benefits.join(', ')}</td>
                     <td className="px-5 py-3">{internship.eligibility.join(', ')}</td>
                     <td className="px-5 py-3 truncate max-w-xs">{internship.description}</td> */}
