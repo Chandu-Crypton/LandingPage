@@ -739,10 +739,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     </div>
 
                     {/* Benefits */}
-                    <div>
+                    {/* <div>
                         <Label>Benefits</Label>
                         {benefits.map((b, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
+                            <div key={idx} className="flex  gap-2 mb-2">
                                 <Input
                                     type="text"
                                     value={b}
@@ -765,6 +765,36 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         >
                             Add Benefit
                         </button>
+                    </div> */}
+
+                    <div>
+                        <Label>Benefits</Label>
+                        {benefits.map((b, idx) => (
+                            <div key={idx} className="flex gap-2 mb-2">
+                                <div className="flex-1"> {/* Add this wrapper */}
+                                    <Input
+                                        type="text"
+                                        value={b}
+                                        onChange={(e) => handleChangeField(setBenefits, benefits, idx, e.target.value)}
+                                        placeholder={`Benefit ${idx + 1}`}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveField(setBenefits, benefits, idx)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded flex-shrink-0"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={() => handleAddField(setBenefits, benefits)}
+                            className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+                        >
+                            Add Benefit
+                        </button>
                     </div>
 
                     {/* Eligibility */}
@@ -772,19 +802,22 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <Label>Eligibility</Label>
                         {eligibility.map((el, idx) => (
                             <div key={idx} className="flex gap-2 mb-2">
-                                <Input
-                                    type="text"
-                                    value={el}
-                                    onChange={(e) => handleChangeField(setEligibility, eligibility, idx, e.target.value)}
-                                    placeholder={`Eligibility ${idx + 1}`}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
-                                    className="px-3 py-1 bg-red-500 text-white rounded"
-                                >
-                                    Remove
-                                </button>
+                                <div className="flex-1">
+                                    <Input
+                                        type="text"
+                                        value={el}
+                                        onChange={(e) => handleChangeField(setEligibility, eligibility, idx, e.target.value)}
+                                        placeholder={`Eligibility ${idx + 1}`}
+                                    />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
+                                        className="px-3 py-1 bg-red-500 text-white rounded"
+                                    >
+                                        Remove
+                                    </button>
+                               
                             </div>
                         ))}
                         <button
@@ -996,6 +1029,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <Label>Curriculum</Label>
                         {curriculum.map((c, idx) => (
                             <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+                                
                                 <Input
                                     placeholder="Curriculum Title"
                                     value={c.currTitle}
@@ -1005,7 +1039,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                         setCurriculum(updated);
                                     }}
                                 />
-
+                        
                                 {/* Curriculum Icon Upload */}
                                 <input
                                     type="file"
@@ -1028,6 +1062,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                 <Label>Descriptions</Label>
                                 {c.currDescription.map((desc, dIdx) => (
                                     <div key={dIdx} className="flex gap-2 mb-1">
+                                        <div className='flex-1'>
                                         <Input
                                             placeholder={`Description ${dIdx + 1}`}
                                             value={desc}
@@ -1037,6 +1072,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                                 setCurriculum(updated);
                                             }}
                                         />
+                                        </div>
                                         <button
                                             type="button"
                                             className="bg-red-500 text-white px-2 rounded"

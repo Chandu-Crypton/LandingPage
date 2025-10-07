@@ -10,12 +10,12 @@ import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
-import { useInternship } from '@/context/InternshipContext'; 
-import { IInternship } from '@/models/Internship';
+import { useNormalInternship } from '@/context/NormalInternshipContext';
+import { INormalInternship } from '@/models/NormalInternship';
 import NextImage from 'next/image';
 
 const InternshipListPage: React.FC = () => {
-  const { internships, deleteInternship } = useInternship();
+  const { internships, deleteInternship } = useNormalInternship();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,18 +46,18 @@ const InternshipListPage: React.FC = () => {
     }
   };
 
-  // 🔎 Filter internships by title, subtitle, description, or benefits/eligibility text
+  // 🔎 Filter internships by title, subtitle, description, or category
   const filteredInternships = useMemo(() => {
     if (!searchTerm.trim()) return internships;
 
     const lower = searchTerm.toLowerCase();
 
-    return internships.filter((internship: IInternship) => {
+    return internships.filter((internship: INormalInternship) => {
       if (internship.title.toLowerCase().includes(lower)) return true;
       if (internship.subtitle?.toLowerCase().includes(lower)) return true;
-      // if (internship.description.toLowerCase().includes(lower)) return true;
-      // if (internship.benefits.some(b => b.toLowerCase().includes(lower))) return true;
-      // if (internship.eligibility.some(e => e.toLowerCase().includes(lower))) return true;
+      if (internship.description?.toLowerCase().includes(lower)) return true;
+      if (internship.category?.toLowerCase().includes(lower)) return true;
+      if (internship.tags?.some(tag => tag.toLowerCase().includes(lower))) return true;
       return false;
     });
   }, [internships, searchTerm]);
@@ -79,7 +79,7 @@ const InternshipListPage: React.FC = () => {
               <Input
                 id="searchInternships"
                 type="text"
-                placeholder="Search by title, subtitle, or description"
+                placeholder="Search by title, subtitle, category, or tags"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -110,28 +110,27 @@ const InternshipListPage: React.FC = () => {
                 <tr className="text-gray-600 border-b border-gray-200">
                   <th className="px-5 py-3 text-left">Title</th>
                   <th className="px-5 py-3 text-left">Subtitle</th>
-                  <th className="px-5 py-3 text-left">Fee</th>
                   <th className="px-5 py-3 text-left">Duration</th>
-                  <th className="px-5 py-3 text-left">Internship Type</th>
-                  {/* <th className="px-5 py-3 text-left">Benefits</th>
-                  <th className="px-5 py-3 text-left">Eligibility</th>
-                  <th className="px-5 py-3 text-left">Description</th> */}
-                  <th className="px-5 py-3 text-left">Main Image</th>
+                  <th className="px-5 py-3 text-left">Mode</th>
+                  <th className="px-5 py-3 text-left">Stipend</th>
                   <th className="px-5 py-3 text-left">Category</th>
+                  <th className="px-5 py-3 text-left">Skills Count</th>
+                  <th className="px-5 py-3 text-left">Tools Count</th>
+                  <th className="px-5 py-3 text-left">Main Image</th>
                   <th className="px-5 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredInternships.map((internship: IInternship) => (
+                {filteredInternships.map((internship: INormalInternship) => (
                   <tr key={internship._id as string} className="border-t hover:bg-gray-50 transition">
                     <td className="px-5 py-3 font-semibold">{internship.title}</td>
-                    <td className="px-5 py-3">{internship.subtitle}</td>
-                    <td className="px-5 py-3">{internship.fee}</td>
+                    <td className="px-5 py-3 max-w-xs truncate">{internship.subtitle?.substring(0,6) || 'N/A'}...</td>
                     <td className="px-5 py-3">{internship.duration}</td>
-                    <td className="px-5 py-3">{internship.internshipType?.substring(0, 10)}...</td>
-                    {/* <td className="px-5 py-3">{internship.benefits.join(', ')}</td>
-                    <td className="px-5 py-3">{internship.eligibility.join(', ')}</td>
-                    <td className="px-5 py-3 truncate max-w-xs">{internship.description}</td> */}
+                    <td className="px-5 py-3">{internship.mode || 'N/A'}</td>
+                    <td className="px-5 py-3">{internship.stipend || 'N/A'}</td>
+                    <td className="px-5 py-3">{internship.category}</td>
+                    <td className="px-5 py-3">{internship.skills?.length || 0}</td>
+                    <td className="px-5 py-3">{internship.tool?.length || 0}</td>
                     <td className="px-5 py-3">
                       {internship.mainImage ? (
                         <NextImage
@@ -147,22 +146,16 @@ const InternshipListPage: React.FC = () => {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      {internship.category || 'N/A'}
-                    </td>
-                    {/* <td className="px-5 py-3">
-                      {internship.createdAt ? new Date(internship.createdAt).toLocaleDateString() : 'N/A'}
-                    </td> */}
-                    <td className="px-5 py-3">
                       <div className="flex justify-center gap-2">
                         <Link
-                          href={`/internship-management/Internship-List/${internship._id as string}`}
+                          href={`/internship-management/NormalInternship-List/${internship._id as string}`}
                           className="text-blue-500 border border-blue-500 rounded-md p-2 hover:bg-blue-500 hover:text-white"
                           title="View Internship"
                         >
                           <EyeIcon size={16} />
                         </Link>
                         <Link
-                          href={`/internship-management/Add-Internship?page=edit&id=${internship._id as string}`}
+                          href={`/internship-management/Add-NormalInternship?page=edit&id=${internship._id as string}`}
                           className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                           title="Edit Internship"
                         >
@@ -181,7 +174,7 @@ const InternshipListPage: React.FC = () => {
                 ))}
                 {filteredInternships.length === 0 && (
                   <tr>
-                    <td colSpan={11} className="px-5 py-10 text-center text-gray-500">
+                    <td colSpan={10} className="px-5 py-10 text-center text-gray-500">
                       No internships found.
                     </td>
                   </tr>

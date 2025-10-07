@@ -35,7 +35,7 @@ import { DisplayContactProvider } from '@/context/DisplayContactContext';
 import { FNewsLetterProvider } from '@/context/FNewsLetterContext';
 import { OurPartnersProvider } from '@/context/OurPartnersContext';
 import { GalleryProvider } from '@/context/GalleryContext';
-
+import { NormalInternshipProvider } from '@/context/NormalInternshipContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -80,7 +80,7 @@ export default function RootLayout({
                                                               <FNewsLetterProvider>
                                                                 <OurPartnersProvider>
                                                                   <GalleryProvider>
-                                                                    
+                                                                    <NormalInternshipProvider>
                                                                     <UserProvider>
                                                                       <WhyChooseProvider>
                                                                         <ZoneProvider>
@@ -90,7 +90,7 @@ export default function RootLayout({
                                                                         </ZoneProvider>
                                                                       </WhyChooseProvider>
                                                                     </UserProvider>
-                                                                  
+                                                                  </NormalInternshipProvider>
                                                                   </GalleryProvider>
                                                                 </OurPartnersProvider>
                                                               </FNewsLetterProvider>

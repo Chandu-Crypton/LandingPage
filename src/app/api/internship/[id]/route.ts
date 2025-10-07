@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-        // console.log('Received formData data:', formData);
+        console.log('Received formData data:', formData);
         const updateData: Partial<IInternship> = {};
 
         // --- Text Fields ---
