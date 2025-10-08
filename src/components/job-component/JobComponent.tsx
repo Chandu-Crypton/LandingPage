@@ -54,12 +54,6 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         "Senior MERN Stack Developer",
         "Frontend Developer",
         "Backend Developer",
-        "Senior Flutter Developer",
-        "Senior Digital Marketing Specialist",
-        "Senior Video Editor",
-        "Senior Content Writer",
-        "Sales Executive (Female Candidate)",
-        "Finance Executive (Fresher)",
         "Graphic Designer",
     ]), []);
 
@@ -143,7 +137,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
     // Memoized list of all job titles for the dropdown:
     const allJobTitles = useMemo(() => {
         const existingAddHeadingsFromJobs = jobs
-            .map(job => job.addHeading)
+            .map(job => job.title)
             .filter(Boolean) as string[];
 
         return Array.from(new Set([
@@ -461,7 +455,19 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                     {/* Other Job Fields */}
                     <div><Label htmlFor="about">About</Label><Input id="about" value={about} required onChange={(e) => setAbout(e.target.value)} disabled={loading} className="mt-1" /></div>
                     <div><Label htmlFor="department">Department</Label><Input id="department" value={department} required onChange={(e) => setDepartment(e.target.value)} disabled={loading} className="mt-1" /></div>
-                    <div><Label htmlFor="location">Location</Label><Input id="location" value={location} required onChange={(e) => setLocation(e.target.value)} disabled={loading} className="mt-1" /></div>
+                    {/* <div><Label htmlFor="location">Location</Label><Input id="location" value={location} required onChange={(e) => setLocation(e.target.value)} disabled={loading} className="mt-1" /></div> */}
+                    <div><Label htmlFor="location">Location</Label>
+                        <div className="md:col-span-3">
+                            <select
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">All Locations</option>
+                                <option value="pune">Pune</option>
+                            </select>
+                        </div>
+                    </div>
                     {/* <div>
                         <Label htmlFor="jobDescription">Job Description</Label>
                         <textarea id="jobDescription" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={6} className="w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-1" required disabled={loading} />
@@ -479,8 +485,6 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                         >
                             <option value="">Select Job Type</option>
                             <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
-                            <option value="Contract">Contract</option>
                             <option value="Internship">Internship</option>
                         </select>
                     </div>
