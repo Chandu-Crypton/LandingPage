@@ -36,6 +36,8 @@ import { FNewsLetterProvider } from '@/context/FNewsLetterContext';
 import { OurPartnersProvider } from '@/context/OurPartnersContext';
 import { GalleryProvider } from '@/context/GalleryContext';
 import { NormalInternshipProvider } from '@/context/NormalInternshipContext';
+import { PaidInternshipContactProvider } from '@/context/PaidInternshipContact';
+
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -81,16 +83,18 @@ export default function RootLayout({
                                                                 <OurPartnersProvider>
                                                                   <GalleryProvider>
                                                                     <NormalInternshipProvider>
-                                                                    <UserProvider>
-                                                                      <WhyChooseProvider>
-                                                                        <ZoneProvider>
+                                                                      <PaidInternshipContactProvider>
+                                                                        <UserProvider>
+                                                                          <WhyChooseProvider>
+                                                                            <ZoneProvider>
 
-                                                                          {children}
+                                                                              {children}
 
-                                                                        </ZoneProvider>
-                                                                      </WhyChooseProvider>
-                                                                    </UserProvider>
-                                                                  </NormalInternshipProvider>
+                                                                            </ZoneProvider>
+                                                                          </WhyChooseProvider>
+                                                                        </UserProvider>
+                                                                      </PaidInternshipContactProvider>
+                                                                    </NormalInternshipProvider>
                                                                   </GalleryProvider>
                                                                 </OurPartnersProvider>
                                                               </FNewsLetterProvider>
