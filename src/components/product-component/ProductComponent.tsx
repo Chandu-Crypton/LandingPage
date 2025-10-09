@@ -474,6 +474,8 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
   const [category, setCategory] = useState('');
   const [homeFeatureTags, setHomeFeatureTags] = useState<string[]>(['']);
   const [livedemoLink, setLivedemoLink] = useState('');
+  const [googleStoreLink, setGoogleStoreLink] = useState('');
+  const [appleStoreLink, setAppleStoreLink] = useState('');
 
   // ================= Images =================
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -514,22 +516,22 @@ const ProductFormComponent: React.FC<ProductFormProps> = ({ productIdToEdit }) =
 
   // ================= Key Features =================
   // ✅ Define a reusable type for items with images
-interface ImageItem {
-  title: string;
-  description: string;
-  imageFile: File | null;
-  imagePreview: string | null;
-}
+  interface ImageItem {
+    title: string;
+    description: string;
+    imageFile: File | null;
+    imagePreview: string | null;
+  }
 
-// ================= Key Features =================
-const [keyFeatures, setKeyFeatures] = useState<ImageItem[]>([
-  { title: '', description: '', imageFile: null, imagePreview: null },
-]);
+  // ================= Key Features =================
+  const [keyFeatures, setKeyFeatures] = useState<ImageItem[]>([
+    { title: '', description: '', imageFile: null, imagePreview: null },
+  ]);
 
-// ================= Project Details =================
-const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
-  { title: '', description: '', imageFile: null, imagePreview: null },
-]);
+  // ================= Project Details =================
+  const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
+    { title: '', description: '', imageFile: null, imagePreview: null },
+  ]);
 
   // ================= Technology =================
   const [technologyTitle, setTechnologyTitle] = useState('');
@@ -552,7 +554,7 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
   const [formError, setFormError] = useState<string | null>(null);
   const router = useRouter();
 
-  
+
 
   // ================= Preload when editing =================
   useEffect(() => {
@@ -567,6 +569,8 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
         setCategory(data.category);
         setHomeFeatureTags(data.homeFeatureTags || ['']);
         setLivedemoLink(data.livedemoLink || '');
+        setGoogleStoreLink(data.googleStoreLink || '');
+        setAppleStoreLink(data.appleStoreLink || '');
 
         setMainImagePreview(data.mainImage);
         setBannerImagePreview(data.bannerImage);
@@ -631,6 +635,8 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
     formData.append('category', category);
     formData.append('homeFeatureTags', JSON.stringify(homeFeatureTags));
     formData.append('livedemoLink', livedemoLink);
+    formData.append('googleStoreLink', googleStoreLink);
+    formData.append('appleStoreLink', appleStoreLink);
 
     // Images
     if (mainImageFile) formData.append('mainImage', mainImageFile);
@@ -733,14 +739,14 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
     setter(prev => prev.filter((_, i) => i !== index));
   };
 
- const handleObjectArrayChange = <T extends object>(
-  setter: React.Dispatch<React.SetStateAction<T[]>>,
-  index: number,
-  field: keyof T,
-  value: string
-) => {
-  setter(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
-};
+  const handleObjectArrayChange = <T extends object>(
+    setter: React.Dispatch<React.SetStateAction<T[]>>,
+    index: number,
+    field: keyof T,
+    value: string
+  ) => {
+    setter(prev => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+  };
 
   const addObjectArrayField = <T extends object>(setter: React.Dispatch<React.SetStateAction<T[]>>, template: T) => {
     setter(prev => [...prev, { ...template }]);
@@ -775,20 +781,20 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
     }
   };
 
- const handleItemImageUpload = <T extends { imageFile: File | null; imagePreview: string | null }>(
-  setter: React.Dispatch<React.SetStateAction<T[]>>,
-  index: number,
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
-  const file = event.target.files?.[0] || null;
-  if (file) {
-    setter(prev =>
-      prev.map((item, i) =>
-        i === index ? { ...item, imageFile: file, imagePreview: URL.createObjectURL(file) } : item
-      )
-    );
-  }
-};
+  const handleItemImageUpload = <T extends { imageFile: File | null; imagePreview: string | null }>(
+    setter: React.Dispatch<React.SetStateAction<T[]>>,
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0] || null;
+    if (file) {
+      setter(prev =>
+        prev.map((item, i) =>
+          i === index ? { ...item, imageFile: file, imagePreview: URL.createObjectURL(file) } : item
+        )
+      );
+    }
+  };
 
 
   // ================= UI =================
@@ -822,20 +828,38 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
           </div>
           <div>
             <Label htmlFor="livedemoLink">Live Demo Link</Label>
-            <Input 
-              id="livedemoLink" 
-              value={livedemoLink} 
-              onChange={e => setLivedemoLink(e.target.value)} 
+            <Input
+              id="livedemoLink"
+              value={livedemoLink}
+              onChange={e => setLivedemoLink(e.target.value)}
             />
           </div>
+          <div>
+            <Label htmlFor="googleStoreLink">Google Store Link</Label>
+            <Input
+              id="googleStoreLink"
+              value={googleStoreLink}
+              onChange={e => setGoogleStoreLink(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="appleStoreLink">Apple Store Link</Label>
+            <Input
+              id="appleStoreLink"
+              value={appleStoreLink}
+              onChange={e => setAppleStoreLink(e.target.value)}
+            />
+          </div>
+
 
           {/* Main Image */}
           <div>
             <Label>Main Image</Label>
             {mainImagePreview && <img src={mainImagePreview} alt="preview" className="h-24 mb-2" />}
-            <input 
-              type="file" 
-              onChange={(e) => handleImageUpload(setMainImageFile, setMainImagePreview, e)} 
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(setMainImageFile, setMainImagePreview, e)}
             />
           </div>
 
@@ -1089,9 +1113,9 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
           <div>
             <Label>Overview Image</Label>
             {overviewImagePreview && <img src={overviewImagePreview} alt="overview" className="h-24 mb-2" />}
-            <input 
-              type="file" 
-              onChange={(e) => handleImageUpload(setOverviewImageFile, setOverviewImagePreview, e)} 
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(setOverviewImageFile, setOverviewImagePreview, e)}
             />
           </div>
 
@@ -1119,7 +1143,7 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
                       type="button"
                       className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
                       onClick={() => {
-                        setKeyFeatures(prev => prev.map((item, idx) => 
+                        setKeyFeatures(prev => prev.map((item, idx) =>
                           idx === i ? { ...item, imageFile: null, imagePreview: null } : item
                         ));
                       }}
@@ -1197,9 +1221,9 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
           <div>
             <Label>Technology Image</Label>
             {technologyImagePreview && <img src={technologyImagePreview} alt="tech" className="h-24 mb-2" />}
-            <input 
-              type="file" 
-              onChange={(e) => handleImageUpload(setTechnologyImageFile, setTechnologyImagePreview, e)} 
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(setTechnologyImageFile, setTechnologyImagePreview, e)}
             />
           </div>
 
@@ -1227,7 +1251,7 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
                       type="button"
                       className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
                       onClick={() => {
-                        setProjectDetails(prev => prev.map((item, idx) => 
+                        setProjectDetails(prev => prev.map((item, idx) =>
                           idx === i ? { ...item, imageFile: null, imagePreview: null } : item
                         ));
                       }}
@@ -1265,11 +1289,13 @@ const [projectDetails, setProjectDetails] = useState<ImageItem[]>([
             <Label>Future Points</Label>
             {futurePoints.map((point, i) => (
               <div key={i} className="flex gap-2 mb-2">
+                <div className='flex-1'>
                 <Input
                   value={point}
                   onChange={e => handleArrayChange(setFuturePoints, i, e.target.value)}
                   placeholder="Future point"
                 />
+                </div>
                 {futurePoints.length > 1 && (
                   <button
                     type="button"

@@ -11,7 +11,8 @@ export interface IProduct extends Document {
     bannerImage: string,
     galleryImages: string[],
     livedemoLink?: string,
-
+    googleStoreLink?: string,
+    appleStoreLink?: string,
     heading: {
         headingPercentage: string,
         headingDesc: string,
@@ -107,6 +108,14 @@ const productSchema: Schema = new Schema({
         type: String,
         required: false
     },
+    googleStoreLink: {
+        type: String,
+        required: false
+    },
+    appleStoreLink: {
+         type: String,
+        required: false
+    },
 
     heading: [
         {
@@ -135,7 +144,7 @@ const productSchema: Schema = new Schema({
             title: { type: String, required: false },
             time: { type: String, required: false },
         }
-    ],  
+    ],
 
     overview: [{
         title: { type: String, required: true },

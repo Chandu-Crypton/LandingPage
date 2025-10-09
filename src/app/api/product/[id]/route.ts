@@ -118,7 +118,9 @@ export async function PUT(req: NextRequest) {
       "category",
       "technologyTitle",
       "technologyDesc",
-      "livedemoLink"
+      "livedemoLink",
+      "googleStoreLink",
+      "appleStoreLink"
     ].forEach((field) => {
       if (formData.has(field)) {
         updateData[field as keyof IProduct] = formData.get(field)?.toString();

@@ -44,6 +44,8 @@ export async function POST(req: NextRequest) {
     const description = formData.get("description")?.toString() || "";
     const category = formData.get("category")?.toString() || "";
     const livedemoLink = formData.get("livedemoLink")?.toString() || "";
+    const googleStoreLink = formData.get("googleStoreLink")?.toString() || "";
+    const appleStoreLink = formData.get("appleStoreLink")?.toString() || "";
 
     // ✅ Arrays (string[])
     const homeFeatureTags = formData.get("homeFeatureTags")
@@ -178,6 +180,8 @@ export async function POST(req: NextRequest) {
       bannerImage: bannerImageUrl,
       galleryImages: galleryImageUrls,
       livedemoLink,
+      googleStoreLink,
+      appleStoreLink,
       heading,
       measurableResults,
       projectTeam,

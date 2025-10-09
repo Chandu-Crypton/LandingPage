@@ -1071,8 +1071,8 @@ const internshipItems: NavItem[] = [
     subItems: [
       { name: "Add New Internship", path: "/internship-management/Add-Internship", pro: false },
       { name: "Internship List", path: "/internship-management/Internship-List", pro: false },
-      { name: "Add New PaidInternshipContact", path: "/internship-management/Add-PaidInternshipContact", pro: false },
-      { name: "PaidInternshipContact List", path: "/internship-management/PaidInternshipContact-List", pro: false },
+      // { name: "Add New PaidInternshipContact", path: "/internship-management/Add-PaidInternshipContact", pro: false },
+      // { name: "PaidInternshipContact List", path: "/internship-management/PaidInternshipContact-List", pro: false },
     ],
   },
 ];

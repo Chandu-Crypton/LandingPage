@@ -1707,6 +1707,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
                             <Label>Item Points</Label>
                             {keyTechnologies.itemPoints.map((point, index) => (
                                 <div key={index} className="flex items-center gap-2 mt-2">
+                                    <div className='flex-1'>
                                     <Input
                                         type="text"
                                         value={point}
@@ -1721,6 +1722,7 @@ const BlogFormComponent: React.FC<BlogFormProps> = ({ blogIdToEdit }) => {
                                         placeholder={`Point ${index + 1}`}
                                         disabled={loading}
                                     />
+                                    </div>
                                     <button
                                         type="button"
                                         className="mt-2 md:mt-auto px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors self-end"
