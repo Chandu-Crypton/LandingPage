@@ -19,6 +19,10 @@ type Job = {
   }[];
   requirements: string[];
   workEnvironment: string[];
+  required: string[],
+  preferredSkills: string[],
+  jobSummary: string[],
+  keyAttributes: string[],
   benefits: 
     {
       title: string;
@@ -30,7 +34,7 @@ type Job = {
   applicationDeadline: Date;
   openingType: string;
   jobType: string;
-  bannerImage?: string;
+  // bannerImage?: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt?: string;

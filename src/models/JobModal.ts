@@ -7,7 +7,7 @@ export interface IJob extends Document {
     about: string;
     department: string;
     location: string;
-    bannerImage: string;
+    // bannerImage: string;
     keyResponsibilities: string[];
     requiredSkills: {
         title: string;
@@ -25,7 +25,11 @@ export interface IJob extends Document {
     benefits: {
         title: string;
         description: string;
-    }[]
+    }[];
+    jobSummary: string[];
+    preferredSkills: string[];
+    required: string[];
+    keyAttributes: string[];
     isDeleted?: boolean; // Added for soft delete functionality
     createdAt?: Date; // Added via timestamps option
     updatedAt?: Date; // Added via timestamps option
@@ -47,10 +51,10 @@ const jobSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    bannerImage: {
-        type: String,
-        required: false,
-    },
+    // bannerImage: {
+    //     type: String,
+    //     required: false,
+    // },
     department: {
         type: String,
         required: true
@@ -103,6 +107,22 @@ const jobSchema: Schema = new Schema({
         required: true
     },
     workEnvironment: {
+        type: [String],
+        required: true
+    },
+     required: {
+        type: [String],
+        required: true
+    },
+     preferredSkills: {
+        type: [String],
+        required: true
+    },
+     jobSummary: {
+        type: [String],
+        required: true
+    },
+     keyAttributes: {
         type: [String],
         required: true
     },
