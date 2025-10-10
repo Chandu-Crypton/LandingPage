@@ -960,6 +960,8 @@ const jobItems: NavItem[] = [
     subItems: [
       { name: "Add New Job", path: "/job-management/Add-Job", pro: false },
       { name: "Job List", path: "/job-management/Job-List", pro: false },
+       { name: "Add New Vacancy", path: "/job-management/Add-Vacancy", pro: false },
+      { name: "Vacancy List", path: "/job-management/Vacancy-List", pro: false },
     ],
   },
 ];
