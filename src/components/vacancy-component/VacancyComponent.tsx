@@ -197,7 +197,7 @@ const VacancyCountFormComponent: React.FC<VacancyCountFormProps> = ({ vacancyCou
                 alert('VacancyCount added successfully!');
                 clearForm();
             }
-            router.push('/job-management/Vacancy-list');
+            router.push('/job-management/Vacancy-List');
         } catch (err) {
             console.error('Submission failed:', err);
             if (axios.isAxiosError(err)) {
