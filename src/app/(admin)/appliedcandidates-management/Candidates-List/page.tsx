@@ -257,6 +257,7 @@ interface AppliedCandidate {
 
 const AppliedCandidatesListPage: React.FC = () => {
     const [appliedcandidates, setAppliedCandidates] = useState<AppliedCandidate[]>([]);
+    const [jobList, setJobList] = useState<{ _id: string; title: string; }[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -279,6 +280,26 @@ const AppliedCandidatesListPage: React.FC = () => {
 
     useEffect(() => {
         fetchAppliedCandidates();
+    }, []);
+
+
+    const fetchJobList = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get('/api/job');
+            if (res.data.success) {
+                setJobList(res.data.data);
+            }
+        } catch (err) {
+            console.error('Error fetching job list:', err);
+            setError('Failed to load job list.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchJobList();
     }, []);
 
     // Filter candidates based on the selected job title
@@ -322,17 +343,17 @@ const AppliedCandidatesListPage: React.FC = () => {
                                 className="w-full border rounded p-2"
                             >
                                 <option value="">All Job Roles</option>
-                                <option value="Senior MERN Stack Developer">Senior MERN Stack Developer</option>
-                                <option value="Frontend Developer">Frontend Developer</option>
-                                <option value="Backend Developer">Backend Developer</option>
-                                <option value="Senior UI/UX Designer">Senior UI/UX Designer</option>
-                                <option value="Senior Flutter Developer">Senior Flutter Developer</option>
-                                <option value="Senior Digital Marketing Specialist">Senior Digital Marketing Specialist</option>
-                                <option value="Senior Video Editor">Senior Video Editor</option>
-                                <option value="Senior Content Writer">Senior Content Writer</option>
-                                <option value="Sales Executive">Sales Executive (Female Candidate)</option>
-                                <option value="Finance Executive">Finance Executive (Fresher)</option>
-                                <option value="Graphic Designer">Graphic Designer</option>
+                                {jobList
+                                    .filter((job, index, self) =>
+                                        // Remove duplicates by title
+                                        index === self.findIndex(j => j.title === job.title)
+                                    )
+                                    .map((job) => (
+                                        <option key={job._id} value={job.title}>
+                                            {job.title}
+                                        </option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </ComponentCard>
@@ -354,7 +375,9 @@ const AppliedCandidatesListPage: React.FC = () => {
             <ComponentCard title="All Applied Candidates">
                 {!loading ? (
                     <div className="w-full">
-                        <table className="w-full text-xs lg:text-sm table-fixed border-collapse">
+                        <div className="overflow-x-auto">
+                        {/* <table className="w-full text-xs lg:text-sm table-fixed border-collapse"> */}
+                        <table className="w-full text-xs lg:text-sm table-fixed border-collapse min-w-[800px]">
                             <thead>
                                 <tr className="text-gray-600">
                                     <th className="px-2 py-2 w-[12%] text-left">Full Name</th>
@@ -440,6 +463,7 @@ const AppliedCandidatesListPage: React.FC = () => {
                                 )}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 ) : (
                     <p className="text-gray-600">Loading candidates...</p>
