@@ -71,6 +71,11 @@ interface QuestionItem {
     answer: string[];
 }
 
+interface DescriptionItem {
+    content: string;
+    points: string[];
+}
+
 const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) => {
     // States for service fields
     const [title, setTitle] = useState('');
@@ -79,11 +84,16 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const [addModule, setAddModule] = useState('');
     const [localModules, setLocalModules] = useState<string[]>([]);
     const [name, setName] = useState('');
-    
+
     // Question section
     const [question, setQuestion] = useState<QuestionItem>({
         title: '',
         answer: []
+    });
+
+    const [description, setDescription] = useState<DescriptionItem>({
+        content: '',
+        points: []
     });
 
     // Arrays for different sections
@@ -123,6 +133,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 title: '',
                 answer: []
             });
+
+            setDescription(serviceData.description || {
+                content: '',
+                points: []
+            });
+
 
             // Process items
             setProcessItems(
@@ -279,6 +295,39 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         });
     };
 
+    // Description handlers
+    const handleDescriptionContentChange = (value: string) => {
+        setDescription({
+            ...description,
+            content: value
+        });
+    };
+
+    const handleDescriptionPointChange = (index: number, value: string) => {
+        const newPoints = [...description.points];
+        newPoints[index] = value;
+        setDescription({
+            ...description,
+            points: newPoints
+        });
+    };
+
+    const addDescriptionPoint = () => {
+        setDescription({
+            ...description,
+            points: [...description.points, '']
+        });
+    };
+
+    const removeDescriptionPoint = (index: number) => {
+        setDescription({
+            ...description,
+            points: description.points.filter((_, i) => i !== index)
+        });
+    };
+
+
+
     // Process handlers
     const handleProcessChange = (index: number, field: keyof ProcessItem, value: string | string[]) => {
         const newItems = [...processItems];
@@ -300,7 +349,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setProcessItems(processItems.filter((_, i) => i !== index));
     };
 
-    
+
 
     const handleWhyChooseUsDescriptionChange = (index: number, value: string) => {
         const newDescriptions = [...whyChooseUs.description];
@@ -537,6 +586,13 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
         // Question
         formData.append('question', JSON.stringify(question));
+
+        const descriptionData = {
+            content: description.content,
+            points: description.points
+        };
+        formData.append('description', JSON.stringify(descriptionData));
+
 
         // Process items
         const processData = processItems.map(item => ({
@@ -976,6 +1032,61 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 removeQuestionAnswer,
                                 "Answer"
                             )}
+                        </div>
+                    </div>
+
+                  {/* Description Section */}
+                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <Label className="block text-sm font-medium text-gray-700 mb-2">Description Content</Label>
+                                <textarea
+                                    value={description.content}
+                                    onChange={(e) => handleDescriptionContentChange(e.target.value)}
+                                    placeholder="Enter main description content"
+                                    disabled={loading}
+                                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
+                                    rows={4}
+                                />
+                            </div>
+
+                            {/* Description Points */}
+                            <div>
+                                <Label className="block text-sm font-medium text-gray-700 mb-2">Description Points</Label>
+                                <div className="space-y-3">
+                                    {description.points.map((point, index) => (
+                                        <div key={index} className="flex gap-2 items-center border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                            <Input
+                                                type="text"
+                                                value={point}
+                                                onChange={(e) => handleDescriptionPointChange(index, e.target.value)}
+                                                placeholder={`Point ${index + 1}`}
+                                                disabled={loading}
+                                                className="flex-1"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeDescriptionPoint(index)}
+                                                className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                disabled={loading}
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={addDescriptionPoint}
+                                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                        disabled={loading}
+                                    >
+                                        + Add Description Point
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

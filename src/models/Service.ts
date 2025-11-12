@@ -1,6 +1,10 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface IService extends Document {
+    description: {
+        content: string,
+        points: string[],
+    },
   overview?: string[];
   overviewImage?: string;
   question?: {
@@ -46,6 +50,10 @@ export interface IService extends Document {
 
 const ServiceSchema = new Schema<IService>(
   {
+    description: {
+      content: {type: String, required: true},
+      points: [{type: String}],
+    },
     overview: [{ type: String }],
     overviewImage: { type: String },
 

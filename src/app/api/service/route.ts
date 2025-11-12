@@ -82,6 +82,9 @@ export async function POST(req: NextRequest) {
     const questionString = formData.get("question")?.toString() || "";
     const question = questionString ? JSON.parse(questionString) : undefined;
 
+     const descriptionString = formData.get("description")?.toString() || "";
+    const description = descriptionString ? JSON.parse(descriptionString) : undefined;
+
     // ✅ Process
     const processString = formData.get("process")?.toString() || "[]";
     type ProcessItem = { icon?: string; title?: string; description?: string[] };
@@ -229,14 +232,15 @@ export async function POST(req: NextRequest) {
 
     // ✅ Create new document
     const newService = await ServiceModel.create({
-      module: modules, // Fixed: use 'module' instead of 'modules'
+      module: modules, 
       name,
       title,
       overview,
       overviewImage,
+      description,
       question,
       process,
-      whyChooseUs, // Now a single object, not array
+      whyChooseUs, 
       benefits,
       keyFeatures,
       integration,

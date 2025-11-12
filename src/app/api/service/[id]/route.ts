@@ -173,6 +173,12 @@ export async function PUT(req: NextRequest) {
       ? JSON.parse(questionString)
       : existingService.question;
 
+
+       const descriptionString = formData.get("description")?.toString();
+    const description = descriptionString
+      ? JSON.parse(descriptionString)
+      : existingService.description;
+
     // ✅ Process
     const processString = formData.get("process")?.toString();
     let process: ProcessItem[] = [];
@@ -365,6 +371,7 @@ export async function PUT(req: NextRequest) {
         title,
         overview,
         overviewImage,
+        description,
         question,
         process,
         whyChooseUs, // Now a single object, not array
