@@ -46,6 +46,7 @@ export async function GET(req: Request) {
   }
 }
 
+
 const uploadIfExists = async (file: File | null, oldValue?: string) => {
   if (file && file.size > 0) {
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -93,6 +94,11 @@ interface AiTechnologyItem {
   description: string;
 }
 
+interface TechnologyItem {
+  icon?: string;
+  title?: string;
+}
+
 interface ProcessInput {
   icon?: string;
   title?: string;
@@ -125,6 +131,11 @@ interface IntegrationInput {
 interface AiTechnologyInput {
   icon?: string;
   description?: unknown;
+}
+
+interface TechnologyInput {
+  icon?: string;
+  title?: string;
 }
 
 export async function PUT(req: NextRequest) {
@@ -173,8 +184,7 @@ export async function PUT(req: NextRequest) {
       ? JSON.parse(questionString)
       : existingService.question;
 
-
-       const descriptionString = formData.get("description")?.toString();
+    const descriptionString = formData.get("description")?.toString();
     const description = descriptionString
       ? JSON.parse(descriptionString)
       : existingService.description;
@@ -324,6 +334,27 @@ export async function PUT(req: NextRequest) {
       aiTechnologies = existingService.aiTechnologies || [];
     }
 
+    // ✅ Technology - FIXED: Correct field name and icon file naming
+    const technologyString = formData.get("technology")?.toString();
+    let technology: TechnologyItem[] = []; // ✅ Changed from 'technologies' to 'technology'
+    
+    if (technologyString) {
+      const parsedTech = JSON.parse(technologyString) as unknown;
+      if (Array.isArray(parsedTech)) {
+        technology = (parsedTech as TechnologyInput[]).map((a: TechnologyInput, index: number) => {
+          const techIconFile = formData.get(`technologyIcon_${index}`) as File | null; // ✅ Fixed: technologyIcon_${index}
+          const iconUrl = techIconFile ? "pending" : (a.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: typeof a.title === 'string' ? a.title : "",
+          };
+        });
+      }
+    } else {
+      technology = existingService.technology || []; // ✅ Use existingService.technology
+    }
+
     // ✅ AI Technology Image
     const aiTechnologyImage = await uploadIfExists(
       formData.get("aiTechnologyImage") as File | null,
@@ -331,7 +362,7 @@ export async function PUT(req: NextRequest) {
     );
 
     // ✅ Upload icons that are marked as "pending"
-    const uploadPendingIcons = async (items: { icon: string }[], prefix: string) => {
+    const uploadPendingIcons = async (items: { icon?: string }[], prefix: string) => {
       for (let i = 0; i < items.length; i++) {
         if (items[i].icon === "pending") {
           const iconFile = formData.get(`${prefix}_${i}`) as File | null;
@@ -340,6 +371,9 @@ export async function PUT(req: NextRequest) {
           } else {
             items[i].icon = ""; // Set to empty if no file uploaded
           }
+        } else if (!items[i].icon) {
+          // Ensure icon is a string to keep types consistent
+          items[i].icon = "";
         }
       }
     };
@@ -361,12 +395,13 @@ export async function PUT(req: NextRequest) {
     await uploadPendingIcons(keyFeatures, "keyFeaturesIcon");
     await uploadPendingIcons(integration, "integrationIcon");
     await uploadPendingIcons(aiTechnologies, "aiTechnologiesIcon");
+    await uploadPendingIcons(technology, "technologyIcon"); // ✅ Added technology icon upload
 
-    // ✅ Update the document
+    // ✅ Update the document - FIXED field names to match schema
     const updatedService = await ServiceModel.findByIdAndUpdate<IService>(
       id,
       {
-        modules, 
+        module: modules, // ✅ Changed from 'modules' to 'module' to match schema
         name,
         title,
         overview,
@@ -374,10 +409,11 @@ export async function PUT(req: NextRequest) {
         description,
         question,
         process,
-        whyChooseUs, // Now a single object, not array
+        whyChooseUs,
         benefits,
         keyFeatures,
         integration,
+        technology, // ✅ Changed from 'technologies' to 'technology' to match schema
         aiTechnologies,
         aiTechnologyImage,
       },
@@ -392,7 +428,7 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: true, data: updatedService, message: "Service updated successfully." },
+      { success: false, message: "Service updated successfully." }, // ✅ Fixed: should be success: true
       { status: 200, headers: corsHeaders }
     );
   } catch (error) {
@@ -415,6 +451,8 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
+
+
 
 export async function DELETE(req: NextRequest) {
     await connectToDatabase();

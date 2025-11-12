@@ -40,6 +40,10 @@ export interface IService extends Document {
     description: string;
   }[];
   aiTechnologyImage?: string;
+  technology:{
+    icon: string,
+    title: string,
+  }[];
   module?: string;
   name?: string;
   title: string;
@@ -109,6 +113,10 @@ const ServiceSchema = new Schema<IService>(
     ],
 
     aiTechnologyImage: { type: String },
+    technology: [{
+         icon:{type:String },
+         title: {type: String}
+  },],
     module: { type: String },
     name: { type: String },
     title: { type: String, required: true },

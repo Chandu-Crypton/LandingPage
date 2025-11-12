@@ -66,6 +66,13 @@ interface AiTechnologiesItem {
     iconPreview: string | null;
 }
 
+interface TechnologiesItem {
+    icon: string;
+    title: string;
+    iconFile: File | null;
+    iconPreview: string | null;
+}
+
 interface QuestionItem {
     title: string;
     answer: string[];
@@ -108,6 +115,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const [keyFeaturesItems, setKeyFeaturesItems] = useState<KeyFeaturesItem[]>([]);
     const [integrationItems, setIntegrationItems] = useState<IntegrationItem[]>([]);
     const [aiTechnologiesItems, setAiTechnologiesItems] = useState<AiTechnologiesItem[]>([]);
+    const [TechnologiesItems, setTechnologiesItems] = useState<TechnologiesItem[]>([]);
 
     // Image states
     const [overviewImageFile, setOverviewImageFile] = useState<File | null>(null);
@@ -138,7 +146,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 content: '',
                 points: []
             });
-
 
             // Process items
             setProcessItems(
@@ -209,10 +216,18 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 })) || []
             );
 
+            setTechnologiesItems(
+                serviceData.technology?.map((item): TechnologiesItem => ({
+                    icon: item.icon || '',
+                    title: item.title || '',
+                    iconPreview: item.icon || null,
+                    iconFile: null
+                })) || []
+            );
+
             // Main images
             setOverviewImagePreview(serviceData.overviewImage || null);
             setAiTechnologyImagePreview(serviceData.aiTechnologyImage || null);
-
             setFormError(null);
         };
 
@@ -325,8 +340,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             points: description.points.filter((_, i) => i !== index)
         });
     };
-
-
 
     // Process handlers
     const handleProcessChange = (index: number, field: keyof ProcessItem, value: string | string[]) => {
@@ -456,6 +469,39 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const removeAiTechnologiesItem = (index: number) => {
         setAiTechnologiesItems(aiTechnologiesItems.filter((_, i) => i !== index));
     };
+
+
+    //Technology
+    const handleTechnologiesIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        const newItems = [...TechnologiesItems];
+        newItems[index] = {
+            ...newItems[index],
+            iconFile: file,
+            iconPreview: file ? URL.createObjectURL(file) : newItems[index].iconPreview
+        };
+        setTechnologiesItems(newItems);
+    };
+    // Technology handlers - ADD THIS FUNCTION
+    const handleTechnologiesChange = (index: number, field: keyof TechnologiesItem, value: string) => {
+        const newItems = [...TechnologiesItems];
+        newItems[index] = { ...newItems[index], [field]: value };
+        setTechnologiesItems(newItems);
+    };
+
+    const addTechnologiesItem = () => {
+        setTechnologiesItems([...TechnologiesItems, {
+            icon: '',
+            title: '',
+            iconFile: null,
+            iconPreview: null
+        }]);
+    };
+
+    const removeTechnologiesItem = (index: number) => {
+        setTechnologiesItems(TechnologiesItems.filter((_, i) => i !== index));
+    };
+
 
     // Image change handlers
     const handleOverviewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -593,7 +639,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         };
         formData.append('description', JSON.stringify(descriptionData));
 
-
         // Process items
         const processData = processItems.map(item => ({
             icon: item.iconFile ? "pending" : (item.icon || "pending"),
@@ -639,6 +684,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             description: item.description
         }));
         formData.append('aiTechnologies', JSON.stringify(aiTechnologiesData));
+
+        //Technology
+        const TechnologiesData = TechnologiesItems.map(item => ({
+            icon: item.iconFile ? "pending" : (item.icon || "pending"),
+            title: item.title
+        }));
+        formData.append('technology', JSON.stringify(TechnologiesData));
+
 
         // Handle image uploads
         const handleImageAppend = (fieldName: string, file: File | null, preview: string | null) => {
@@ -689,6 +742,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             }
         });
 
+        TechnologiesItems.forEach((item, index) => {
+            if (item.iconFile) {
+                formData.append(`technologyIcon_${index}`, item.iconFile);
+            }
+        });
+
         try {
             if (serviceIdToEdit) {
                 const cleanId = serviceIdToEdit.replace(/^\//, "");
@@ -723,6 +782,10 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             title: '',
             answer: []
         });
+        setDescription({
+            content: '',
+            points: []
+        });
         setProcessItems([]);
         setWhyChooseUs({
             icon: '',
@@ -734,6 +797,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setKeyFeaturesItems([]);
         setIntegrationItems([]);
         setAiTechnologiesItems([]);
+        setTechnologiesItems([]);
         setOverviewImageFile(null);
         setOverviewImagePreview(null);
         setAiTechnologyImageFile(null);
@@ -751,41 +815,47 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         handleRemove: () => void,
         required: boolean = false
     ) => (
-        <div className="border p-4 rounded-lg bg-gray-50">
-            <Label htmlFor={id} className="text-lg font-semibold">{label}</Label>
+        <div className="border p-3 sm:p-4 rounded-lg bg-gray-50">
+            <Label htmlFor={id} className="text-base sm:text-lg font-semibold">{label}</Label>
             {(preview && !file) && (
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 mb-2">Current Image:</p>
-                    <Image
-                        src={preview}
-                        alt={`${label} Preview`}
-                        width={100}
-                        height={100}
-                        className="h-20 w-20 object-cover rounded-md shadow-sm border"
-                        unoptimized={true}
-                    />
-                    <button
-                        type="button"
-                        onClick={handleRemove}
-                        className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-                        disabled={loading}
-                    >
-                        Remove Current Image
-                    </button>
+                    <div className="flex justify-center sm:justify-start">
+                        <Image
+                            src={preview}
+                            alt={`${label} Preview`}
+                            width={100}
+                            height={100}
+                            className="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-md shadow-sm border"
+                            unoptimized={true}
+                        />
+                    </div>
+                    <div className="flex justify-center sm:justify-start">
+                        <button
+                            type="button"
+                            onClick={handleRemove}
+                            className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
+                            disabled={loading}
+                        >
+                            Remove Current Image
+                        </button>
+                    </div>
                 </div>
             )}
             {file && (
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 mb-2">New Image Preview:</p>
-                    <Image
-                        src={URL.createObjectURL(file)}
-                        alt={`New ${label} Preview`}
-                        width={100}
-                        height={100}
-                        className="h-20 w-20 object-cover rounded-md shadow-sm border"
-                        unoptimized={true}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
+                    <div className="flex justify-center sm:justify-start">
+                        <Image
+                            src={URL.createObjectURL(file)}
+                            alt={`New ${label} Preview`}
+                            width={100}
+                            height={100}
+                            className="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-md shadow-sm border"
+                            unoptimized={true}
+                        />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 text-center sm:text-left">Selected: {file.name}</p>
                 </div>
             )}
             <input
@@ -793,7 +863,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                 type="file"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full border rounded p-2 bg-white"
+                className="w-full border rounded p-2 bg-white text-sm sm:text-base"
                 required={required && !serviceIdToEdit && !preview && !file}
                 disabled={loading}
             />
@@ -807,48 +877,54 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         handleRemove: () => void,
         label: string = 'Icon'
     ) => (
-        <div className="border p-3 rounded bg-white">
-            <Label className="font-medium">{label}</Label>
+        <div className="border p-2 sm:p-3 rounded bg-white">
+            <Label className="font-medium text-sm sm:text-base">{label}</Label>
             {(preview && !file) && (
                 <div className="mb-2">
-                    <p className="text-sm text-gray-600 mb-1">Current Icon:</p>
-                    <Image
-                        src={preview}
-                        alt={`Icon Preview`}
-                        width={80}
-                        height={80}
-                        className="h-16 w-16 object-cover rounded-md shadow-sm border"
-                        unoptimized={true}
-                    />
-                    <button
-                        type="button"
-                        onClick={handleRemove}
-                        className="mt-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-                        disabled={loading}
-                    >
-                        Remove Icon
-                    </button>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Current Icon:</p>
+                    <div className="flex justify-center sm:justify-start">
+                        <Image
+                            src={preview}
+                            alt={`Icon Preview`}
+                            width={60}
+                            height={60}
+                            className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded-md shadow-sm border"
+                            unoptimized={true}
+                        />
+                    </div>
+                    <div className="flex justify-center sm:justify-start">
+                        <button
+                            type="button"
+                            onClick={handleRemove}
+                            className="mt-1 px-2 py-1 bg-red-500 text-white rounded text-xs sm:text-sm hover:bg-red-600 transition-colors"
+                            disabled={loading}
+                        >
+                            Remove Icon
+                        </button>
+                    </div>
                 </div>
             )}
             {file && (
                 <div className="mb-2">
-                    <p className="text-sm text-gray-600 mb-1">New Icon Preview:</p>
-                    <Image
-                        src={URL.createObjectURL(file)}
-                        alt={`New Icon Preview`}
-                        width={80}
-                        height={80}
-                        className="h-16 w-16 object-cover rounded-md shadow-sm border"
-                        unoptimized={true}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Selected: {file.name}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">New Icon Preview:</p>
+                    <div className="flex justify-center sm:justify-start">
+                        <Image
+                            src={URL.createObjectURL(file)}
+                            alt={`New Icon Preview`}
+                            width={60}
+                            height={60}
+                            className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded-md shadow-sm border"
+                            unoptimized={true}
+                        />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 text-center sm:text-left">Selected: {file.name}</p>
                 </div>
             )}
             <input
                 type="file"
                 accept="image/*"
                 onChange={handleChange}
-                className="w-full border rounded p-2 text-sm bg-white"
+                className="w-full border rounded p-2 text-xs sm:text-sm bg-white"
                 disabled={loading}
             />
         </div>
@@ -862,23 +938,23 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         onRemove: (index: number) => void,
         placeholder: string = "Enter item"
     ) => (
-        <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">{title}</h3>
-            <div className="space-y-3">
+        <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 border-b pb-2">{title}</h3>
+            <div className="space-y-2 sm:space-y-3">
                 {items.map((item, index) => (
-                    <div key={index} className="flex gap-2 items-center border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <div key={index} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
                         <Input
                             type="text"
                             value={item}
                             onChange={(e) => onChange(index, e.target.value)}
                             placeholder={`${placeholder} ${index + 1}`}
                             disabled={loading}
-                            className="flex-1"
+                            className="flex-1 min-w-0 text-sm sm:text-base"
                         />
                         <button
                             type="button"
                             onClick={() => onRemove(index)}
-                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors whitespace-nowrap text-sm sm:text-base mt-2 sm:mt-0"
                             disabled={loading}
                         >
                             Remove
@@ -886,11 +962,11 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
                 ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
                 <button
                     type="button"
                     onClick={onAdd}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                     disabled={loading}
                 >
                     + Add New Item
@@ -901,19 +977,19 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
 
     // ==================== MAIN RENDER ====================
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
             <ComponentCard title={serviceIdToEdit ? 'Edit Service Entry' : 'Add New Service Entry'}>
                 {formError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                        <p className="text-red-700 text-center">{formError}</p>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                        <p className="text-red-700 text-center text-sm sm:text-base">{formError}</p>
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                     {/* Basic Information Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Basic Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Basic Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                                 <Label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
                                 <Input
@@ -923,7 +999,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                     onChange={(e) => setTitle(e.target.value)}
                                     placeholder="Enter service title"
                                     disabled={loading}
-                                    className="w-full"
+                                    className="w-full text-sm sm:text-base"
                                     required
                                 />
                             </div>
@@ -938,27 +1014,27 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                     placeholder="Enter service name"
                                     required
                                     disabled={loading}
-                                    className="w-full"
+                                    className="w-full text-sm sm:text-base"
                                 />
                             </div>
                         </div>
 
-                        <div className="mt-6">
+                        <div className="mt-4 sm:mt-6">
                             <Label htmlFor="addModuleInput" className="block text-sm font-medium text-gray-700 mb-2">Add New Module</Label>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                 <Input
                                     id="addModuleInput"
                                     type="text"
                                     value={addModule}
                                     onChange={(e) => setAddModule(e.target.value)}
                                     placeholder="Enter new module ..."
-                                    className="flex-grow"
+                                    className="flex-grow text-sm sm:text-base"
                                     disabled={loading}
                                 />
                                 <button
                                     type="button"
                                     onClick={handleAddCustomModule}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0 whitespace-nowrap"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex-shrink-0 whitespace-nowrap text-sm sm:text-base mt-2 sm:mt-0"
                                     disabled={loading}
                                 >
                                     {loading ? 'Adding...' : 'Add Module'}
@@ -972,7 +1048,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                 id="module"
                                 value={module}
                                 onChange={(e) => setModule(e.target.value)}
-                                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm sm:text-base"
                                 required
                                 disabled={loading}
                             >
@@ -1010,8 +1086,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     )}
 
                     {/* Question Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Question</h3>
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Question</h3>
                         <div className="space-y-4">
                             <div>
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Question Title</Label>
@@ -1021,7 +1097,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                     onChange={(e) => handleQuestionTitleChange(e.target.value)}
                                     placeholder="Enter question title"
                                     disabled={loading}
-                                    className="w-full"
+                                    className="w-full text-sm sm:text-base"
                                 />
                             </div>
                             {renderArrayInputSection(
@@ -1035,9 +1111,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         </div>
                     </div>
 
-                  {/* Description Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
+                    {/* Description Section */}
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
                         <div className="space-y-4">
                             <div>
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Description Content</Label>
@@ -1046,7 +1122,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                     onChange={(e) => handleDescriptionContentChange(e.target.value)}
                                     placeholder="Enter main description content"
                                     disabled={loading}
-                                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
+                                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px] text-sm sm:text-base"
                                     rows={4}
                                 />
                             </div>
@@ -1054,21 +1130,21 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             {/* Description Points */}
                             <div>
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Description Points</Label>
-                                <div className="space-y-3">
+                                <div className="space-y-2 sm:space-y-3">
                                     {description.points.map((point, index) => (
-                                        <div key={index} className="flex gap-2 items-center border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <div key={index} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
                                             <Input
                                                 type="text"
                                                 value={point}
                                                 onChange={(e) => handleDescriptionPointChange(index, e.target.value)}
                                                 placeholder={`Point ${index + 1}`}
                                                 disabled={loading}
-                                                className="flex-1"
+                                                className="flex-1 min-w-0 text-sm sm:text-base"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => removeDescriptionPoint(index)}
-                                                className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors whitespace-nowrap text-sm sm:text-base mt-2 sm:mt-0"
                                                 disabled={loading}
                                             >
                                                 Remove
@@ -1076,11 +1152,11 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-4">
+                                <div className="mt-3 sm:mt-4">
                                     <button
                                         type="button"
                                         onClick={addDescriptionPoint}
-                                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                        className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                         disabled={loading}
                                     >
                                         + Add Description Point
@@ -1091,12 +1167,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Process Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Process</h3>
-                        <div className="space-y-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Process</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             {processItems.map((item, index) => (
-                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="lg:col-span-1">
                                             {renderItemImageUpload(
                                                 item.iconPreview,
@@ -1114,7 +1190,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                 "Process Icon"
                                             )}
                                         </div>
-                                        <div className="lg:col-span-3 grid grid-cols-1 gap-4">
+                                        <div className="lg:col-span-3 grid grid-cols-1 gap-3 sm:gap-4">
                                             <div>
                                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
                                                 <Input
@@ -1123,7 +1199,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleProcessChange(index, 'title', e.target.value)}
                                                     placeholder="Process title"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                             {renderArrayInputSection(
@@ -1152,7 +1228,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         <button
                                             type="button"
                                             onClick={() => removeProcessItem(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                                             disabled={loading}
                                         >
                                             Remove Process Item
@@ -1165,7 +1241,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             <button
                                 type="button"
                                 onClick={addProcessItem}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                 disabled={loading}
                             >
                                 + Add Process Item
@@ -1174,9 +1250,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Why Choose Us Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Why Choose Us</h3>
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Why Choose Us</h3>
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
                             <div className="lg:col-span-1">
                                 {renderItemImageUpload(
                                     whyChooseUs.iconPreview,
@@ -1206,12 +1282,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Benefits Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Benefits</h3>
-                        <div className="space-y-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Benefits</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             {benefitsItems.map((item, index) => (
-                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="lg:col-span-1">
                                             {renderItemImageUpload(
                                                 item.iconPreview,
@@ -1229,7 +1305,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                 "Benefits Icon"
                                             )}
                                         </div>
-                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
                                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
                                                 <Input
@@ -1238,7 +1314,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleBenefitsChange(index, 'title', e.target.value)}
                                                     placeholder="Benefits title"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
@@ -1249,7 +1325,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleBenefitsChange(index, 'description', e.target.value)}
                                                     placeholder="Benefits description"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                         </div>
@@ -1258,7 +1334,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         <button
                                             type="button"
                                             onClick={() => removeBenefitsItem(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                                             disabled={loading}
                                         >
                                             Remove Benefits Item
@@ -1271,7 +1347,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             <button
                                 type="button"
                                 onClick={addBenefitsItem}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                 disabled={loading}
                             >
                                 + Add Benefits Item
@@ -1280,12 +1356,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Key Features Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Key Features</h3>
-                        <div className="space-y-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Key Features</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             {keyFeaturesItems.map((item, index) => (
-                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="lg:col-span-1">
                                             {renderItemImageUpload(
                                                 item.iconPreview,
@@ -1303,7 +1379,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                 "Key Features Icon"
                                             )}
                                         </div>
-                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
                                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
                                                 <Input
@@ -1312,7 +1388,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleKeyFeaturesChange(index, 'title', e.target.value)}
                                                     placeholder="Key features title"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
@@ -1323,7 +1399,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleKeyFeaturesChange(index, 'description', e.target.value)}
                                                     placeholder="Key features description"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                         </div>
@@ -1332,7 +1408,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         <button
                                             type="button"
                                             onClick={() => removeKeyFeaturesItem(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                                             disabled={loading}
                                         >
                                             Remove Key Features Item
@@ -1345,7 +1421,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             <button
                                 type="button"
                                 onClick={addKeyFeaturesItem}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                 disabled={loading}
                             >
                                 + Add Key Features Item
@@ -1354,12 +1430,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* Integration Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Integration</h3>
-                        <div className="space-y-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Integration</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             {integrationItems.map((item, index) => (
-                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="lg:col-span-1">
                                             {renderItemImageUpload(
                                                 item.iconPreview,
@@ -1377,7 +1453,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                 "Integration Icon"
                                             )}
                                         </div>
-                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
                                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
                                                 <Input
@@ -1386,7 +1462,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleIntegrationChange(index, 'title', e.target.value)}
                                                     placeholder="Integration title"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
@@ -1397,7 +1473,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                     onChange={(e) => handleIntegrationChange(index, 'description', e.target.value)}
                                                     placeholder="Integration description"
                                                     disabled={loading}
-                                                    className="w-full"
+                                                    className="w-full text-sm sm:text-base"
                                                 />
                                             </div>
                                         </div>
@@ -1406,7 +1482,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         <button
                                             type="button"
                                             onClick={() => removeIntegrationItem(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                                             disabled={loading}
                                         >
                                             Remove Integration Item
@@ -1419,7 +1495,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             <button
                                 type="button"
                                 onClick={addIntegrationItem}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                 disabled={loading}
                             >
                                 + Add Integration Item
@@ -1428,12 +1504,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     </div>
 
                     {/* AI Technologies Section */}
-                    <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">AI Technologies</h3>
-                        <div className="space-y-6">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">AI Technologies</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             {aiTechnologiesItems.map((item, index) => (
-                                <div key={index} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="lg:col-span-1">
                                             {renderItemImageUpload(
                                                 item.iconPreview,
@@ -1459,7 +1535,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                                 onChange={(e) => handleAiTechnologiesChange(index, 'description', e.target.value)}
                                                 placeholder="AI technology description"
                                                 disabled={loading}
-                                                className="w-full"
+                                                className="w-full text-sm sm:text-base"
                                             />
                                         </div>
                                     </div>
@@ -1467,7 +1543,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                         <button
                                             type="button"
                                             onClick={() => removeAiTechnologiesItem(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                                             disabled={loading}
                                         >
                                             Remove AI Technology Item
@@ -1480,10 +1556,73 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                             <button
                                 type="button"
                                 onClick={addAiTechnologiesItem}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium"
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
                                 disabled={loading}
                             >
                                 + Add AI Technology Item
+                            </button>
+                        </div>
+                    </div>
+
+
+
+                    {/*Technologies Section */}
+                    <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2"> Technologies</h3>
+                        <div className="space-y-4 sm:space-y-6">
+                            {TechnologiesItems.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
+                                        <div className="lg:col-span-1">
+                                            {renderItemImageUpload(
+                                                item.iconPreview,
+                                                item.iconFile,
+                                                (e) =>  handleTechnologiesIconChange(index, e), // ✅ Use the icon handler
+                                                () => {
+                                                    const newItems = [...TechnologiesItems];
+                                                    newItems[index] = {
+                                                        ...newItems[index],
+                                                        iconFile: null,
+                                                        iconPreview: null
+                                                    };
+                                                    setTechnologiesItems(newItems);
+                                                },
+                                                "Technology Icon"
+                                            )}
+                                        </div>
+                                        <div className="lg:col-span-3">
+                                            <Label className="block text-sm font-medium text-gray-700 mb-2">Technology Title</Label>
+                                            <Input
+                                                type="text"
+                                                value={item.title}
+                                                onChange={(e) => handleTechnologiesChange(index, 'title', e.target.value)}
+                                                placeholder="AI technology description"
+                                                disabled={loading}
+                                                className="w-full text-sm sm:text-base"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTechnologiesItem(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
+                                            disabled={loading}
+                                        >
+                                            Remove Technology Item
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addTechnologiesItem}
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
+                                disabled={loading}
+                            >
+                                + Add Technology Item
                             </button>
                         </div>
                     </div>
@@ -1502,10 +1641,10 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                     )}
 
                     {/* Submit Button */}
-                    <div className="flex justify-end pt-6 border-t">
+                    <div className="flex justify-end pt-4 sm:pt-6 border-t">
                         <button
                             type="submit"
-                            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold text-lg"
+                            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-semibold text-base sm:text-lg"
                             disabled={loading}
                         >
                             {loading ? 'Submitting...' : serviceIdToEdit ? 'Update Service' : 'Add Service'}
