@@ -12,7 +12,7 @@ import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 import { useService } from '@/context/ServiceContext';
 import { IService } from '@/models/Service';
-import NextImage from 'next/image'; // Aliased Image to NextImage to avoid conflicts
+
 
 const ServiceListPage: React.FC = () => {
     const { services, deleteService } = useService();
@@ -65,22 +65,21 @@ const ServiceListPage: React.FC = () => {
 
 
     const filteredServices = useMemo(() => {
-    if (!searchTerm.trim()) return services;
+        if (!searchTerm.trim()) return services;
 
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
+        const lowercasedSearchTerm = searchTerm.toLowerCase();
 
-    return services.filter((service) => {
-        // check title and description
-        if (service.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
-        if (service.description.some(desc => desc.toLowerCase().includes(lowercasedSearchTerm))) return true;
-          if (service.module?.toLowerCase().includes(lowercasedSearchTerm)) return true;
-       
-        return false;
-    });
-}, [services, searchTerm]);
+        return services.filter((service) => {
+            // check title and description
+            if (service.title.toLowerCase().includes(lowercasedSearchTerm)) return true;
+            if (service.module?.toLowerCase().includes(lowercasedSearchTerm)) return true;
+
+            return false;
+        });
+    }, [services, searchTerm]);
 
 
-   
+
 
 
     return (
@@ -132,9 +131,7 @@ const ServiceListPage: React.FC = () => {
                             <thead>
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Title</th>
-                                    <th className="px-5 py-3 text-left">Description</th>
-                                    <th className="px-5 py-3 text-left">Main Image</th>
-                                    <th className="px-5 py-3 text-left">Banner Image</th>
+                                    <th className='px-5 py-3 text-left'>AI Technology Image</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -142,38 +139,15 @@ const ServiceListPage: React.FC = () => {
                                 {filteredServices.map((service: IService) => (
                                     <tr key={service._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{service.title}</td>
-                                        <td className="px-5 py-3 ">{service.description.join(", ")}</td>
-                                        <td className="px-5 py-3">
-                                            {service.mainImage ? (
-                                                <NextImage
-                                                    src={service.mainImage}
-                                                    alt="Main Service Image"
-                                                    width={80}
-                                                    height={60}
-                                                    className="rounded-md object-cover"
-                                                    unoptimized={true}
-                                                />
-                                            ) : (
-                                                <span className="text-gray-400">N/A</span>
-                                            )}
+                                        <td className="px-1 py-1">
+                                            <img
+                                                src={service.aiTechnologyImage}
+                                                alt="aiTechnology"
+                                                className="w-15 h-15 object-contain"
+                                            />
                                         </td>
-                                       
-                                        <td className="px-5 py-3">
-                                            {service.bannerImage ? (
-                                                <NextImage
-                                                    src={service.bannerImage}
-                                                    alt="Banner Service Image"
-                                                    width={80}
-                                                    height={60}
-                                                    className="rounded-md object-cover"
-                                                    unoptimized={true}
-                                                />  
-                                            ) : (
-                                                <span className="text-gray-400">N/A</span>
-                                            )}
-                                        </td>
-                                     
-                                       
+
+
                                         <td className="px-5 py-3">
                                             <div className="flex justify-center gap-2">
                                                 <Link
@@ -184,7 +158,7 @@ const ServiceListPage: React.FC = () => {
                                                     <EyeIcon size={16} />
                                                 </Link>
                                                 <Link
-                                                     href={`/service-management/Add-Service?page=edit&id=${service._id as string}`}
+                                                    href={`/service-management/Add-Service?page=edit&id=${service._id as string}`}
                                                     className="text-yellow-500 border border-yellow-500 rounded-md p-2 hover:bg-yellow-500 hover:text-white"
                                                     title="Edit Service"
                                                 >

@@ -1,81 +1,115 @@
-import mongoose, { Document, Schema } from 'mongoose';
-
+import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface IService extends Document {
-    module?: string;
-    name?: string;
-    serviceIcon?: string;
+  overview?: string[];
+  overviewImage?: string;
+  question?: {
     title: string;
+    answer: string[];
+  };
+  process: {
+    icon: string;
+    title: string;
+    description?: string[];
+  }[];
+  whyChooseUs: {
+    icon: string;
     description: string[];
-    mainImage: string;
-    icons?: string[];
-    bannerImage?: string;
-    serviceImage1: string;
-    serviceImage2: string;
-    process:{
-        title: string,
-        description?: string,
-    }[],
-    service:{
-        icon: string,
-        title: string,
-        description: string,
-    }[],
-    technology:{
-        title: string,
-        icon: string,
-    }[],
-    whyChooseUs:{
-        icon: string,
-        description: string,
-    }[],
-    isDeleted?: boolean;
-    createdAt?: string;
-    updatedAt?: string;
-    __v?: number;
+  };
+  benefits: {
+    icon: string;
+    title: string;
+    description: string;
+  }[];
+  keyFeatures: {
+    icon: string;
+    title: string;
+    description: string;
+  }[];
+  integration: {
+    icon: string;
+    title: string;
+    description: string;
+  }[];
+  aiTechnologies: {
+    icon: string;
+    description: string;
+  }[];
+  aiTechnologyImage?: string;
+  module?: string;
+  name?: string;
+  title: string;
+  isDeleted?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
+const ServiceSchema = new Schema<IService>(
+  {
+    overview: [{ type: String }],
+    overviewImage: { type: String },
 
-const ServiceSchema: Schema<IService> = new Schema<IService>({
-    module: { type: String, required: false },
-    name: { type: String, required: false },
-    serviceIcon: { type: String, required: false },
-    icons: { type: [String], required: false },
-    serviceImage1: { type: String, required: true },
-    serviceImage2: { type: String, required: true },
+    question: {
+      title: { type: String },
+      answer: [{ type: String }],
+    },
+
     process: [
-        {
-            title: { type: String, required: true },
-            description: { type: String, required: false },
-        }
-    ],
-    service: [
-        {
-            icon: { type: String, required: true },
-            title: { type: String, required: true },
-            description: { type: String, required: true },
-        }
-    ],
-    technology: [
-        {
-            title: { type: String, required: true },
-            icon: { type: String, required: true },
-        }
-    ],
-    whyChooseUs: [
-        {
-            icon: { type: String, required: true },
-            description: { type: String, required: true },
-        }
+      {
+        icon: { type: String, required: true },
+        title: { type: String, required: true },
+        description: [{ type: String }],
+      },
     ],
 
+    whyChooseUs: 
+      {
+        icon: { type: String, required: true },
+        description: [{ type: String, required: true }],
+      },
+    
+
+    benefits: [
+      {
+        icon: { type: String, required: true },
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+      },
+    ],
+
+    keyFeatures: [
+      {
+        icon: { type: String, required: true },
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+      },
+    ],
+
+    integration: [
+      {
+        icon: { type: String, required: true },
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+      },
+    ],
+
+    aiTechnologies: [
+      {
+        icon: { type: String, required: true },
+        description: { type: String, required: true },
+      },
+    ],
+
+    aiTechnologyImage: { type: String },
+    module: { type: String },
+    name: { type: String },
     title: { type: String, required: true },
-    description: { type: [String], required: true },
-    mainImage: { type: String, required: true },
-    bannerImage: { type: String, required: false }
-}, { timestamps: true });
+    isDeleted: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
 
+const ServiceModel: Model<IService> =
+  mongoose.models.Service || mongoose.model<IService>("Service", ServiceSchema);
 
-
-const ServiceModal = mongoose.models.Service || mongoose.model<IService>("Service", ServiceSchema);
-export default ServiceModal;
+export default ServiceModel;

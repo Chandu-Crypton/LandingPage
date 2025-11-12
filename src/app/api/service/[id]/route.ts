@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/utils/db";
-import ServiceModel from "@/models/Service";
+import ServiceModel, { IService } from "@/models/Service";
 import imagekit from "@/utils/imagekit";
 // import { v4 as uuidv4 } from 'uuid';
 import mongoose from "mongoose"; // Import mongoose to validate ObjectId
@@ -46,116 +46,86 @@ export async function GET(req: Request) {
   }
 }
 
+const uploadIfExists = async (file: File | null, oldValue?: string) => {
+  if (file && file.size > 0) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadRes = await imagekit.upload({
+      file: buffer,
+      fileName: file.name,
+      folder: "/service_images",
+    });
+    return uploadRes.url;
+  }
+  return oldValue;
+};
 
-// export async function PUT(req: NextRequest) {
-//     await connectToDatabase();
+interface ProcessItem {
+  icon: string;
+  title: string;
+  description?: string[];
+}
 
-//     const url = new URL(req.url);
-//     const id = url.pathname.split("/").pop();
+interface WhyChooseUsItem {
+  icon: string;
+  description: string[];
+}
 
-//     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-//         return NextResponse.json(
-//             { success: false, message: "Invalid or missing Blog ID." },
-//             { status: 400, headers: corsHeaders }
-//         );
-//     }
+interface BenefitItem {
+  icon: string;
+  title: string;
+  description: string;
+}
 
-//     try {
-//         const formData = await req.formData();
-//         const updateData: Partial<IService> = {}; // Partial<IService>
+interface FeatureItem {
+  icon: string;
+  title: string;
+  description: string;
+}
 
-       
-//         const title = formData.get("title")?.toString();
+interface IntegrationItem {
+  icon: string;
+  title: string;
+  description: string;
+}
 
-//         if (title) updateData.title = title;
+interface AiTechnologyItem {
+  icon: string;
+  description: string;
+}
 
-//        // --- Description ---
-//        const descriptionString = formData.get("description")?.toString();
-//         if (descriptionString) {
-//             try {
-//                 const parsedDescription = JSON.parse(descriptionString);
-//                 if (Array.isArray(parsedDescription)) {
-//                     updateData.description = parsedDescription.map((d: string) => d.trim()).filter(Boolean);
-//                 } else {
-//                     return NextResponse.json(
-//                         { success: false, message: "Description should be a JSON array of strings." },
-//                         { status: 400, headers: corsHeaders }
-//                     );
-//                 }
-//             } catch {
-//                 return NextResponse.json(
-//                     { success: false, message: "Invalid JSON format for tags." },
-//                     { status: 400, headers: corsHeaders }
-//                 );
-//             }
-//         }
+interface ProcessInput {
+  icon?: string;
+  title?: string;
+  description?: unknown;
+}
 
+interface WhyChooseUsInput {
+  icon?: string;
+  description?: unknown;
+}
 
-//         // --- Main Image ---
-//         const mainImageFile = formData.get("mainImage");
-//         if (mainImageFile instanceof File && mainImageFile.size > 0) {
-//             const buffer = Buffer.from(await mainImageFile.arrayBuffer());
-//             const uploadRes = await imagekit.upload({
-//                 file: buffer,
-//                 fileName: `${uuidv4()}-${mainImageFile.name}`,
-//                 folder: "/service-main-images",
-//             });
-//             updateData.mainImage = uploadRes.url;
-//         } else if (mainImageFile === "null" || mainImageFile === "") {
-//             updateData.mainImage = "";
-//         }
-       
-//         // --- Banner Image ---
-//         const bannerImageFile = formData.get("bannerImage");
-//         if (bannerImageFile instanceof File && bannerImageFile.size > 0) {
-//             const buffer = Buffer.from(await bannerImageFile.arrayBuffer());
-//             const uploadRes = await imagekit.upload({
-//                 file: buffer,
-//                 fileName: `${uuidv4()}-${bannerImageFile.name}`,
-//                 folder: "/service-banner-images",
-//             });
-//             updateData.bannerImage = uploadRes.url;
-//         } else if (bannerImageFile === "null" || bannerImageFile === "") {
-//             updateData.bannerImage = "";
-//         }
-        
+interface BenefitInput {
+  icon?: string;
+  title?: string;
+  description?: unknown;
+}
 
-//         // --- Check if anything to update ---
-//         if (Object.keys(updateData).length === 0) {
-//             return NextResponse.json(
-//                 { success: false, message: "No valid fields provided for update." },
-//                 { status: 400, headers: corsHeaders }
-//             );
-//         }
+interface FeatureInput {
+  icon?: string;
+  title?: string;
+  description?: unknown;
+}
 
-//         const updatedService = await ServiceModel.findByIdAndUpdate(
-//             id,
-//             { $set: updateData },
-//             { new: true, runValidators: true }
-//         );
+interface IntegrationInput {
+  icon?: string;
+  title?: string;
+  description?: unknown;
+}
 
-//         if (!updatedService) {
-//             return NextResponse.json(
-//                 { success: false, message: "Service entry not found for update." },
-//                 { status: 404, headers: corsHeaders }
-//             );
-//         }
-
-//         return NextResponse.json(
-//             { success: true, data: updatedService, message: "Service entry updated successfully." },
-//             { status: 200, headers: corsHeaders }
-//         );
-
-//     } catch (error) {
-//         console.error(`PUT /api/service/${id} error:`, error);
-//         const message = error instanceof Error ? error.message : "Internal Server Error";
-//         return NextResponse.json(
-//             { success: false, message },
-//             { status: 500, headers: corsHeaders }
-//         );
-//     }
-// }
-
+interface AiTechnologyInput {
+  icon?: string;
+  description?: unknown;
+}
 
 export async function PUT(req: NextRequest) {
   await connectToDatabase();
@@ -163,193 +133,253 @@ export async function PUT(req: NextRequest) {
   const url = new URL(req.url);
   const id = url.pathname.split("/").pop();
 
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { success: false, message: "Invalid or missing Service ID." },
+      { status: 400, headers: corsHeaders }
+    );
+  }
+
   try {
     const formData = await req.formData();
-    console.log("Received formData for PUT:", formData);
-
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, message: "Invalid or missing Service ID." },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // Find existing service
     const existingService = await ServiceModel.findById(id);
+
     if (!existingService) {
       return NextResponse.json(
-        { success: false, message: "Service not found" },
+        { success: false, message: "Service not found." },
         { status: 404, headers: corsHeaders }
       );
     }
 
-    // Helper: upload file if exists
-    const uploadIfExists = async (file: File | null, oldValue?: string) => {
-      if (file && file.size > 0) {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const uploadRes = await imagekit.upload({
-          file: buffer,
-          fileName: file.name,
-          folder: "/service_images",
+    // ✅ Basic fields
+    const modules = formData.get("module")?.toString() || existingService.module || "";
+    const name = formData.get("name")?.toString() || existingService.name || "";
+    const title = formData.get("title")?.toString() || existingService.title || "";
+
+    // ✅ Overview & Overview Image
+    const overviewString = formData.get("overview")?.toString();
+    const overview: string[] = overviewString
+      ? JSON.parse(overviewString)
+      : existingService.overview || [];
+
+    const overviewImage = await uploadIfExists(
+      formData.get("overviewImage") as File | null,
+      existingService.overviewImage
+    );
+
+    // ✅ Question
+    const questionString = formData.get("question")?.toString();
+    const question = questionString
+      ? JSON.parse(questionString)
+      : existingService.question;
+
+    // ✅ Process
+    const processString = formData.get("process")?.toString();
+    let process: ProcessItem[] = [];
+    
+    if (processString) {
+      const parsedProcess = JSON.parse(processString) as unknown;
+      if (Array.isArray(parsedProcess)) {
+        process = (parsedProcess as ProcessInput[]).map((p: ProcessInput, index: number) => {
+          const processIconFile = formData.get(`processIcon_${index}`) as File | null;
+          const iconUrl = processIconFile ? "pending" : (p.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: p.title || "",
+            description: Array.isArray(p.description) ? p.description as string[] : [],
+          };
         });
-        return uploadRes.url;
       }
-      return oldValue;
+    } else {
+      process = existingService.process || [];
+    }
+
+    // ✅ Why Choose Us - Handle as single object, not array
+    const whyChooseUsString = formData.get("whyChooseUs")?.toString();
+    let whyChooseUs: WhyChooseUsItem;
+
+    if (whyChooseUsString) {
+      const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
+      const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
+      
+      let iconUrl = "";
+      if (whyChooseUsIconFile) {
+        iconUrl = "pending";
+      } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null && 'icon' in (parsedWhyChooseUs as WhyChooseUsInput)) {
+        iconUrl = (parsedWhyChooseUs as WhyChooseUsInput).icon || "";
+      }
+
+      if (Array.isArray(parsedWhyChooseUs) && parsedWhyChooseUs.length > 0) {
+        // Handle array format (fallback)
+        const firstItem = parsedWhyChooseUs[0] as WhyChooseUsInput;
+        whyChooseUs = {
+          icon: iconUrl,
+          description: Array.isArray(firstItem.description) ? firstItem.description as string[] : [],
+        };
+      } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
+        // Handle object format
+        const obj = parsedWhyChooseUs as WhyChooseUsInput;
+        whyChooseUs = {
+          icon: iconUrl,
+          description: Array.isArray(obj.description) ? obj.description as string[] : [],
+        };
+      } else {
+        whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+      }
+    } else {
+      whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+    }
+
+    // ✅ Benefits
+    const benefitsString = formData.get("benefits")?.toString();
+    let benefits: BenefitItem[] = [];
+    
+    if (benefitsString) {
+      const parsedBenefits = JSON.parse(benefitsString) as unknown;
+      if (Array.isArray(parsedBenefits)) {
+        benefits = (parsedBenefits as BenefitInput[]).map((b: BenefitInput, index: number) => {
+          const benefitsIconFile = formData.get(`benefitsIcon_${index}`) as File | null;
+          const iconUrl = benefitsIconFile ? "pending" : (b.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: b.title || "",
+            description: typeof b.description === 'string' ? b.description : "",
+          };
+        });
+      }
+    } else {
+      benefits = existingService.benefits || [];
+    }
+
+    // ✅ Key Features
+    const keyFeaturesString = formData.get("keyFeatures")?.toString();
+    let keyFeatures: FeatureItem[] = [];
+    
+    if (keyFeaturesString) {
+      const parsedKeyFeatures = JSON.parse(keyFeaturesString) as unknown;
+      if (Array.isArray(parsedKeyFeatures)) {
+        keyFeatures = (parsedKeyFeatures as FeatureInput[]).map((k: FeatureInput, index: number) => {
+          const keyFeaturesIconFile = formData.get(`keyFeaturesIcon_${index}`) as File | null;
+          const iconUrl = keyFeaturesIconFile ? "pending" : (k.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: k.title || "",
+            description: typeof k.description === 'string' ? k.description : "",
+          };
+        });
+      }
+    } else {
+      keyFeatures = existingService.keyFeatures || [];
+    }
+
+    // ✅ Integration
+    const integrationString = formData.get("integration")?.toString();
+    let integration: IntegrationItem[] = [];
+    
+    if (integrationString) {
+      const parsedIntegration = JSON.parse(integrationString) as unknown;
+      if (Array.isArray(parsedIntegration)) {
+        integration = (parsedIntegration as IntegrationInput[]).map((i: IntegrationInput, index: number) => {
+          const integrationIconFile = formData.get(`integrationIcon_${index}`) as File | null;
+          const iconUrl = integrationIconFile ? "pending" : (i.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: i.title || "",
+            description: typeof i.description === 'string' ? i.description : "",
+          };
+        });
+      }
+    } else {
+      integration = existingService.integration || [];
+    }
+
+    // ✅ AI Technologies
+    const aiTechString = formData.get("aiTechnologies")?.toString();
+    let aiTechnologies: AiTechnologyItem[] = [];
+    
+    if (aiTechString) {
+      const parsedAiTech = JSON.parse(aiTechString) as unknown;
+      if (Array.isArray(parsedAiTech)) {
+        aiTechnologies = (parsedAiTech as AiTechnologyInput[]).map((a: AiTechnologyInput, index: number) => {
+          const aiTechIconFile = formData.get(`aiTechnologiesIcon_${index}`) as File | null;
+          const iconUrl = aiTechIconFile ? "pending" : (a.icon || "");
+          
+          return {
+            icon: iconUrl,
+            description: typeof a.description === 'string' ? a.description : "",
+          };
+        });
+      }
+    } else {
+      aiTechnologies = existingService.aiTechnologies || [];
+    }
+
+    // ✅ AI Technology Image
+    const aiTechnologyImage = await uploadIfExists(
+      formData.get("aiTechnologyImage") as File | null,
+      existingService.aiTechnologyImage
+    );
+
+    // ✅ Upload icons that are marked as "pending"
+    const uploadPendingIcons = async (items: { icon: string }[], prefix: string) => {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].icon === "pending") {
+          const iconFile = formData.get(`${prefix}_${i}`) as File | null;
+          if (iconFile && iconFile.size > 0) {
+            items[i].icon = await uploadIfExists(iconFile, "") || "";
+          } else {
+            items[i].icon = ""; // Set to empty if no file uploaded
+          }
+        }
+      }
     };
 
-    // Basic fields
-    const modules = formData.get("module")?.toString() || existingService.module;
-    const name = formData.get("name")?.toString() || existingService.name;
-    const title = formData.get("title")?.toString() || existingService.title;
-    const descriptionString = formData.get("description")?.toString();
-    const description: string[] =
-      descriptionString ? JSON.parse(descriptionString) : existingService.description;
-
-    // Files
-    const mainImageFile = formData.get("mainImage") as File | null;
-    const bannerImageFile = formData.get("bannerImage") as File | null;
-    const serviceImage1File = formData.get("serviceImage1") as File | null;
-    const serviceImage2File = formData.get("serviceImage2") as File | null;
-    const serviceIconFile = formData.get("serviceIcon") as File | null;
-
-    // Upload files if new ones provided, else keep old URLs
-    const serviceIcon = await uploadIfExists(serviceIconFile, existingService.serviceIcon);
-    const mainImage = await uploadIfExists(mainImageFile, existingService.mainImage);
-    const bannerImage = await uploadIfExists(bannerImageFile, existingService.bannerImage);
-    const serviceImage1 = await uploadIfExists(serviceImage1File, existingService.serviceImage1);
-    const serviceImage2 = await uploadIfExists(serviceImage2File, existingService.serviceImage2);
-
-    // ✅ Fix process handling
-    const processString = formData.get("process")?.toString();
-    const process =
-      processString && processString.length > 0
-        ? JSON.parse(processString).map(
-            (p: { title?: string; description?: string }) => ({
-              title: p.title?.toString().trim() || "",
-              description: p.description?.toString().trim() || "",
-            })
-          )
-        : existingService.process;
-
-    // ✅ Fix icons array (MISSING IN YOUR ORIGINAL PUT)
-    const icons: string[] = [];
-    let iconIndex = 0;
-    while (true) {
-      const file = formData.get(`icons_${iconIndex}`) as File | null;
-      if (!file) break;
-      
-      const uploaded = await uploadIfExists(file);
-      if (uploaded) {
-        icons.push(uploaded);
+    // Upload all pending icons
+    await uploadPendingIcons(process, "processIcon");
+    
+    // Upload why choose us icon
+    if (whyChooseUs.icon === "pending") {
+      const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
+      if (whyChooseUsIconFile && whyChooseUsIconFile.size > 0) {
+        whyChooseUs.icon = await uploadIfExists(whyChooseUsIconFile, "") || "";
       } else {
-        // Preserve existing icon if no new file uploaded
-        if (existingService.icons && existingService.icons[iconIndex]) {
-          icons.push(existingService.icons[iconIndex]);
-        }
-      }
-      iconIndex++;
-    }
-
-    // If no new icons provided, use existing ones
-    const finalIcons = icons.length > 0 ? icons : existingService.icons;
-
-    // ✅ Fix service array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
-    const serviceArrayString = formData.get("service")?.toString();
-    const serviceArray = serviceArrayString
-      ? JSON.parse(serviceArrayString)
-      : existingService.service;
-
-    // Process service array icons
-    if (serviceArray && Array.isArray(serviceArray)) {
-      for (let i = 0; i < serviceArray.length; i++) {
-        const file = formData.get(`serviceItemIcon_${i}`) as File | null;
-        if (file && file.size > 0) {
-          const uploaded = await uploadIfExists(file);
-          if (uploaded) {
-            serviceArray[i].icon = uploaded;
-          }
-        } else if (!serviceArray[i].icon) {
-          // Preserve existing icon if no new file and no icon in parsed data
-          if (existingService.service && existingService.service[i] && existingService.service[i].icon) {
-            serviceArray[i].icon = existingService.service[i].icon;
-          }
-        }
+        whyChooseUs.icon = "";
       }
     }
 
-    // ✅ Fix technology array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
-    const technologyString = formData.get("technology")?.toString();
-    const technology = technologyString
-      ? JSON.parse(technologyString)
-      : existingService.technology;
+    await uploadPendingIcons(benefits, "benefitsIcon");
+    await uploadPendingIcons(keyFeatures, "keyFeaturesIcon");
+    await uploadPendingIcons(integration, "integrationIcon");
+    await uploadPendingIcons(aiTechnologies, "aiTechnologiesIcon");
 
-    // Process technology array icons
-    if (technology && Array.isArray(technology)) {
-      for (let i = 0; i < technology.length; i++) {
-        const file = formData.get(`technologyIcon_${i}`) as File | null;
-        if (file && file.size > 0) {
-          const uploaded = await uploadIfExists(file);
-          if (uploaded) {
-            technology[i].icon = uploaded;
-          }
-        } else if (!technology[i].icon) {
-          // Preserve existing icon
-          if (existingService.technology && existingService.technology[i] && existingService.technology[i].icon) {
-            technology[i].icon = existingService.technology[i].icon;
-          }
-        }
-      }
-    }
-
-    // ✅ Fix whyChooseUs array with icon uploads (MISSING IN YOUR ORIGINAL PUT)
-    const whyChooseUsString = formData.get("whyChooseUs")?.toString();
-    const whyChooseUs = whyChooseUsString
-      ? JSON.parse(whyChooseUsString)
-      : existingService.whyChooseUs;
-
-    // Process whyChooseUs array icons
-    if (whyChooseUs && Array.isArray(whyChooseUs)) {
-      for (let i = 0; i < whyChooseUs.length; i++) {
-        const file = formData.get(`whyChooseUsIcon_${i}`) as File | null;
-        if (file && file.size > 0) {
-          const uploaded = await uploadIfExists(file);
-          if (uploaded) {
-            whyChooseUs[i].icon = uploaded;
-          }
-        } else if (!whyChooseUs[i].icon) {
-          // Preserve existing icon
-          if (existingService.whyChooseUs && existingService.whyChooseUs[i] && existingService.whyChooseUs[i].icon) {
-            whyChooseUs[i].icon = existingService.whyChooseUs[i].icon;
-          }
-        }
-      }
-    }
-
-    // Update doc
-    const updatedService = await ServiceModel.findByIdAndUpdate(
+    // ✅ Update the document
+    const updatedService = await ServiceModel.findByIdAndUpdate<IService>(
       id,
       {
-        module: modules, // Fixed: was "modules" but should match schema field name
+        modules, 
         name,
-        serviceIcon,
         title,
-        description,
-        mainImage,
-        bannerImage,
-        serviceImage1,
-        serviceImage2,
-        icons: finalIcons, // ✅ Now included
-        service: serviceArray,
-        technology,
-        whyChooseUs,
+        overview,
+        overviewImage,
+        question,
         process,
+        whyChooseUs, // Now a single object, not array
+        benefits,
+        keyFeatures,
+        integration,
+        aiTechnologies,
+        aiTechnologyImage,
       },
-      { new: true, runValidators: true } // ✅ Added runValidators
+      { new: true, runValidators: true }
     );
 
     if (!updatedService) {
       return NextResponse.json(
-        { success: false, message: "Failed to update service" },
+        { success: false, message: "Failed to update service." },
         { status: 500, headers: corsHeaders }
       );
     }
@@ -372,7 +402,10 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: false, message }, { status: 500, headers: corsHeaders });
+    return NextResponse.json(
+      { success: false, message },
+      { status: 500, headers: corsHeaders }
+    );
   }
 }
 
