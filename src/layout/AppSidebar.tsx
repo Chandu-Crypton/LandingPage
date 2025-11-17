@@ -1164,6 +1164,9 @@ const servicesItems: NavItem[] = [
     subItems: [
       { name: "Add New Services", path: "/service-management/Add-Service", pro: false },
       { name: "Services List", path: "/service-management/Service-List", pro: false },
+      { name: "Add New Home Services", path: "/homeservices-management/Add-HomeServices", pro: false },
+      { name: "Home Services List", path: "/homeservices-management/HomeServices-List", pro: false },
+
     ],
   },
 ];
@@ -1189,6 +1192,7 @@ const fservicesItems: NavItem[] = [
     subItems: [
       { name: "Add New Services", path: "/fservices-management/Add-FServices", pro: false },
       { name: "Services List", path: "/fservices-management/FServices-List", pro: false },
+
     ],
     isSpecialSection: true,
   },

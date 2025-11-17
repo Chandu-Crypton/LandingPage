@@ -37,7 +37,7 @@ import { OurPartnersProvider } from '@/context/OurPartnersContext';
 import { GalleryProvider } from '@/context/GalleryContext';
 import { NormalInternshipProvider } from '@/context/NormalInternshipContext';
 import { PaidInternshipContactProvider } from '@/context/PaidInternshipContact';
-
+import { HomeServicesProvider } from '@/context/HomeServiesContext';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -72,6 +72,7 @@ export default function RootLayout({
                                           <FBlogProvider>
                                             <AuthProvider>
                                               <ServiceProvider>
+                                                <HomeServicesProvider>
                                                 <PackageProvider>
                                                   <BannerProvider>
                                                     <ReviewProvider>
@@ -105,6 +106,7 @@ export default function RootLayout({
                                                     </ReviewProvider>
                                                   </BannerProvider>
                                                 </PackageProvider>
+                                                </HomeServicesProvider>
                                               </ServiceProvider>
                                             </AuthProvider>
                                           </FBlogProvider>
