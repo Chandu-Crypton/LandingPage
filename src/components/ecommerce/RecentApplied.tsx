@@ -112,7 +112,7 @@ export default function CandidateList() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {candidateData.map((job) => (
+            {candidateData.slice(0,7).map((job) => (
               <TableRow key={job._id}>
                 <TableCell className="py-3 text-gray-800 text-theme-sm dark:text-white/90 font-medium">
                   {job.fullName}

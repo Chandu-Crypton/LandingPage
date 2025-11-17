@@ -47,6 +47,8 @@ export interface IService extends Document {
   module?: string;
   name?: string;
   title: string;
+  mainImage?: string;
+  descriptionTitle?: string;
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -120,6 +122,8 @@ const ServiceSchema = new Schema<IService>(
     module: { type: String },
     name: { type: String },
     title: { type: String, required: true },
+    mainImage: { type: String },
+    descriptionTitle: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }

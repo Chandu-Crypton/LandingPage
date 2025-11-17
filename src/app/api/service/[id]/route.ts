@@ -166,7 +166,11 @@ export async function PUT(req: NextRequest) {
     const modules = formData.get("module")?.toString() || existingService.module || "";
     const name = formData.get("name")?.toString() || existingService.name || "";
     const title = formData.get("title")?.toString() || existingService.title || "";
-
+    const descriptionTitle = formData.get("descriptionTitle")?.toString() || existingService.descriptionTitle || "";
+    const mainImage = await uploadIfExists(
+      formData.get("mainImage") as File | null,
+      existingService.mainImage
+    );
     // ✅ Overview & Overview Image
     const overviewString = formData.get("overview")?.toString();
     const overview: string[] = overviewString
@@ -404,6 +408,8 @@ export async function PUT(req: NextRequest) {
         module: modules, // ✅ Changed from 'modules' to 'module' to match schema
         name,
         title,
+        descriptionTitle,
+        mainImage,
         overview,
         overviewImage,
         description,

@@ -72,7 +72,8 @@ export async function POST(req: NextRequest) {
     const modules = formData.get("module")?.toString() || "";
     const name = formData.get("name")?.toString() || "";
     const title = formData.get("title")?.toString() || "";
-
+    const descriptionTitle = formData.get("descriptionTitle")?.toString() || "";
+    const mainImage = await uploadFile(formData.get("mainImage") as File | null);
     // ✅ Overview
     const overviewString = formData.get("overview")?.toString() || "[]";
     const overview: string[] = JSON.parse(overviewString);
@@ -264,6 +265,7 @@ console.log("🔧 Technology icon files in formData:", technologyIconFiles);
     await uploadIcons(integration, "integrationIcon");
     await uploadIcons(aiTechnologies, "aiTechnologiesIcon");
   
+  
     // ✅ Validation
     if (!title) {
       return NextResponse.json(
@@ -277,6 +279,8 @@ console.log("🔧 Technology icon files in formData:", technologyIconFiles);
       module: modules,
       name,
       title,
+      mainImage,
+      descriptionTitle,
       overview,
       overviewImage,
       description,

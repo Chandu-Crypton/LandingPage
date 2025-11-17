@@ -51,19 +51,6 @@ const ServiceListPage: React.FC = () => {
     };
 
 
-
-    // const filteredServices = useMemo(() => {
-    //     if (!searchTerm.trim()) {
-    //         return blogs;
-    //     }
-    //     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    //     return blogs.filter((blog) =>
-    //         blog.title.toLowerCase().includes(lowercasedSearchTerm) ||
-    //         blog.description.toLowerCase().includes(lowercasedSearchTerm) 
-    //     );
-    // }, [blogs, searchTerm]);
-
-
     const filteredServices = useMemo(() => {
         if (!searchTerm.trim()) return services;
 

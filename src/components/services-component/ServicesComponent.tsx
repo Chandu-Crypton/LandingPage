@@ -91,6 +91,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
     const [addModule, setAddModule] = useState('');
     const [localModules, setLocalModules] = useState<string[]>([]);
     const [name, setName] = useState('');
+    const [descriptionTitle, setDescriptionTitle] = useState('');
+    const [mainImage, setMainImage] = useState<File | null>(null);
+    const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
 
     // Question section
     const [question, setQuestion] = useState<QuestionItem>({
@@ -134,6 +137,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             setModule(serviceData.module || '');
             setName(serviceData.name || '');
             setTitle(serviceData.title || '');
+            setDescriptionTitle(serviceData.descriptionTitle || '');
             setOverview(serviceData.overview || []);
 
             // Question
@@ -226,6 +230,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             );
 
             // Main images
+            setMainImagePreview(serviceData.mainImage || null);
             setOverviewImagePreview(serviceData.overviewImage || null);
             setAiTechnologyImagePreview(serviceData.aiTechnologyImage || null);
             setFormError(null);
@@ -510,6 +515,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setOverviewImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
+    const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        setMainImage(file);
+        setMainImagePreview(file ? URL.createObjectURL(file) : null);
+    };
+
     const handleAiTechnologyImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setAiTechnologyImageFile(file);
@@ -628,6 +639,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         formData.append('title', title);
         formData.append('module', module);
         formData.append('name', name);
+        formData.append('descriptionTitle', descriptionTitle);
         formData.append('overview', JSON.stringify(overview));
 
         // Question
@@ -705,6 +717,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         };
 
         handleImageAppend('overviewImage', overviewImageFile, overviewImagePreview);
+        handleImageAppend('mainImage', mainImage, mainImagePreview);
         handleImageAppend('aiTechnologyImage', aiTechnologyImageFile, aiTechnologyImagePreview);
 
         // Handle icon uploads
@@ -798,6 +811,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
         setIntegrationItems([]);
         setAiTechnologiesItems([]);
         setTechnologiesItems([]);
+        setMainImage(null);
+        setMainImagePreview(null);
+        setDescriptionTitle('');
         setOverviewImageFile(null);
         setOverviewImagePreview(null);
         setAiTechnologyImageFile(null);
@@ -942,24 +958,32 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
             <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 border-b pb-2">{title}</h3>
             <div className="space-y-2 sm:space-y-3">
                 {items.map((item, index) => (
-                    <div key={index} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
-                        <Input
-                            type="text"
-                            value={item}
-                            onChange={(e) => onChange(index, e.target.value)}
-                            placeholder={`${placeholder} ${index + 1}`}
-                            disabled={loading}
-                            className="flex-1 min-w-0 text-sm sm:text-base"
-                        />
+                    <div
+                        key={index}
+                        className="flex flex-col sm:flex-row w-full gap-3 items-stretch border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50"
+                    >
+                        <div className="flex-1 w-full">
+                            <Input
+                                type="text"
+                                value={item}
+                                onChange={(e) => onChange(index, e.target.value)}
+                                placeholder={`${placeholder} ${index + 1}`}
+                                disabled={loading}
+                                className="w-full text-sm sm:text-base"
+                            />
+                        </div>
+
                         <button
                             type="button"
                             onClick={() => onRemove(index)}
-                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors whitespace-nowrap text-sm sm:text-base mt-2 sm:mt-0"
+                            className="sm:w-auto w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
                             disabled={loading}
                         >
                             Remove
                         </button>
                     </div>
+
+
                 ))}
             </div>
             <div className="mt-3 sm:mt-4">
@@ -1085,6 +1109,20 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         }
                     )}
 
+                    {
+                        renderImageUpload(
+                            'mainImage',
+                            'Main Image',
+                            mainImage,
+                            mainImagePreview,
+                            handleMainImageChange,
+                            () => {
+                                setMainImage(null);
+                                setMainImagePreview(null);
+                            }
+                        )
+                    }
+
                     {/* Question Section */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
                         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Question</h3>
@@ -1116,6 +1154,20 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
                         <div className="space-y-4">
                             <div>
+                                 <div>
+                                <Label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Title</Label>
+                                <Input
+                                    id="title"
+                                    type="text"
+                                    value={descriptionTitle}
+                                    onChange={(e) => setDescriptionTitle(e.target.value)}
+                                    placeholder="Enter service title"
+                                    disabled={loading}
+                                    className="w-full text-sm sm:text-base mb-2"
+                                    required
+                                />
+                            </div>
+
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Description Content</Label>
                                 <textarea
                                     value={description.content}
@@ -1577,7 +1629,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({ serviceIdToEdit }) =
                                             {renderItemImageUpload(
                                                 item.iconPreview,
                                                 item.iconFile,
-                                                (e) =>  handleTechnologiesIconChange(index, e), // ✅ Use the icon handler
+                                                (e) => handleTechnologiesIconChange(index, e), // ✅ Use the icon handler
                                                 () => {
                                                     const newItems = [...TechnologiesItems];
                                                     newItems[index] = {
