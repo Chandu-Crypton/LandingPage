@@ -8,32 +8,71 @@
 // import Image from 'next/image';
 // import axios from 'axios';
 
+
 // interface InternshipFormProps {
 //     internshipIdToEdit?: string;
 // }
 
 // interface IInternship {
 //     _id?: string;
+//     internshipType: string;
 //     title: string;
 //     subtitle: string;
 //     fee: string;
 //     duration: string;
 //     mode: string;
+//     projects: string;
+//     mentorship: string;
+//     internship: string;
+//     level: string;
+//     category: string;
+//     rating: string;
+//     syllabusLink: string;
+//     description: string;
+//     stipend: string;
+//     schedule: string;
+//     enrolledStudents: string;
+//     durationDetails: string;
 //     benefits: string[];
 //     eligibility: string[];
-//     description: string;
+//     skills: { skillTitle: string; skillIcon: string }[];
+//     tool: { toolTitle: string; toolIcon: string }[];
+//     curriculum: { currIcon: string; currTitle: string; currDescription: string[] }[];
+//     summary: { icon: string; sumTitle: string; sumDesc: string }[];
+//     learningOutcomes: string[];
+//     tags: string[];
 //     mainImage?: string;
 //     bannerImage?: string;
-//     isDeleted?: boolean;
-//     createdAt?: Date;
-//     updatedAt?: Date;
-//     __v?: number;
 // }
+
+// interface Skill {
+//     skillTitle: string;
+//     skillIcon: File | string | null;
+// }
+
+// interface Tool {
+//     toolTitle: string;
+//     toolIcon: File | string | null;
+// }
+
+// interface Curriculum {
+//     currTitle: string;
+//     currDescription: string[];
+//     currIcon: File | string | null;
+// }
+
+// interface Summary {
+//     sumTitle: string;
+//     sumDesc: string;
+//     icon: File | string | null;
+// }
+
 
 // const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdToEdit }) => {
 //     const router = useRouter();
 
 //     // Form states
+//     const [internshipType, setInternshipType] = useState('');
 //     const [title, setTitle] = useState('');
 //     const [subtitle, setSubtitle] = useState('');
 //     const [fee, setFee] = useState('');
@@ -42,12 +81,44 @@
 //     const [benefits, setBenefits] = useState<string[]>(['']);
 //     const [eligibility, setEligibility] = useState<string[]>(['']);
 //     const [description, setDescription] = useState('');
+//     const [stipend, setStipend] = useState('');
+//     const [schedule, setSchedule] = useState('');
+//     const [enrolledStudents, setEnrolledStudents] = useState('');
+//     const [durationDetails, setDurationDetails] = useState('');
+
 //     const [mainImageFile, setMainImageFile] = useState<File | null>(null);
 //     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
 //     const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
 //     const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
 //     const [loading, setLoading] = useState(false);
 //     const [formError, setFormError] = useState<string | null>(null);
+
+//     // New string fields
+//     const [projects, setProjects] = useState('');
+//     const [mentorship, setMentorship] = useState('');
+//     const [internship, setInternship] = useState('');
+//     const [level, setLevel] = useState('');
+//     const [category, setCategory] = useState('');
+//     const [rating, setRating] = useState('');
+//     const [syllabusLink, setSyllabusLink] = useState('');
+
+//     // Arrays
+//     const [skills, setSkills] = useState<Skill[]>([
+//         { skillTitle: "", skillIcon: null }
+//     ]);
+
+//     const [tool, setTool] = useState<Tool[]>([{ toolTitle: '', toolIcon: null }]);
+//     const [curriculum, setCurriculum] = useState<Curriculum[]>([
+//         { currTitle: "", currDescription: [""], currIcon: null }
+//     ]);
+
+//     const [summary, setSummary] = useState<Summary[]>([
+//         { sumTitle: "", sumDesc: "", icon: null }
+//     ]);
+
+//     const [learningOutcomes, setLearningOutcomes] = useState(['']);
+//     const [tags, setTags] = useState(['']);
+
 
 //     // Fetch internship if editing
 //     useEffect(() => {
@@ -61,6 +132,8 @@
 //                 );
 //                 if (res.data.success && res.data.data) {
 //                     const data = res.data.data;
+//                     console.log('Fetched internship data:', data);
+//                     setInternshipType(data.internshipType);
 //                     setTitle(data.title);
 //                     setSubtitle(data.subtitle);
 //                     setFee(data.fee);
@@ -69,8 +142,27 @@
 //                     setBenefits(data.benefits.length ? data.benefits : ['']);
 //                     setEligibility(data.eligibility.length ? data.eligibility : ['']);
 //                     setDescription(data.description);
-//                     setMainImagePreview(data.mainImage || null);
+//                     setMainImageFile(null); // Reset file input
+//                     setMainImagePreview(data.mainImage || null); // Only set the preview URL
 //                     setBannerImagePreview(data.bannerImage || null);
+//                     setBannerImageFile(null); // Reset file input
+//                     setInternship(data.internship);
+//                     setLevel(data.level);
+//                     setProjects(data.projects);
+//                     setMentorship(data.mentorship);
+//                     setLearningOutcomes(data.learningOutcomes);
+//                     setCategory(data.category);
+//                     setRating(data.rating);
+//                     setSyllabusLink(data.syllabusLink);
+//                     setSkills(data.skills ?? []);
+//                     setTool(data.tool ?? []);
+//                     setCurriculum(data.curriculum ?? []);
+//                     setSummary(data.summary ?? []);
+//                     setTags(data.tags);
+//                     setStipend(data.stipend || '');
+//                     setSchedule(data.schedule || '');
+//                     setEnrolledStudents(data.enrolledStudents || '');
+//                     setDurationDetails(data.durationDetails || '');
 //                     setFormError(null);
 //                 } else {
 //                     setFormError(res.data.message || 'Internship not found.');
@@ -87,10 +179,14 @@
 //     }, [internshipIdToEdit]);
 
 //     // Handlers
-//     const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const handleFileChange = (
+//         e: React.ChangeEvent<HTMLInputElement>,
+//         setterFile: React.Dispatch<React.SetStateAction<File | null>>,
+//         setterPreview: React.Dispatch<React.SetStateAction<string | null>>
+//     ) => {
 //         const file = e.target.files?.[0] || null;
-//         setMainImageFile(file);
-//         setMainImagePreview(file ? URL.createObjectURL(file) : null);
+//         setterFile(file);
+//         setterPreview(file ? URL.createObjectURL(file) : null);
 //     };
 
 //     const handleAddField = (setter: React.Dispatch<React.SetStateAction<string[]>>, values: string[]) => {
@@ -122,26 +218,66 @@
 //         setLoading(true);
 
 //         const formData = new FormData();
+
+//         // Basic fields
+//         formData.append('internshipType', internshipType);
 //         formData.append('title', title);
 //         formData.append('subtitle', subtitle);
 //         formData.append('fee', fee);
 //         formData.append('duration', duration);
 //         formData.append('mode', mode);
 //         formData.append('description', description);
+//         formData.append('projects', projects);
+//         formData.append('mentorship', mentorship);
+//         formData.append('internship', internship);
+//         formData.append('level', level);
+//         formData.append('category', category);
+//         formData.append('rating', rating);
+//         formData.append('syllabusLink', syllabusLink);
+//         formData.append('stipend', stipend);
+//         formData.append('schedule', schedule);
+//         formData.append('enrolledStudents', enrolledStudents);
+//         formData.append('durationDetails', durationDetails);
+
+//         // Arrays
 //         formData.append('benefits', JSON.stringify(benefits.filter(b => b.trim() !== '')));
-//         formData.append('eligibility', JSON.stringify(eligibility.filter(e => e.trim() !== '')));
+//         formData.append('eligibility', JSON.stringify(eligibility.filter(el => el.trim() !== '')));
+//         formData.append('learningOutcomes', JSON.stringify(learningOutcomes));
+//         formData.append('tags', JSON.stringify(tags));
 
-//         if (mainImageFile) {
-//             formData.append('mainImage', mainImageFile);
-//         } else if (mainImagePreview) {
-//             formData.append('mainImage', mainImagePreview);
-//         }
+//         // Skills
+//         formData.append("skills", JSON.stringify(skills.map(s => ({ skillTitle: s.skillTitle }))));
+//         skills.forEach((s, idx) => {
+//             if (s.skillIcon) formData.append(`skillIcon_${idx}`, s.skillIcon);
+//         });
 
-//         if (bannerImageFile) {
-//             formData.append('bannerImage', bannerImageFile);
-//         } else if (bannerImagePreview) {
-//             formData.append('bannerImage', bannerImagePreview);
-//         }
+//         // Tools
+//         formData.append("tool", JSON.stringify(tool.map(t => ({ toolTitle: t.toolTitle }))));
+//         tool.forEach((t, idx) => {
+//             if (t.toolIcon) formData.append(`toolIcon_${idx}`, t.toolIcon);
+//         });
+
+//         // Curriculum
+//         formData.append("curriculum", JSON.stringify(curriculum.map(c => ({
+//             currTitle: c.currTitle,
+//             currDescription: c.currDescription
+//         }))));
+//         curriculum.forEach((c, idx) => {
+//             if (c.currIcon) formData.append(`currIcon_${idx}`, c.currIcon);
+//         });
+
+//         // Summary
+//         formData.append("summary", JSON.stringify(summary.map(s => ({
+//             sumTitle: s.sumTitle,
+//             sumDesc: s.sumDesc
+//         }))));
+//         summary.forEach((s, idx) => {
+//             if (s.icon) formData.append(`summaryIcon_${idx}`, s.icon);
+//         });
+
+//         // Images
+//         if (mainImageFile) formData.append('mainImage', mainImageFile);
+//         if (bannerImageFile) formData.append('bannerImage', bannerImageFile);
 
 //         try {
 //             if (internshipIdToEdit) {
@@ -152,9 +288,8 @@
 //                 alert('Internship created successfully!');
 //             }
 //             router.push('/internship-management/Internship-List');
-//         } catch (err) { // Catch any error
+//         } catch (err) {
 //             console.error('Submission failed:', err);
-//             // More robust error handling
 //             if (axios.isAxiosError(err)) {
 //                 setFormError(err.response?.data?.message || 'An error occurred during submission.');
 //             } else if (err instanceof Error) {
@@ -167,11 +302,29 @@
 //         }
 //     };
 
+
 //     return (
 //         <div className="container mx-auto px-4 py-8">
 //             <ComponentCard title={internshipIdToEdit ? 'Edit Internship' : 'Add New Internship'}>
 //                 {formError && <p className="text-red-500 text-center mb-4">{formError}</p>}
 //                 <form onSubmit={handleSubmit} className="space-y-6">
+
+//                     {/* InternshipType */}
+//                     <div>
+//                         <Label htmlFor="internshipType">Internship Type</Label>
+//                         <select
+//                             id="internshipType"
+//                             value={internshipType}
+//                             onChange={(e) => setInternshipType(e.target.value)}
+//                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                             required
+//                         >
+//                             <option value="">Select Internship Type</option>
+//                             <option value="paid internship">Paid Internship</option>
+//                             <option value="normal internship">Normal Internship</option>
+//                         </select>
+//                     </div>
+
 //                     {/* Title */}
 //                     <div>
 //                         <Label htmlFor="title">Title</Label>
@@ -184,6 +337,25 @@
 //                         <Input id="subtitle" type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} required />
 //                     </div>
 
+//                     <div>
+//                         <Label htmlFor="subtitle">Rating</Label>
+//                         <Input id="rating" type="text" value={rating} onChange={(e) => setRating(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="category">Category</Label>
+//                         <Input id="category" type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="syllabus">Syllabus Link</Label>
+//                         <Input id="syllabus" type="text" value={syllabusLink} onChange={(e) => setSyllabusLink(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="fee">Level</Label>
+//                         <Input id="level" type="text" value={level} onChange={(e) => setLevel(e.target.value)} required />
+//                     </div>
 //                     {/* Fee */}
 //                     <div>
 //                         <Label htmlFor="fee">Fee</Label>
@@ -202,11 +374,31 @@
 //                         <Input id="mode" type="text" value={mode} onChange={(e) => setMode(e.target.value)} required />
 //                     </div>
 
-//                     {/* Benefits */}
 //                     <div>
+//                         <Label htmlFor="stipend">Stipend</Label>
+//                         <Input id="stipend" type="text" value={stipend} onChange={(e) => setStipend(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="schedule">Schedule</Label>
+//                         <Input id="schedule" type="text" value={schedule} onChange={(e) => setSchedule(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="enrolledStudents">Enrolled Students</Label>
+//                         <Input id="enrolledStudents" type="text" value={enrolledStudents} onChange={(e) => setEnrolledStudents(e.target.value)} required />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="durationDetails">Duration Details</Label>
+//                         <Input id="durationDetails" type="text" value={durationDetails} onChange={(e) => setDurationDetails(e.target.value)} required />
+//                     </div>
+
+//                     {/* Benefits */}
+//                     {/* <div>
 //                         <Label>Benefits</Label>
 //                         {benefits.map((b, idx) => (
-//                             <div key={idx} className="flex gap-2 mb-2">
+//                             <div key={idx} className="flex  gap-2 mb-2">
 //                                 <Input
 //                                     type="text"
 //                                     value={b}
@@ -229,6 +421,36 @@
 //                         >
 //                             Add Benefit
 //                         </button>
+//                     </div> */}
+
+//                     <div>
+//                         <Label>Benefits</Label>
+//                         {benefits.map((b, idx) => (
+//                             <div key={idx} className="flex gap-2 mb-2">
+//                                 <div className="flex-1"> {/* Add this wrapper */}
+//                                     <Input
+//                                         type="text"
+//                                         value={b}
+//                                         onChange={(e) => handleChangeField(setBenefits, benefits, idx, e.target.value)}
+//                                         placeholder={`Benefit ${idx + 1}`}
+//                                     />
+//                                 </div>
+//                                 <button
+//                                     type="button"
+//                                     onClick={() => handleRemoveField(setBenefits, benefits, idx)}
+//                                     className="px-3 py-1 bg-red-500 text-white rounded flex-shrink-0"
+//                                 >
+//                                     Remove
+//                                 </button>
+//                             </div>
+//                         ))}
+//                         <button
+//                             type="button"
+//                             onClick={() => handleAddField(setBenefits, benefits)}
+//                             className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+//                         >
+//                             Add Benefit
+//                         </button>
 //                     </div>
 
 //                     {/* Eligibility */}
@@ -236,19 +458,22 @@
 //                         <Label>Eligibility</Label>
 //                         {eligibility.map((el, idx) => (
 //                             <div key={idx} className="flex gap-2 mb-2">
-//                                 <Input
-//                                     type="text"
-//                                     value={el}
-//                                     onChange={(e) => handleChangeField(setEligibility, eligibility, idx, e.target.value)}
-//                                     placeholder={`Eligibility ${idx + 1}`}
-//                                 />
-//                                 <button
-//                                     type="button"
-//                                     onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
-//                                     className="px-3 py-1 bg-red-500 text-white rounded"
-//                                 >
-//                                     Remove
-//                                 </button>
+//                                 <div className="flex-1">
+//                                     <Input
+//                                         type="text"
+//                                         value={el}
+//                                         onChange={(e) => handleChangeField(setEligibility, eligibility, idx, e.target.value)}
+//                                         placeholder={`Eligibility ${idx + 1}`}
+//                                     />
+//                                     </div>
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
+//                                         className="px-3 py-1 bg-red-500 text-white rounded"
+//                                     >
+//                                         Remove
+//                                     </button>
+                               
 //                             </div>
 //                         ))}
 //                         <button
@@ -287,7 +512,7 @@
 //                                 />
 //                             </div>
 //                         )}
-//                         <input type="file" id="mainImage" accept="image/*" onChange={handleMainImageChange} />
+//                         <input type="file" id="mainImage" accept="image/*" onChange={(e) => handleFileChange(e, setMainImageFile, setMainImagePreview)} />
 //                     </div>
 
 //                     {/* Banner Image */}
@@ -295,7 +520,7 @@
 //                         <Label htmlFor="bannerImage">Banner Image</Label>
 //                         {bannerImagePreview && (
 //                             <div className="mb-2">
-//                                 <Image  
+//                                 <Image
 //                                     src={bannerImagePreview}
 //                                     alt="Preview"
 //                                     width={300}
@@ -305,11 +530,358 @@
 //                                 />
 //                             </div>
 //                         )}
-//                         <input type="file" id="bannerImage" accept="image/*" onChange={(e) => {
-//                             const file = e.target.files?.[0] || null;
-//                             setBannerImageFile(file);
-//                             setBannerImagePreview(file ? URL.createObjectURL(file) : null);
-//                         }} />
+//                         <input type="file" id="bannerImage" accept="image/*" onChange={(e) => handleFileChange(e, setBannerImageFile, setBannerImagePreview)} />
+//                     </div>
+
+
+
+//                     {/* Projects */}
+//                     <div>
+//                         <Label htmlFor="projects">Projects</Label>
+//                         <Input id="projects" type="text" value={projects} onChange={(e) => setProjects(e.target.value)} required />
+//                     </div>
+
+//                     {/* Mentorship */}
+//                     <div>
+//                         <Label htmlFor="mentorship">Mentorship</Label>
+//                         <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)} />
+//                     </div>
+
+//                     <div>
+//                         <Label htmlFor="internship">Internship</Label>
+//                         <Input id="internship" type="text" value={internship} onChange={(e) => setInternship(e.target.value)} required />
+//                     </div>
+
+//                     {/* Skills (dynamic) */}
+//                     <div>
+//                         <Label>Skills</Label>
+//                         {skills.map((s, idx) => (
+//                             <div key={idx} className="flex gap-2 mb-2 items-center">
+//                                 <Input
+//                                     placeholder="Skill Title"
+//                                     value={s.skillTitle}
+//                                     onChange={(e) => {
+//                                         const updated = [...skills];
+//                                         updated[idx].skillTitle = e.target.value;
+//                                         setSkills(updated);
+//                                     }}
+//                                 />
+
+//                                 <input
+//                                     type="file"
+//                                     accept="image/*"
+//                                     onChange={(e) => {
+//                                         if (e.target.files && e.target.files[0]) {
+//                                             const updated = [...skills];
+//                                             updated[idx].skillIcon = e.target.files[0];
+//                                             setSkills(updated);
+//                                         }
+//                                     }}
+//                                 />
+
+//                                 {s.skillIcon && typeof s.skillIcon === "string" ? (
+//                                     <img src={s.skillIcon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+//                                 ) : s.skillIcon ? (
+//                                     <span className="text-xs text-gray-500">File Selected</span>
+//                                 ) : null}
+
+//                                 {/* Remove Button */}
+//                                 <button
+//                                     type="button"
+//                                     className="bg-red-500 text-white px-2 py-1 rounded"
+//                                     onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
+//                                 >
+//                                     Remove
+//                                 </button>
+//                             </div>
+//                         ))}
+
+//                         <button
+//                             type="button"
+//                             className="bg-green-500 text-white px-3 py-1 rounded"
+//                             onClick={() => setSkills([...skills, { skillTitle: "", skillIcon: null }])}
+//                         >
+//                             Add Skill
+//                         </button>
+//                     </div>
+
+//                     {/* Tools (dynamic) */}
+//                     <div>
+//                         <Label>Tools</Label>
+//                         {tool.map((t, idx) => (
+//                             <div key={idx} className="flex gap-2 mb-2 items-center">
+//                                 <Input
+//                                     placeholder="Tool Title"
+//                                     value={t.toolTitle}
+//                                     onChange={(e) => {
+//                                         const updated = [...tool];
+//                                         updated[idx].toolTitle = e.target.value;
+//                                         setTool(updated);
+//                                     }}
+//                                 />
+
+//                                 <input
+//                                     type="file"
+//                                     accept="image/*"
+//                                     onChange={(e) => {
+//                                         if (e.target.files && e.target.files[0]) {
+//                                             const updated = [...tool];
+//                                             updated[idx].toolIcon = e.target.files[0];
+//                                             setTool(updated);
+//                                         }
+//                                     }}
+//                                 />
+
+//                                 {t.toolIcon && typeof t.toolIcon === "string" ? (
+//                                     <img src={t.toolIcon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+//                                 ) : t.toolIcon ? (
+//                                     <span className="text-xs text-gray-500">File Selected</span>
+//                                 ) : null}
+
+//                                 {/* Remove Button */}
+//                                 <button
+//                                     type="button"
+//                                     className="bg-red-500 text-white px-2 py-1 rounded"
+//                                     onClick={() => setTool(tool.filter((_, i) => i !== idx))}
+//                                 >
+//                                     Remove
+//                                 </button>
+//                             </div>
+//                         ))}
+
+//                         <button
+//                             type="button"
+//                             className="bg-green-500 text-white px-3 py-1 rounded"
+//                             onClick={() => setTool([...tool, { toolTitle: "", toolIcon: null }])}
+//                         >
+//                             Add Tool
+//                         </button>
+//                     </div>
+
+
+//                     {/* Learning Outcomes */}
+//                     <div>
+//                         <Label>Learning Outcomes</Label>
+//                         {learningOutcomes.map((outcome, idx) => (
+//                             <div key={idx} className="flex gap-2 mb-2">
+//                                 <Input
+//                                     placeholder={`Outcome ${idx + 1}`}
+//                                     value={outcome}
+//                                     onChange={(e) => {
+//                                         const updated = [...learningOutcomes];
+//                                         updated[idx] = e.target.value;
+//                                         setLearningOutcomes(updated);
+//                                     }}
+//                                 />
+//                             </div>
+//                         ))}
+//                         <button type="button" className="bg-green-500 text-white px-3 py-1 rounded" onClick={() => setLearningOutcomes([...learningOutcomes, ''])}>
+//                             Add Outcome
+//                         </button>
+//                     </div>
+
+//                     {/* Curriculum */}
+//                     <div>
+//                         <Label>Curriculum</Label>
+//                         {curriculum.map((c, idx) => (
+//                             <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+                                
+//                                 <Input
+//                                     placeholder="Curriculum Title"
+//                                     value={c.currTitle}
+//                                     onChange={(e) => {
+//                                         const updated = [...curriculum];
+//                                         updated[idx].currTitle = e.target.value;
+//                                         setCurriculum(updated);
+//                                     }}
+//                                 />
+                        
+//                                 {/* Curriculum Icon Upload */}
+//                                 <input
+//                                     type="file"
+//                                     accept="image/*"
+//                                     onChange={(e) => {
+//                                         if (e.target.files && e.target.files[0]) {
+//                                             const updated = [...curriculum];
+//                                             updated[idx].currIcon = e.target.files[0]; // File type fits
+//                                             setCurriculum(updated);
+//                                         }
+//                                     }}
+//                                 />
+//                                 {c.currIcon && typeof c.currIcon === "string" ? (
+//                                     <img src={c.currIcon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+//                                 ) : c.currIcon ? (
+//                                     <span className="text-xs text-gray-500">File Selected</span>
+//                                 ) : null}
+
+//                                 {/* Curriculum Descriptions */}
+//                                 <Label>Descriptions</Label>
+//                                 {c.currDescription.map((desc, dIdx) => (
+//                                     <div key={dIdx} className="flex gap-2 mb-1">
+//                                         <div className='flex-1'>
+//                                         <Input
+//                                             placeholder={`Description ${dIdx + 1}`}
+//                                             value={desc}
+//                                             onChange={(e) => {
+//                                                 const updated = [...curriculum];
+//                                                 updated[idx].currDescription[dIdx] = e.target.value;
+//                                                 setCurriculum(updated);
+//                                             }}
+//                                         />
+//                                         </div>
+//                                         <button
+//                                             type="button"
+//                                             className="bg-red-500 text-white px-2 rounded"
+//                                             onClick={() => {
+//                                                 const updated = [...curriculum];
+//                                                 updated[idx].currDescription = updated[idx].currDescription.filter((_, i) => i !== dIdx);
+//                                                 setCurriculum(updated);
+//                                             }}
+//                                         >
+//                                             Remove
+//                                         </button>
+//                                     </div>
+//                                 ))}
+//                                 <div className='mb-4'>
+//                                     <button
+//                                         type="button"
+//                                         className="bg-green-500 text-white px-3 py-1 rounded "
+//                                         onClick={() => {
+//                                             const updated = [...curriculum];
+//                                             updated[idx].currDescription.push("");
+//                                             setCurriculum(updated);
+//                                         }}
+//                                     >
+//                                         Add Description
+//                                     </button>
+//                                 </div>
+
+//                                 {/* Remove Curriculum Block */}
+//                                 <div className='mb-4'>
+//                                     <button
+//                                         type="button"
+//                                         className="bg-red-600 text-white mb-3 px-3 py-1 rounded mt-2"
+//                                         onClick={() => setCurriculum(curriculum.filter((_, i) => i !== idx))}
+//                                     >
+//                                         Remove Curriculum
+//                                     </button>
+//                                 </div>
+//                             </div>
+//                         ))}
+
+
+//                         <button
+//                             type="button"
+//                             className="bg-green-600 text-white px-4 py-2 rounded"
+//                             onClick={() =>
+//                                 setCurriculum([...curriculum, { currIcon: null, currTitle: "", currDescription: [""] }])
+//                             }
+//                         >
+//                             Add Curriculum
+//                         </button>
+
+
+
+
+//                         {/* Summary */}
+//                         <div>
+//                             <Label>Summary</Label>
+//                             {summary.map((s, idx) => (
+//                                 <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+//                                     <Input
+//                                         placeholder="Summary Title"
+//                                         value={s.sumTitle}
+//                                         onChange={(e) => {
+//                                             const updated = [...summary];
+//                                             updated[idx].sumTitle = e.target.value;
+//                                             setSummary(updated);
+//                                         }}
+//                                     />
+
+//                                     <Input
+//                                         placeholder="Summary Description"
+//                                         value={s.sumDesc}
+//                                         onChange={(e) => {
+//                                             const updated = [...summary];
+//                                             updated[idx].sumDesc = e.target.value;
+//                                             setSummary(updated);
+//                                         }}
+//                                     />
+
+//                                     {/* Icon Upload */}
+//                                     <input
+//                                         type="file"
+//                                         accept="image/*"
+//                                         onChange={(e) => {
+//                                             if (e.target.files && e.target.files[0]) {
+//                                                 const updated = [...summary];
+//                                                 updated[idx].icon = e.target.files[0]; // File type fits
+//                                                 setSummary(updated);
+//                                             }
+//                                         }}
+//                                     />
+//                                     {s.icon && typeof s.icon === "string" ? (
+//                                         <img src={s.icon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+//                                     ) : s.icon ? (
+//                                         <span className="text-xs text-gray-500">File Selected</span>
+//                                     ) : null}
+
+//                                     <button
+//                                         type="button"
+//                                         className="bg-red-600 text-white px-3 py-1 rounded"
+//                                         onClick={() => setSummary(summary.filter((_, i) => i !== idx))}
+//                                     >
+//                                         Remove Summary
+//                                     </button>
+//                                 </div>
+//                             ))}
+
+//                             <button
+//                                 type="button"
+//                                 className="bg-green-600 text-white px-4 py-2 rounded"
+//                                 onClick={() =>
+//                                     setSummary([...summary, { icon: null, sumTitle: "", sumDesc: "" }])
+//                                 }
+//                             >
+//                                 Add Summary
+//                             </button>
+//                         </div>
+
+
+//                         {/* Tags */}
+//                         <div>
+//                             <Label>Tags</Label>
+//                             {tags.map((tag, idx) => (
+//                                 <div key={idx} className="flex gap-2 mb-2">
+//                                     <Input
+//                                         placeholder={`Tag ${idx + 1}`}
+//                                         value={tag}
+//                                         onChange={(e) => {
+//                                             const updated = [...tags];
+//                                             updated[idx] = e.target.value;
+//                                             setTags(updated);
+//                                         }}
+//                                     />
+//                                     <button
+//                                         type="button"
+//                                         className="bg-red-500 text-white px-2 rounded"
+//                                         onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+//                                     >
+//                                         Remove
+//                                     </button>
+//                                 </div>
+//                             ))}
+//                             <button
+//                                 type="button"
+//                                 className="bg-green-500 text-white px-3 py-1 rounded"
+//                                 onClick={() => setTags([...tags, ""])}
+//                             >
+//                                 Add Tag
+//                             </button>
+//                         </div>
+
+
+
 //                     </div>
 
 
@@ -339,9 +911,6 @@
 
 
 
-
-
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -352,28 +921,27 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import axios from 'axios';
 
-
 interface InternshipFormProps {
     internshipIdToEdit?: string;
 }
 
 interface IInternship {
     _id?: string;
-    internshipType: string;
+    // internshipType: string;
     title: string;
     subtitle: string;
     fee: string;
     duration: string;
     mode: string;
-    projects: string;
-    mentorship: string;
-    internship: string;
-    level: string;
+    // projects: string;
+    // mentorship: string;
+    // internship: string;
+    // level: string;
     category: string;
     rating: string;
     syllabusLink: string;
     description: string;
-    stipend: string;
+    // stipend: string;
     schedule: string;
     enrolledStudents: string;
     durationDetails: string;
@@ -381,7 +949,14 @@ interface IInternship {
     eligibility: string[];
     skills: { skillTitle: string; skillIcon: string }[];
     tool: { toolTitle: string; toolIcon: string }[];
-    curriculum: { currIcon: string; currTitle: string; currDescription: string[] }[];
+    curriculum: { 
+        currIcon: string; 
+        currTitle: string; 
+        weeklyPlan: { 
+            weekTitle: string; 
+            topics: string[] 
+        }[] 
+    }[];
     summary: { icon: string; sumTitle: string; sumDesc: string }[];
     learningOutcomes: string[];
     tags: string[];
@@ -399,9 +974,14 @@ interface Tool {
     toolIcon: File | string | null;
 }
 
+interface WeeklyPlan {
+    weekTitle: string;
+    topics: string[];
+}
+
 interface Curriculum {
     currTitle: string;
-    currDescription: string[];
+    weeklyPlan: WeeklyPlan[];
     currIcon: File | string | null;
 }
 
@@ -411,12 +991,11 @@ interface Summary {
     icon: File | string | null;
 }
 
-
 const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdToEdit }) => {
     const router = useRouter();
 
     // Form states
-    const [internshipType, setInternshipType] = useState('');
+    // const [internshipType, setInternshipType] = useState('');
     const [title, setTitle] = useState('');
     const [subtitle, setSubtitle] = useState('');
     const [fee, setFee] = useState('');
@@ -425,7 +1004,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const [benefits, setBenefits] = useState<string[]>(['']);
     const [eligibility, setEligibility] = useState<string[]>(['']);
     const [description, setDescription] = useState('');
-    const [stipend, setStipend] = useState('');
+    // const [stipend, setStipend] = useState('');
     const [schedule, setSchedule] = useState('');
     const [enrolledStudents, setEnrolledStudents] = useState('');
     const [durationDetails, setDurationDetails] = useState('');
@@ -438,10 +1017,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const [formError, setFormError] = useState<string | null>(null);
 
     // New string fields
-    const [projects, setProjects] = useState('');
-    const [mentorship, setMentorship] = useState('');
-    const [internship, setInternship] = useState('');
-    const [level, setLevel] = useState('');
+    // const [projects, setProjects] = useState('');
+    // const [mentorship, setMentorship] = useState('');
+    // const [internship, setInternship] = useState('');
+    // const [level, setLevel] = useState('');
     const [category, setCategory] = useState('');
     const [rating, setRating] = useState('');
     const [syllabusLink, setSyllabusLink] = useState('');
@@ -453,7 +1032,11 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
 
     const [tool, setTool] = useState<Tool[]>([{ toolTitle: '', toolIcon: null }]);
     const [curriculum, setCurriculum] = useState<Curriculum[]>([
-        { currTitle: "", currDescription: [""], currIcon: null }
+        { 
+            currTitle: "", 
+            weeklyPlan: [{ weekTitle: "", topics: [""] }], 
+            currIcon: null 
+        }
     ]);
 
     const [summary, setSummary] = useState<Summary[]>([
@@ -462,7 +1045,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
 
     const [learningOutcomes, setLearningOutcomes] = useState(['']);
     const [tags, setTags] = useState(['']);
-
 
     // Fetch internship if editing
     useEffect(() => {
@@ -477,7 +1059,8 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                 if (res.data.success && res.data.data) {
                     const data = res.data.data;
                     console.log('Fetched internship data:', data);
-                    setInternshipType(data.internshipType);
+                    
+                    // setInternshipType(data.internshipType);
                     setTitle(data.title);
                     setSubtitle(data.subtitle);
                     setFee(data.fee);
@@ -486,24 +1069,32 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setBenefits(data.benefits.length ? data.benefits : ['']);
                     setEligibility(data.eligibility.length ? data.eligibility : ['']);
                     setDescription(data.description);
-                    setMainImageFile(null); // Reset file input
-                    setMainImagePreview(data.mainImage || null); // Only set the preview URL
+                    setMainImageFile(null);
+                    setMainImagePreview(data.mainImage || null);
                     setBannerImagePreview(data.bannerImage || null);
-                    setBannerImageFile(null); // Reset file input
-                    setInternship(data.internship);
-                    setLevel(data.level);
-                    setProjects(data.projects);
-                    setMentorship(data.mentorship);
+                    setBannerImageFile(null);
+                    // setInternship(data.internship);
+                    // setLevel(data.level);
+                    // setProjects(data.projects);
+                    // setMentorship(data.mentorship);
                     setLearningOutcomes(data.learningOutcomes);
                     setCategory(data.category);
                     setRating(data.rating);
                     setSyllabusLink(data.syllabusLink);
                     setSkills(data.skills ?? []);
                     setTool(data.tool ?? []);
-                    setCurriculum(data.curriculum ?? []);
+                    
+                    // Handle curriculum data with weeklyPlan
+                    const formattedCurriculum = data.curriculum?.map(item => ({
+                        currTitle: item.currTitle,
+                        weeklyPlan: item.weeklyPlan || [{ weekTitle: "", topics: [""] }],
+                        currIcon: item.currIcon
+                    })) || [{ currTitle: "", weeklyPlan: [{ weekTitle: "", topics: [""] }], currIcon: null }];
+                    
+                    setCurriculum(formattedCurriculum);
                     setSummary(data.summary ?? []);
                     setTags(data.tags);
-                    setStipend(data.stipend || '');
+                    // setStipend(data.stipend || '');
                     setSchedule(data.schedule || '');
                     setEnrolledStudents(data.enrolledStudents || '');
                     setDurationDetails(data.durationDetails || '');
@@ -556,6 +1147,43 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         setter(values.filter((_, i) => i !== index));
     };
 
+    // Curriculum handlers
+    const addCurriculum = () => {
+        setCurriculum([
+            ...curriculum, 
+            { 
+                currTitle: "", 
+                weeklyPlan: [{ weekTitle: "", topics: [""] }], 
+                currIcon: null 
+            }
+        ]);
+    };
+
+    const addWeeklyPlan = (curriculumIndex: number) => {
+        const updated = [...curriculum];
+        updated[curriculumIndex].weeklyPlan.push({ weekTitle: "", topics: [""] });
+        setCurriculum(updated);
+    };
+
+    const removeWeeklyPlan = (curriculumIndex: number, weekIndex: number) => {
+        const updated = [...curriculum];
+        updated[curriculumIndex].weeklyPlan = updated[curriculumIndex].weeklyPlan.filter((_, i) => i !== weekIndex);
+        setCurriculum(updated);
+    };
+
+    const addTopic = (curriculumIndex: number, weekIndex: number) => {
+        const updated = [...curriculum];
+        updated[curriculumIndex].weeklyPlan[weekIndex].topics.push("");
+        setCurriculum(updated);
+    };
+
+    const removeTopic = (curriculumIndex: number, weekIndex: number, topicIndex: number) => {
+        const updated = [...curriculum];
+        updated[curriculumIndex].weeklyPlan[weekIndex].topics = 
+            updated[curriculumIndex].weeklyPlan[weekIndex].topics.filter((_, i) => i !== topicIndex);
+        setCurriculum(updated);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
@@ -564,21 +1192,21 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         const formData = new FormData();
 
         // Basic fields
-        formData.append('internshipType', internshipType);
+        // formData.append('internshipType', internshipType);
         formData.append('title', title);
         formData.append('subtitle', subtitle);
         formData.append('fee', fee);
         formData.append('duration', duration);
         formData.append('mode', mode);
         formData.append('description', description);
-        formData.append('projects', projects);
-        formData.append('mentorship', mentorship);
-        formData.append('internship', internship);
-        formData.append('level', level);
+        // formData.append('projects', projects);
+        // formData.append('mentorship', mentorship);
+        // formData.append('internship', internship);
+        // formData.append('level', level);
         formData.append('category', category);
         formData.append('rating', rating);
         formData.append('syllabusLink', syllabusLink);
-        formData.append('stipend', stipend);
+        // formData.append('stipend', stipend);
         formData.append('schedule', schedule);
         formData.append('enrolledStudents', enrolledStudents);
         formData.append('durationDetails', durationDetails);
@@ -586,28 +1214,31 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         // Arrays
         formData.append('benefits', JSON.stringify(benefits.filter(b => b.trim() !== '')));
         formData.append('eligibility', JSON.stringify(eligibility.filter(el => el.trim() !== '')));
-        formData.append('learningOutcomes', JSON.stringify(learningOutcomes));
-        formData.append('tags', JSON.stringify(tags));
+        formData.append('learningOutcomes', JSON.stringify(learningOutcomes.filter(lo => lo.trim() !== '')));
+        formData.append('tags', JSON.stringify(tags.filter(tag => tag.trim() !== '')));
 
         // Skills
         formData.append("skills", JSON.stringify(skills.map(s => ({ skillTitle: s.skillTitle }))));
         skills.forEach((s, idx) => {
-            if (s.skillIcon) formData.append(`skillIcon_${idx}`, s.skillIcon);
+            if (s.skillIcon instanceof File) formData.append(`skillIcon_${idx}`, s.skillIcon);
         });
 
         // Tools
         formData.append("tool", JSON.stringify(tool.map(t => ({ toolTitle: t.toolTitle }))));
         tool.forEach((t, idx) => {
-            if (t.toolIcon) formData.append(`toolIcon_${idx}`, t.toolIcon);
+            if (t.toolIcon instanceof File) formData.append(`toolIcon_${idx}`, t.toolIcon);
         });
 
-        // Curriculum
+        // Curriculum - Updated for weeklyPlan structure
         formData.append("curriculum", JSON.stringify(curriculum.map(c => ({
             currTitle: c.currTitle,
-            currDescription: c.currDescription
+            weeklyPlan: c.weeklyPlan.map(week => ({
+                weekTitle: week.weekTitle,
+                topics: week.topics.filter(topic => topic.trim() !== '')
+            })).filter(week => week.weekTitle.trim() !== '' || week.topics.length > 0)
         }))));
         curriculum.forEach((c, idx) => {
-            if (c.currIcon) formData.append(`currIcon_${idx}`, c.currIcon);
+            if (c.currIcon instanceof File) formData.append(`currIcon_${idx}`, c.currIcon);
         });
 
         // Summary
@@ -616,7 +1247,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
             sumDesc: s.sumDesc
         }))));
         summary.forEach((s, idx) => {
-            if (s.icon) formData.append(`summaryIcon_${idx}`, s.icon);
+            if (s.icon instanceof File) formData.append(`summaryIcon_${idx}`, s.icon);
         });
 
         // Images
@@ -646,7 +1277,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         }
     };
 
-
     return (
         <div className="container mx-auto px-4 py-8">
             <ComponentCard title={internshipIdToEdit ? 'Edit Internship' : 'Add New Internship'}>
@@ -654,7 +1284,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                 <form onSubmit={handleSubmit} className="space-y-6">
 
                     {/* InternshipType */}
-                    <div>
+                    {/* <div>
                         <Label htmlFor="internshipType">Internship Type</Label>
                         <select
                             id="internshipType"
@@ -667,7 +1297,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                             <option value="paid internship">Paid Internship</option>
                             <option value="normal internship">Normal Internship</option>
                         </select>
-                    </div>
+                    </div> */}
 
                     {/* Title */}
                     <div>
@@ -682,7 +1312,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     </div>
 
                     <div>
-                        <Label htmlFor="subtitle">Rating</Label>
+                        <Label htmlFor="rating">Rating</Label>
                         <Input id="rating" type="text" value={rating} onChange={(e) => setRating(e.target.value)} required />
                     </div>
 
@@ -696,10 +1326,11 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <Input id="syllabus" type="text" value={syllabusLink} onChange={(e) => setSyllabusLink(e.target.value)} required />
                     </div>
 
-                    <div>
-                        <Label htmlFor="fee">Level</Label>
+                    {/* <div>
+                        <Label htmlFor="level">Level</Label>
                         <Input id="level" type="text" value={level} onChange={(e) => setLevel(e.target.value)} required />
-                    </div>
+                    </div> */}
+
                     {/* Fee */}
                     <div>
                         <Label htmlFor="fee">Fee</Label>
@@ -718,10 +1349,10 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <Input id="mode" type="text" value={mode} onChange={(e) => setMode(e.target.value)} required />
                     </div>
 
-                    <div>
+                    {/* <div>
                         <Label htmlFor="stipend">Stipend</Label>
                         <Input id="stipend" type="text" value={stipend} onChange={(e) => setStipend(e.target.value)} required />
-                    </div>
+                    </div> */}
 
                     <div>
                         <Label htmlFor="schedule">Schedule</Label>
@@ -739,39 +1370,11 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     </div>
 
                     {/* Benefits */}
-                    {/* <div>
-                        <Label>Benefits</Label>
-                        {benefits.map((b, idx) => (
-                            <div key={idx} className="flex  gap-2 mb-2">
-                                <Input
-                                    type="text"
-                                    value={b}
-                                    onChange={(e) => handleChangeField(setBenefits, benefits, idx, e.target.value)}
-                                    placeholder={`Benefit ${idx + 1}`}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveField(setBenefits, benefits, idx)}
-                                    className="px-3 py-1 bg-red-500 text-white rounded"
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        ))}
-                        <button
-                            type="button"
-                            onClick={() => handleAddField(setBenefits, benefits)}
-                            className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
-                        >
-                            Add Benefit
-                        </button>
-                    </div> */}
-
                     <div>
                         <Label>Benefits</Label>
                         {benefits.map((b, idx) => (
                             <div key={idx} className="flex gap-2 mb-2">
-                                <div className="flex-1"> {/* Add this wrapper */}
+                                <div className="flex-1">
                                     <Input
                                         type="text"
                                         value={b}
@@ -809,15 +1412,14 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                         onChange={(e) => handleChangeField(setEligibility, eligibility, idx, e.target.value)}
                                         placeholder={`Eligibility ${idx + 1}`}
                                     />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded"
-                                    >
-                                        Remove
-                                    </button>
-                               
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveField(setEligibility, eligibility, idx)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded"
+                                >
+                                    Remove
+                                </button>
                             </div>
                         ))}
                         <button
@@ -877,24 +1479,22 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         <input type="file" id="bannerImage" accept="image/*" onChange={(e) => handleFileChange(e, setBannerImageFile, setBannerImagePreview)} />
                     </div>
 
-
-
                     {/* Projects */}
-                    <div>
+                    {/* <div>
                         <Label htmlFor="projects">Projects</Label>
                         <Input id="projects" type="text" value={projects} onChange={(e) => setProjects(e.target.value)} required />
-                    </div>
+                    </div> */}
 
                     {/* Mentorship */}
-                    <div>
+                    {/* <div>
                         <Label htmlFor="mentorship">Mentorship</Label>
                         <Input id="mentorship" type="text" value={mentorship} onChange={(e) => setMentorship(e.target.value)} />
-                    </div>
-
+                    </div> */}
+{/* 
                     <div>
                         <Label htmlFor="internship">Internship</Label>
                         <Input id="internship" type="text" value={internship} onChange={(e) => setInternship(e.target.value)} required />
-                    </div>
+                    </div> */}
 
                     {/* Skills (dynamic) */}
                     <div>
@@ -929,7 +1529,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                     <span className="text-xs text-gray-500">File Selected</span>
                                 ) : null}
 
-                                {/* Remove Button */}
                                 <button
                                     type="button"
                                     className="bg-red-500 text-white px-2 py-1 rounded"
@@ -982,7 +1581,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                     <span className="text-xs text-gray-500">File Selected</span>
                                 ) : null}
 
-                                {/* Remove Button */}
                                 <button
                                     type="button"
                                     className="bg-red-500 text-white px-2 py-1 rounded"
@@ -1001,7 +1599,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                             Add Tool
                         </button>
                     </div>
-
 
                     {/* Learning Outcomes */}
                     <div>
@@ -1024,18 +1621,18 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                         </button>
                     </div>
 
-                    {/* Curriculum */}
+                    {/* Curriculum - Updated for weeklyPlan structure */}
                     <div>
                         <Label>Curriculum</Label>
-                        {curriculum.map((c, idx) => (
-                            <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+                        {curriculum.map((c, curriculumIndex) => (
+                            <div key={curriculumIndex} className="border p-3 mb-3 rounded space-y-2">
                                 
                                 <Input
                                     placeholder="Curriculum Title"
                                     value={c.currTitle}
                                     onChange={(e) => {
                                         const updated = [...curriculum];
-                                        updated[idx].currTitle = e.target.value;
+                                        updated[curriculumIndex].currTitle = e.target.value;
                                         setCurriculum(updated);
                                     }}
                                 />
@@ -1047,7 +1644,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                     onChange={(e) => {
                                         if (e.target.files && e.target.files[0]) {
                                             const updated = [...curriculum];
-                                            updated[idx].currIcon = e.target.files[0]; // File type fits
+                                            updated[curriculumIndex].currIcon = e.target.files[0];
                                             setCurriculum(updated);
                                         }
                                     }}
@@ -1058,54 +1655,77 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                                     <span className="text-xs text-gray-500">File Selected</span>
                                 ) : null}
 
-                                {/* Curriculum Descriptions */}
-                                <Label>Descriptions</Label>
-                                {c.currDescription.map((desc, dIdx) => (
-                                    <div key={dIdx} className="flex gap-2 mb-1">
-                                        <div className='flex-1'>
-                                        <Input
-                                            placeholder={`Description ${dIdx + 1}`}
-                                            value={desc}
-                                            onChange={(e) => {
-                                                const updated = [...curriculum];
-                                                updated[idx].currDescription[dIdx] = e.target.value;
-                                                setCurriculum(updated);
-                                            }}
-                                        />
+                                {/* Weekly Plan */}
+                                <Label>Weekly Plan</Label>
+                                {c.weeklyPlan.map((week, weekIndex) => (
+                                    <div key={weekIndex} className="border p-2 rounded space-y-2">
+                                        <div className="flex gap-2 items-center">
+                                            <Input
+                                                placeholder={`Week ${weekIndex + 1} Title`}
+                                                value={week.weekTitle}
+                                                onChange={(e) => {
+                                                    const updated = [...curriculum];
+                                                    updated[curriculumIndex].weeklyPlan[weekIndex].weekTitle = e.target.value;
+                                                    setCurriculum(updated);
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="bg-red-500 text-white px-2 py-1 rounded"
+                                                onClick={() => removeWeeklyPlan(curriculumIndex, weekIndex)}
+                                            >
+                                                Remove Week
+                                            </button>
                                         </div>
+
+                                        {/* Topics */}
+                                        <Label>Topics</Label>
+                                        {week.topics.map((topic, topicIndex) => (
+                                            <div key={topicIndex} className="flex gap-2 mb-1">
+                                                <div className='flex-1'>
+                                                    <Input
+                                                        placeholder={`Topic ${topicIndex + 1}`}
+                                                        value={topic}
+                                                        onChange={(e) => {
+                                                            const updated = [...curriculum];
+                                                            updated[curriculumIndex].weeklyPlan[weekIndex].topics[topicIndex] = e.target.value;
+                                                            setCurriculum(updated);
+                                                        }}
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className="bg-red-500 text-white px-2 rounded"
+                                                    onClick={() => removeTopic(curriculumIndex, weekIndex, topicIndex)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
                                         <button
                                             type="button"
-                                            className="bg-red-500 text-white px-2 rounded"
-                                            onClick={() => {
-                                                const updated = [...curriculum];
-                                                updated[idx].currDescription = updated[idx].currDescription.filter((_, i) => i !== dIdx);
-                                                setCurriculum(updated);
-                                            }}
+                                            className="bg-green-500 text-white px-3 py-1 rounded"
+                                            onClick={() => addTopic(curriculumIndex, weekIndex)}
                                         >
-                                            Remove
+                                            Add Topic
                                         </button>
                                     </div>
                                 ))}
-                                <div className='mb-4'>
-                                    <button
-                                        type="button"
-                                        className="bg-green-500 text-white px-3 py-1 rounded "
-                                        onClick={() => {
-                                            const updated = [...curriculum];
-                                            updated[idx].currDescription.push("");
-                                            setCurriculum(updated);
-                                        }}
-                                    >
-                                        Add Description
-                                    </button>
-                                </div>
+                                
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                                    onClick={() => addWeeklyPlan(curriculumIndex)}
+                                >
+                                    Add Week
+                                </button>
 
                                 {/* Remove Curriculum Block */}
                                 <div className='mb-4'>
                                     <button
                                         type="button"
                                         className="bg-red-600 text-white mb-3 px-3 py-1 rounded mt-2"
-                                        onClick={() => setCurriculum(curriculum.filter((_, i) => i !== idx))}
+                                        onClick={() => setCurriculum(curriculum.filter((_, i) => i !== curriculumIndex))}
                                     >
                                         Remove Curriculum
                                     </button>
@@ -1113,121 +1733,108 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                             </div>
                         ))}
 
+                        <button
+                            type="button"
+                            className="bg-green-600 text-white px-4 py-2 rounded"
+                            onClick={addCurriculum}
+                        >
+                            Add Curriculum
+                        </button>
+                    </div>
+
+                    {/* Summary */}
+                    <div>
+                        <Label>Summary</Label>
+                        {summary.map((s, idx) => (
+                            <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+                                <Input
+                                    placeholder="Summary Title"
+                                    value={s.sumTitle}
+                                    onChange={(e) => {
+                                        const updated = [...summary];
+                                        updated[idx].sumTitle = e.target.value;
+                                        setSummary(updated);
+                                    }}
+                                />
+
+                                <Input
+                                    placeholder="Summary Description"
+                                    value={s.sumDesc}
+                                    onChange={(e) => {
+                                        const updated = [...summary];
+                                        updated[idx].sumDesc = e.target.value;
+                                        setSummary(updated);
+                                    }}
+                                />
+
+                                {/* Icon Upload */}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            const updated = [...summary];
+                                            updated[idx].icon = e.target.files[0];
+                                            setSummary(updated);
+                                        }
+                                    }}
+                                />
+                                {s.icon && typeof s.icon === "string" ? (
+                                    <img src={s.icon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+                                ) : s.icon ? (
+                                    <span className="text-xs text-gray-500">File Selected</span>
+                                ) : null}
+
+                                <button
+                                    type="button"
+                                    className="bg-red-600 text-white px-3 py-1 rounded"
+                                    onClick={() => setSummary(summary.filter((_, i) => i !== idx))}
+                                >
+                                    Remove Summary
+                                </button>
+                            </div>
+                        ))}
 
                         <button
                             type="button"
                             className="bg-green-600 text-white px-4 py-2 rounded"
-                            onClick={() =>
-                                setCurriculum([...curriculum, { currIcon: null, currTitle: "", currDescription: [""] }])
-                            }
+                            onClick={() => setSummary([...summary, { icon: null, sumTitle: "", sumDesc: "" }])}
                         >
-                            Add Curriculum
+                            Add Summary
                         </button>
-
-
-
-
-                        {/* Summary */}
-                        <div>
-                            <Label>Summary</Label>
-                            {summary.map((s, idx) => (
-                                <div key={idx} className="border p-3 mb-3 rounded space-y-2">
-                                    <Input
-                                        placeholder="Summary Title"
-                                        value={s.sumTitle}
-                                        onChange={(e) => {
-                                            const updated = [...summary];
-                                            updated[idx].sumTitle = e.target.value;
-                                            setSummary(updated);
-                                        }}
-                                    />
-
-                                    <Input
-                                        placeholder="Summary Description"
-                                        value={s.sumDesc}
-                                        onChange={(e) => {
-                                            const updated = [...summary];
-                                            updated[idx].sumDesc = e.target.value;
-                                            setSummary(updated);
-                                        }}
-                                    />
-
-                                    {/* Icon Upload */}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            if (e.target.files && e.target.files[0]) {
-                                                const updated = [...summary];
-                                                updated[idx].icon = e.target.files[0]; // File type fits
-                                                setSummary(updated);
-                                            }
-                                        }}
-                                    />
-                                    {s.icon && typeof s.icon === "string" ? (
-                                        <img src={s.icon} alt="Preview" className="w-8 h-8 object-cover rounded" />
-                                    ) : s.icon ? (
-                                        <span className="text-xs text-gray-500">File Selected</span>
-                                    ) : null}
-
-                                    <button
-                                        type="button"
-                                        className="bg-red-600 text-white px-3 py-1 rounded"
-                                        onClick={() => setSummary(summary.filter((_, i) => i !== idx))}
-                                    >
-                                        Remove Summary
-                                    </button>
-                                </div>
-                            ))}
-
-                            <button
-                                type="button"
-                                className="bg-green-600 text-white px-4 py-2 rounded"
-                                onClick={() =>
-                                    setSummary([...summary, { icon: null, sumTitle: "", sumDesc: "" }])
-                                }
-                            >
-                                Add Summary
-                            </button>
-                        </div>
-
-
-                        {/* Tags */}
-                        <div>
-                            <Label>Tags</Label>
-                            {tags.map((tag, idx) => (
-                                <div key={idx} className="flex gap-2 mb-2">
-                                    <Input
-                                        placeholder={`Tag ${idx + 1}`}
-                                        value={tag}
-                                        onChange={(e) => {
-                                            const updated = [...tags];
-                                            updated[idx] = e.target.value;
-                                            setTags(updated);
-                                        }}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="bg-red-500 text-white px-2 rounded"
-                                        onClick={() => setTags(tags.filter((_, i) => i !== idx))}
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                className="bg-green-500 text-white px-3 py-1 rounded"
-                                onClick={() => setTags([...tags, ""])}
-                            >
-                                Add Tag
-                            </button>
-                        </div>
-
-
-
                     </div>
 
+                    {/* Tags */}
+                    <div>
+                        <Label>Tags</Label>
+                        {tags.map((tag, idx) => (
+                            <div key={idx} className="flex gap-2 mb-2">
+                                <Input
+                                    placeholder={`Tag ${idx + 1}`}
+                                    value={tag}
+                                    onChange={(e) => {
+                                        const updated = [...tags];
+                                        updated[idx] = e.target.value;
+                                        setTags(updated);
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-red-500 text-white px-2 rounded"
+                                    onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            className="bg-green-500 text-white px-3 py-1 rounded"
+                            onClick={() => setTags([...tags, ""])}
+                        >
+                            Add Tag
+                        </button>
+                    </div>
 
                     {/* Submit */}
                     <div className="pt-4 flex justify-end">

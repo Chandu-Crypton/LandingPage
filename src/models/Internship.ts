@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IInternship extends Document {
-  internshipType: string;
+  // internshipType: string;
   skills: {
     skillTitle: string;
     skillIcon: string;
@@ -13,7 +13,11 @@ export interface IInternship extends Document {
   curriculum: {
     currIcon: string;
     currTitle: string;
-    currDescription: string[];
+    // currDescription: string[];
+    weeklyPlan?: {
+      weekTitle: string;
+      topics: string[];
+    }[];
   }[];
   learningOutcomes?: string[];
   syllabusLink: string;
@@ -22,16 +26,16 @@ export interface IInternship extends Document {
     sumTitle: string;
     sumDesc: string;
   }[];
-  projects?: string;
+  // projects?: string;
   mode?: string;
   duration: string;
   durationDetails?: string;
-  stipend?: string;
+  // stipend?: string;
   schedule?: string;
   enrolledStudents?: string;
-  mentorship?: string;
-  internship?: string;
-  level?: string;
+  // mentorship?: string;
+  // internship?: string;
+  // level?: string;
   title: string;
   subtitle?: string;
   fee?: string;
@@ -51,7 +55,7 @@ export interface IInternship extends Document {
 
 const InternshipSchema: Schema = new Schema(
   {
-    internshipType: { type: String, required: true, trim: true },
+    // internshipType: { type: String, required: true, trim: true },
     title: { type: String, required: true, trim: true },
     subtitle: { type: String, required: false, trim: true },
     fee: { type: String, required: false, trim: true },
@@ -74,7 +78,13 @@ const InternshipSchema: Schema = new Schema(
       {
         currIcon: { type: String, required: true, trim: true },
         currTitle: { type: String, required: true, trim: true },
-        currDescription: [{ type: String, required: true, trim: true }],
+        // currDescription: [{ type: String, required: true, trim: true }],
+        weeklyPlan: [
+          {
+            weekTitle: { type: String, required: true, trim: true },
+            topics: [{ type: String, required: true, trim: true }],
+          },
+        ],
       },
     ],
     summary: [
@@ -93,17 +103,17 @@ const InternshipSchema: Schema = new Schema(
 
     // Single fields
     syllabusLink: { type: String, required: false, trim: true },
-    projects: { type: String, required: false, trim: true },
-    stipend: { type: String, required: true, trim: true },
+    // projects: { type: String, required: false, trim: true },
+    // stipend: { type: String, required: true, trim: true },
     schedule: { type: String, required: false, trim: true },
     enrolledStudents: { type: String, required: false, trim: true },
     durationDetails: { type: String, required: false, trim: true },
 
     mode: { type: String, required: false, trim: true },
     duration: { type: String, required: true, trim: true },
-    mentorship: { type: String, required: false, trim: true },
-    internship: { type: String, required: false, trim: true },
-    level: { type: String, required: false, trim: true },
+    // mentorship: { type: String, required: false, trim: true },
+    // internship: { type: String, required: false, trim: true },
+    // level: { type: String, required: false, trim: true },
     category: { type: String, required: true, trim: true },
     rating: { type: String, required: true, trim: true },
 
