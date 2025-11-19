@@ -945,7 +945,7 @@ interface IInternship {
     schedule: string;
     enrolledStudents: string;
     durationDetails: string;
-    benefits: string[];
+    benefits: { title: string; icon: string }[];
     eligibility: string[];
     skills: { skillTitle: string; skillIcon: string }[];
     tool: { toolTitle: string; toolIcon: string }[];
@@ -991,6 +991,11 @@ interface Summary {
     icon: File | string | null;
 }
 
+interface Benefit {
+    title: string;
+    icon: File | string | null;
+}
+
 const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdToEdit }) => {
     const router = useRouter();
 
@@ -1001,7 +1006,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
     const [fee, setFee] = useState('');
     const [duration, setDuration] = useState('');
     const [mode, setMode] = useState('');
-    const [benefits, setBenefits] = useState<string[]>(['']);
     const [eligibility, setEligibility] = useState<string[]>(['']);
     const [description, setDescription] = useState('');
     // const [stipend, setStipend] = useState('');
@@ -1043,6 +1047,8 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         { sumTitle: "", sumDesc: "", icon: null }
     ]);
 
+    const [benefits, setBenefits] = useState<Benefit[]>([{ title: "", icon: null }]);
+
     const [learningOutcomes, setLearningOutcomes] = useState(['']);
     const [tags, setTags] = useState(['']);
 
@@ -1066,7 +1072,7 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     setFee(data.fee);
                     setDuration(data.duration);
                     setMode(data.mode);
-                    setBenefits(data.benefits.length ? data.benefits : ['']);
+                    setBenefits(data.benefits ?? [{ title: "", icon: null }]);
                     setEligibility(data.eligibility.length ? data.eligibility : ['']);
                     setDescription(data.description);
                     setMainImageFile(null);
@@ -1212,7 +1218,6 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         formData.append('durationDetails', durationDetails);
 
         // Arrays
-        formData.append('benefits', JSON.stringify(benefits.filter(b => b.trim() !== '')));
         formData.append('eligibility', JSON.stringify(eligibility.filter(el => el.trim() !== '')));
         formData.append('learningOutcomes', JSON.stringify(learningOutcomes.filter(lo => lo.trim() !== '')));
         formData.append('tags', JSON.stringify(tags.filter(tag => tag.trim() !== '')));
@@ -1248,6 +1253,11 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
         }))));
         summary.forEach((s, idx) => {
             if (s.icon instanceof File) formData.append(`summaryIcon_${idx}`, s.icon);
+        });
+
+         formData.append('benefits', JSON.stringify(benefits.map(b => ({ title: b.title }))));
+        benefits.forEach((b, idx) => {
+            if (b.icon instanceof File) formData.append(`benefitIcon_${idx}`, b.icon);
         });
 
         // Images
@@ -1370,31 +1380,54 @@ const InternshipFormComponent: React.FC<InternshipFormProps> = ({ internshipIdTo
                     </div>
 
                     {/* Benefits */}
-                    <div>
+                    
+                       <div>
                         <Label>Benefits</Label>
                         {benefits.map((b, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
-                                <div className="flex-1">
-                                    <Input
-                                        type="text"
-                                        value={b}
-                                        onChange={(e) => handleChangeField(setBenefits, benefits, idx, e.target.value)}
-                                        placeholder={`Benefit ${idx + 1}`}
-                                    />
-                                </div>
+                            <div key={idx} className="border p-3 mb-3 rounded space-y-2">
+                                <Input
+                                    placeholder="Benefit Title"
+                                    value={b.title}
+                                    onChange={(e) => {
+                                        const updated = [...benefits];
+                                        updated[idx].title = e.target.value;
+                                        setBenefits(updated);
+                                    }}
+                                />
+
+
+                                {/* Icon Upload */}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            const updated = [...benefits];
+                                            updated[idx].icon = e.target.files[0];
+                                            setBenefits(updated);
+                                        }
+                                    }}
+                                />
+                                {b.icon && typeof b.icon === "string" ? (
+                                    <img src={b.icon} alt="Preview" className="w-8 h-8 object-cover rounded" />
+                                ) : b.icon ? (
+                                    <span className="text-xs text-gray-500">File Selected</span>
+                                ) : null}
+
                                 <button
                                     type="button"
-                                    onClick={() => handleRemoveField(setBenefits, benefits, idx)}
-                                    className="px-3 py-1 bg-red-500 text-white rounded flex-shrink-0"
+                                    className="bg-red-600 text-white px-3 py-1 rounded"
+                                    onClick={() => setBenefits(benefits.filter((_, i) => i !== idx))}
                                 >
-                                    Remove
+                                    Remove Benefit
                                 </button>
                             </div>
                         ))}
+
                         <button
                             type="button"
-                            onClick={() => handleAddField(setBenefits, benefits)}
-                            className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+                            className="bg-green-600 text-white px-4 py-2 rounded"
+                            onClick={() => setBenefits([...benefits, { icon: null, title: "" }])}
                         >
                             Add Benefit
                         </button>

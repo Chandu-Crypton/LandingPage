@@ -264,7 +264,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
-        
+        console.log("form data:", formData)
         // Helper to parse JSON-like fields safely
         const parseJSON = <T>(field: FormDataEntryValue | null): T | [] => {
             if (!field) return [];
@@ -296,8 +296,7 @@ export async function POST(req: NextRequest) {
         const schedule = formData.get("schedule")?.toString();
 
         // Arrays
-        const tags = parseJSON<string[]>(formData.get("tags"));
-        const benefits = parseJSON<string[]>(formData.get("benefits"));
+        const tags = parseJSON<string[]>(formData.get("tags")); 
         const eligibility = parseJSON<string[]>(formData.get("eligibility"));
         const learningOutcomes = parseJSON<string[]>(
             formData.get("learningOutcomes")
@@ -404,6 +403,32 @@ export async function POST(req: NextRequest) {
             });
         }
 
+          const rawBenefits = parseJSON<{ icon: string; title: string }[]>(
+            formData.get("benefits")
+        );
+        const benefits: { icon: string; title: string }[] = [];
+
+        for (let i = 0; i < rawBenefits.length; i++) {
+            const file = formData.get(`benefitIcon_${i}`) as File | null;
+            let iconUrl = "";
+            if (file && file.size > 0) {
+                const buffer = Buffer.from(await file.arrayBuffer());
+                const uploadRes = await imagekit.upload({
+                    file: buffer,
+                    fileName: file.name,
+                    folder: "/internship/benefits",
+                });
+                iconUrl = uploadRes.url;
+            }
+            benefits.push({ 
+                icon: iconUrl,
+                title: rawBenefits[i].title, 
+ 
+            });
+        }
+
+
+        
         // Images
         const mainImageFile = formData.get("mainImage") as File | null;
         const bannerImageFile = formData.get("bannerImage") as File | null;

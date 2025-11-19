@@ -42,7 +42,10 @@ export interface IInternship extends Document {
   category: string;
   rating: string;
   tags: string[];
-  benefits?: string[];
+  benefits?: {
+    icon: string;
+    title: string;
+  }[];
   eligibility?: string[];
   description?: string;
   mainImage?: string;
@@ -98,7 +101,12 @@ const InternshipSchema: Schema = new Schema(
     // Simple arrays
     learningOutcomes: [{ type: String, required: false, trim: true }],
     tags: [{ type: String, required: true, trim: true }],
-    benefits: [{ type: String, required: false, trim: true }],
+    benefits: [
+      {
+        icon: { type: String, required: false, trim: true },
+        title: { type: String, required: false, trim: true },
+      }
+    ],
     eligibility: [{ type: String, required: false, trim: true }],
 
     // Single fields

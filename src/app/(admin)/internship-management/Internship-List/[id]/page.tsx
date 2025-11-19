@@ -199,7 +199,7 @@
 //               <p className="mt-1 text-gray-500">No banner image available.</p>
 //             )}
 //           </div>
-          
+
 
 //           <p><strong>Created At:</strong> {internship.createdAt ? new Date(internship.createdAt).toLocaleString() : 'N/A'}</p>
 //           <p><strong>Last Updated:</strong> {internship.updatedAt ? new Date(internship.updatedAt).toLocaleString() : 'N/A'}</p>
@@ -261,8 +261,8 @@ const InternshipDetailPage: React.FC = () => {
           axios.isAxiosError(err)
             ? err.response?.data?.message || 'Failed to load internship details.'
             : err instanceof Error
-            ? err.message
-            : 'Unexpected error occurred.'
+              ? err.message
+              : 'Unexpected error occurred.'
         );
       } finally {
         setLoading(false);
@@ -286,8 +286,8 @@ const InternshipDetailPage: React.FC = () => {
         axios.isAxiosError(err)
           ? err.response?.data?.message || 'Failed to delete internship.'
           : err instanceof Error
-          ? err.message
-          : 'Unknown error occurred during deletion.'
+            ? err.message
+            : 'Unknown error occurred during deletion.'
       );
     } finally {
       setLoading(false);
@@ -323,16 +323,16 @@ const InternshipDetailPage: React.FC = () => {
 
         {/* Basic Info */}
         <div className="space-y-4 text-gray-700 dark:text-gray-300">
-            <p><strong>Internship Type:</strong> {internship?.internshipType}</p>
+          {/* <p><strong>Internship Type:</strong> {internship?.internshipType}</p> */}
           <p><strong>Subtitle:</strong> {internship.subtitle}</p>
           <p><strong>Description:</strong> {internship.description}</p>
           <p><strong>Mode:</strong> {internship.mode}</p>
           <p><strong>Fee:</strong> {internship.fee}</p>
           <p><strong>Duration:</strong> {internship.duration}</p>
-          <p><strong>Projects:</strong> {internship.projects}</p>
+          {/* <p><strong>Projects:</strong> {internship.projects}</p>
           <p><strong>Mentorship:</strong> {internship.mentorship}</p>
           <p><strong>Internship Type:</strong> {internship.internship}</p>
-          <p><strong>Level:</strong> {internship.level}</p>
+          <p><strong>Level:</strong> {internship.level}</p> */}
           <p><strong>Category:</strong> {internship.category}</p>
           <p><strong>Rating:</strong> {internship.rating}</p>
           <p><strong>Syllabus Link:</strong> {internship.syllabusLink || 'N/A'}</p>
@@ -353,10 +353,26 @@ const InternshipDetailPage: React.FC = () => {
           <div>
             <strong>Benefits:</strong>
             {internship.benefits && internship.benefits.length > 0 ? (
-              <ul className="list-disc pl-6 mt-1">
-                {internship.benefits.map((b, i) => <li key={i}>{b}</li>)}
-              </ul>
-            ) : <p className="mt-1 text-gray-500">No benefits listed.</p>}
+              <div className="mt-3 space-y-3">
+                {internship.benefits.map((benefit, i) => (
+                  <div key={i} className="flex items-start space-x-3">
+                    {benefit.icon && (
+                      <NextImage
+                        src={benefit.icon}
+                        alt={benefit.title}
+                        width={24}
+                        height={24}
+                        className="rounded-md object-cover mt-0.5 flex-shrink-0"
+                        unoptimized
+                      />
+                    )}
+                    <span className="text-gray-700">{benefit.title}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-1 text-gray-500">No benefits listed.</p>
+            )}
           </div>
 
           {/* Eligibility */}
@@ -431,31 +447,65 @@ const InternshipDetailPage: React.FC = () => {
           <div>
             <strong>Curriculum:</strong>
             {internship.curriculum && internship.curriculum.length > 0 ? (
-              <ul className="pl-6 mt-2 space-y-4">
+              <div className="space-y-6 mt-4">
                 {internship.curriculum.map((c, idx) => (
-                  <li key={idx}>
-                    <div className="flex items-center space-x-2 mb-1">
+                  <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4">
+                    {/* Curriculum Header */}
+                    <div className="flex items-center space-x-3 mb-4">
                       {c.currIcon && (
                         <NextImage
                           src={c.currIcon}
                           alt={c.currTitle}
-                          width={40}
-                          height={40}
-                          className="rounded-md object-cover"
+                          width={48}
+                          height={48}
+                          className="rounded-lg object-cover"
                           unoptimized
                         />
                       )}
-                      <span className="font-semibold">{c.currTitle}</span>
+                      <h3 className="font-semibold text-lg text-gray-800">{c.currTitle}</h3>
                     </div>
-                    <ul className="list-disc pl-6">
-                      {c.currDescription.map((desc, i) => (
-                        <li key={i}>{desc}</li>
-                      ))}
-                    </ul>
-                  </li>
+
+                    {/* Weekly Plan */}
+                    {c.weeklyPlan && c.weeklyPlan.length > 0 ? (
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-gray-700 text-sm uppercase tracking-wide">
+                          Weekly Breakdown
+                        </h4>
+                        {c.weeklyPlan.map((week, weekIdx) => (
+                          <div key={weekIdx} className="border-l-4 border-blue-500 pl-4 py-2">
+                            <h5 className="font-medium text-gray-800 mb-2">
+                              {week.weekTitle}
+                            </h5>
+
+                            {/* Topics */}
+                            {week.topics && week.topics.length > 0 ? (
+                              <ul className="space-y-1">
+                                {week.topics.map((topic, topicIdx) => (
+                                  <li key={topicIdx} className="flex items-start text-gray-600">
+                                    <span className="text-blue-500 mr-2">•</span>
+                                    <span>{topic}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-gray-400 text-sm">No topics listed for this week</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-gray-400">No weekly plan available</p>
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </ul>
-            ) : <p className="mt-1 text-gray-500">No curriculum provided.</p>}
+              </div>
+            ) : (
+              <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <p className="text-gray-500">Curriculum details coming soon</p>
+              </div>
+            )}
           </div>
 
           {/* Summary */}

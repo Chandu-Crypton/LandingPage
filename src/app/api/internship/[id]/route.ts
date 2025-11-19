@@ -314,7 +314,6 @@ export async function GET(req: Request) {
 //     }
 // }
 
-
 export async function PUT(req: NextRequest) {
     await connectToDatabase();
 
@@ -333,32 +332,37 @@ export async function PUT(req: NextRequest) {
         console.log('Received formData data:', formData);
         const updateData: Partial<IInternship> = {};
 
+        // Get the existing internship first to preserve existing data
+        const existingInternship = await Internship.findById(id);
+        if (!existingInternship) {
+            return NextResponse.json(
+                { success: false, message: "Internship not found." },
+                { status: 404 }
+            );
+        }
+
         // --- Text Fields ---
         const textFields = [
-             "title", "subtitle", "fee", "description", "mode", "duration", "durationDetails",
-            "schedule", "enrolledStudents",
-             "syllabusLink", "category", "rating"
+            "title", "subtitle", "fee", "description", "mode", "duration", "durationDetails",
+            "schedule", "enrolledStudents", "syllabusLink", "category", "rating"
         ];
 
         textFields.forEach((field) => {
             const value = formData.get(field);
-            // Only update if the field was actually provided (not just empty string)
+            // Only update if the field was actually provided and not empty
             if (value !== null && value !== undefined) {
                 const stringValue = value.toString();
                 if (stringValue !== "") {
                     updateData[field as keyof IInternship] = stringValue;
-                } else if (stringValue === "") {
-                    // Handle empty string as null/undefined if appropriate
-                    updateData[field as keyof IInternship] = undefined;
                 }
             }
         });
 
         // --- Simple Arrays ---
-        const arrayFields = ["tags", "benefits", "eligibility", "learningOutcomes"];
+        const arrayFields = ["tags", "eligibility", "learningOutcomes"];
         for (const field of arrayFields) {
             const value = formData.get(field);
-            if (value !== null && value !== undefined) {
+            if (value !== null && value !== undefined && value.toString() !== "") {
                 try {
                     const parsed = JSON.parse(value.toString());
                     if (Array.isArray(parsed)) {
@@ -380,12 +384,15 @@ export async function PUT(req: NextRequest) {
 
         // --- Nested Arrays with Icons ---
         const handleNestedArrayWithIcons = async (
-            fieldName: "skills" | "tool" | "curriculum" | "summary",
+            fieldName: "skills" | "tool" | "curriculum" | "summary" | "benefits",
             iconFieldBase: string,
             folder: string
         ) => {
             const value = formData.get(fieldName);
-            if (!value) return;
+            // Only process if the field was provided in the form data and not empty
+            if (value === null || value === undefined || value.toString() === "") {
+                return;
+            }
 
             let parsedArray;
             try {
@@ -399,12 +406,6 @@ export async function PUT(req: NextRequest) {
                 );
             }
 
-            // Get the existing internship to preserve existing icons
-            const existingInternship = await Internship.findById(id);
-            if (!existingInternship) {
-                throw new Error("Internship not found");
-            }
-
             const existingArray = existingInternship[fieldName] || [];
             const finalArray = [];
 
@@ -412,7 +413,7 @@ export async function PUT(req: NextRequest) {
                 const item = parsedArray[i];
                 const existingItem = existingArray[i] || {};
 
-                // Validate required fields for each item type based on new schema
+                // Validate required text fields for each item type
                 if (fieldName === "skills" && (!item.skillTitle || typeof item.skillTitle !== 'string')) {
                     throw new Error(`Invalid skill item at index ${i}: skillTitle is required`);
                 }
@@ -424,6 +425,9 @@ export async function PUT(req: NextRequest) {
                 }
                 if (fieldName === "summary" && (!item.sumTitle || typeof item.sumTitle !== 'string' || !item.sumDesc || typeof item.sumDesc !== 'string')) {
                     throw new Error(`Invalid summary item at index ${i}: sumTitle and sumDesc are required`);
+                }
+                if (fieldName === "benefits" && (!item.title || typeof item.title !== 'string')) {
+                    throw new Error(`Invalid benefits item at index ${i}: title is required`);
                 }
 
                 // Validate curriculum weeklyPlan structure
@@ -444,7 +448,7 @@ export async function PUT(req: NextRequest) {
 
                 const file = formData.get(`${iconFieldBase}_${i}`);
 
-                // Handle file upload
+                // Handle file upload - only process if a new file is provided
                 if (file instanceof File && file.size > 0) {
                     try {
                         const buffer = Buffer.from(await file.arrayBuffer());
@@ -458,22 +462,26 @@ export async function PUT(req: NextRequest) {
                         if (fieldName === "tool") item.toolIcon = uploadRes.url;
                         if (fieldName === "curriculum") item.currIcon = uploadRes.url;
                         if (fieldName === "summary") item.icon = uploadRes.url;
+                        if (fieldName === "benefits") item.icon = uploadRes.url;
                     } catch (uploadError) {
                         console.error(`Error uploading ${fieldName} icon:`, uploadError);
                         throw new Error(`Failed to upload ${fieldName} icon`);
                     }
                 } else if (file === "null" || file === null) {
-                    // Handle icon removal
-                    if (fieldName === "skills") item.skillIcon = "";
-                    if (fieldName === "tool") item.toolIcon = "";
-                    if (fieldName === "curriculum") item.currIcon = "";
-                    if (fieldName === "summary") item.icon = "";
-                } else {
-                    // Preserve existing icon if no new file is provided and file is not explicitly null
+                    // Handle explicit icon removal - use existing icon instead of empty string
                     if (fieldName === "skills") item.skillIcon = existingItem.skillIcon || "";
                     if (fieldName === "tool") item.toolIcon = existingItem.toolIcon || "";
                     if (fieldName === "curriculum") item.currIcon = existingItem.currIcon || "";
                     if (fieldName === "summary") item.icon = existingItem.icon || "";
+                    if (fieldName === "benefits") item.icon = existingItem.icon || "";
+                } else {
+                    // Preserve existing icon if no new file is provided
+                    // CRITICAL: Never set to empty string, always use existing icon
+                    if (fieldName === "skills") item.skillIcon = existingItem.skillIcon || "";
+                    if (fieldName === "tool") item.toolIcon = existingItem.toolIcon || "";
+                    if (fieldName === "curriculum") item.currIcon = existingItem.currIcon || "";
+                    if (fieldName === "summary") item.icon = existingItem.icon || "";
+                    if (fieldName === "benefits") item.icon = existingItem.icon || "";
                 }
 
                 // Ensure curriculum has proper structure
@@ -481,7 +489,6 @@ export async function PUT(req: NextRequest) {
                     if (!item.weeklyPlan) {
                         item.weeklyPlan = [];
                     }
-                    // Remove any currDescription if present to match new schema
                     if (item.currDescription) {
                         delete item.currDescription;
                     }
@@ -490,20 +497,30 @@ export async function PUT(req: NextRequest) {
                 finalArray.push(item);
             }
 
+            // Only update if we have items to update
             if (finalArray.length > 0) {
                 updateData[fieldName as keyof IInternship] = finalArray;
-            } else {
-                // If empty array is provided, set to empty array
-                updateData[fieldName as keyof IInternship] = [];
             }
         };
 
-        // Process nested arrays
+        // Process nested arrays only if they are provided in form data
         try {
-            await handleNestedArrayWithIcons("skills", "skillIcon", "/internship/skills");
-            await handleNestedArrayWithIcons("tool", "toolIcon", "/internship/tools");
-            await handleNestedArrayWithIcons("curriculum", "currIcon", "/internship/curriculum");
-            await handleNestedArrayWithIcons("summary", "summaryIcon", "/internship/summary");
+            // Only process these arrays if they exist in form data AND are not empty
+            if (formData.has("skills") && formData.get("skills")?.toString() !== "") {
+                await handleNestedArrayWithIcons("skills", "skillIcon", "/internship/skills");
+            }
+            if (formData.has("tool") && formData.get("tool")?.toString() !== "") {
+                await handleNestedArrayWithIcons("tool", "toolIcon", "/internship/tools");
+            }
+            if (formData.has("curriculum") && formData.get("curriculum")?.toString() !== "") {
+                await handleNestedArrayWithIcons("curriculum", "currIcon", "/internship/curriculum");
+            }
+            if (formData.has("summary") && formData.get("summary")?.toString() !== "") {
+                await handleNestedArrayWithIcons("summary", "summaryIcon", "/internship/summary");
+            }
+            if (formData.has("benefits") && formData.get("benefits")?.toString() !== "") {
+                await handleNestedArrayWithIcons("benefits", "benefitIcon", "/internship/benefits");
+            }
         } catch (error) {
             return NextResponse.json(
                 { success: false, message: error instanceof Error ? error.message : "Error processing nested arrays" },
@@ -519,7 +536,7 @@ export async function PUT(req: NextRequest) {
             // If no file field is provided at all (null), preserve existing image
             if (file === null) {
                 console.log(`No ${fieldName} provided - preserving existing image`);
-                return; // Don't add to updateData, preserve existing
+                return;
             }
 
             // If it's a File with actual content, upload it
@@ -539,9 +556,8 @@ export async function PUT(req: NextRequest) {
                         throw new Error(`Failed to upload ${fieldName}`);
                     }
                 } else {
-                    // Empty file - remove the image
-                    updateData[fieldName as keyof IInternship] = "";
-                    console.log(`Removed ${fieldName} (empty file)`);
+                    // Empty file - preserve existing instead of removing
+                    console.log(`Empty ${fieldName} file - preserving existing`);
                 }
             }
             // If it's explicitly "null" string, remove the image
@@ -549,35 +565,26 @@ export async function PUT(req: NextRequest) {
                 updateData[fieldName as keyof IInternship] = "";
                 console.log(`Explicitly removed ${fieldName}`);
             }
-            // If it's a URL string (existing image), preserve it
-            else if (typeof file === 'string' && file.startsWith('http')) {
-                console.log(`Preserving existing ${fieldName} URL`);
-                // Don't add to updateData - preserve existing value
-            }
-            // For any other case (empty string, undefined, etc.), preserve existing
+            // For any other case, preserve existing
             else {
-                console.log(`Preserving existing ${fieldName} (other case)`);
-                // Don't add to updateData - preserve existing value
+                console.log(`Preserving existing ${fieldName}`);
             }
         };
 
         try {
-            await handleImage("mainImage", "/internship/main");
-            await handleImage("bannerImage", "/internship/banner");
+            // Only process images if they are provided in form data
+            if (formData.has("mainImage")) {
+                await handleImage("mainImage", "/internship/main");
+            }
+            if (formData.has("bannerImage")) {
+                await handleImage("bannerImage", "/internship/banner");
+            }
         } catch (error) {
             return NextResponse.json(
                 { success: false, message: error instanceof Error ? error.message : "Error processing images" },
                 { status: 400 }
             );
         }
-
-        // --- Validate required fields based on schema ---
-        // if (updateData.stipend === "") {
-        //     return NextResponse.json(
-        //         { success: false, message: "Stipend is required and cannot be empty." },
-        //         { status: 400 }
-        //     );
-        // }
 
         // --- If nothing to update ---
         if (Object.keys(updateData).length === 0) {
@@ -587,11 +594,17 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        // --- Update in DB ---
+        console.log('Update data:', updateData);
+
+        // --- Update in DB with relaxed validation for partial updates ---
         const updatedInternship = await Internship.findByIdAndUpdate(
             id,
             { $set: updateData },
-            { new: true, runValidators: true }
+            { 
+                new: true, 
+                runValidators: false, // Turn off validators for partial updates
+                context: 'query' 
+            }
         );
 
         if (!updatedInternship) {
@@ -626,7 +639,6 @@ export async function PUT(req: NextRequest) {
         );
     }
 }
-
 
 export async function DELETE(req: NextRequest) {
     await connectToDatabase();
