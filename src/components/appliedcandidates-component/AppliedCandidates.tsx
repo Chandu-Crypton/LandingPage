@@ -22,6 +22,10 @@ const AppliedCandidatesComponent: React.FC<AppliedCandidateProps> = ({ candidate
     const [employmenttype, setEmploymenttype] = useState('');
     const [background, setBackground] = useState('');
     const [resume, setResume] = useState<File | null>(null);
+    const [experience, setExperience] = useState('');
+    const [currentCTC, setCurrentCTC] = useState('');
+    const [expectedCTC, setExpectedCTC] = useState('');
+    const [noticePeriod, setNoticePeriod] = useState('');
 
     const router = useRouter();
     const { addAppliedCandidates, updateAppliedCandidates, appliedcandidates } = useAppliedCandidates();
@@ -49,6 +53,10 @@ const AppliedCandidatesComponent: React.FC<AppliedCandidateProps> = ({ candidate
             setWorkplacetype(candidateToEdit.workplacetype);
             setEmploymenttype(candidateToEdit.employmenttype);
             setBackground(candidateToEdit.background);
+            setExperience(candidateToEdit.experience || '');
+            setCurrentCTC(candidateToEdit.currentCTC || '');
+            setExpectedCTC(candidateToEdit.expectedCTC || '');
+            setNoticePeriod(candidateToEdit.noticePeriod || '');
             // Note: File inputs can't be pre-populated for security reasons.
         }
     }
@@ -66,6 +74,10 @@ const AppliedCandidatesComponent: React.FC<AppliedCandidateProps> = ({ candidate
         formData.append('workplacetype', workplacetype);
         formData.append('employmenttype', employmenttype);
         formData.append('background', background);
+        formData.append('experience', experience);
+        formData.append('currentCTC', currentCTC);
+        formData.append('expectedCTC', expectedCTC);
+        formData.append('noticePeriod', noticePeriod);
         if (resume) {
             formData.append('resume', resume);
         }
@@ -96,6 +108,10 @@ const AppliedCandidatesComponent: React.FC<AppliedCandidateProps> = ({ candidate
         setEmploymenttype('');
         setBackground('');
         setResume(null);
+        setExperience('');
+        setCurrentCTC('');
+        setExpectedCTC('');
+        setNoticePeriod('');
     };
 
     return (
@@ -155,6 +171,11 @@ const AppliedCandidatesComponent: React.FC<AppliedCandidateProps> = ({ candidate
                         <Label>Resume</Label>
                         <input type="file"  required accept=".pdf,.doc,.docx," onChange={(e) => setResume(e.target.files ? e.target.files[0] : null)} className="w-full border rounded p-2" />
                     </div>
+
+                    <div><Label>Experience</Label><Input value={experience} required onChange={(e) => setExperience(e.target.value)} /></div>
+                    <div><Label>Current CTC</Label><Input value={currentCTC} required onChange={(e) => setCurrentCTC(e.target.value)} /></div>
+                    <div><Label>Expected CTC</Label><Input value={expectedCTC} required onChange={(e) => setExpectedCTC(e.target.value)} /></div>
+                    <div><Label>Notice Period</Label><Input value={noticePeriod} required onChange={(e) => setNoticePeriod(e.target.value)} /></div>
 
                     <div className="pt-6">
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">

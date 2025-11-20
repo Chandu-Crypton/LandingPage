@@ -68,9 +68,13 @@ export async function POST(req: NextRequest) {
     const employmenttype = formData.get('employmenttype') as string;
     const background = formData.get('background') as string;
     const resume = formData.get('resume') as File | null;
+    const experience = formData.get('experience') as string;
+    const currentCTC = formData.get('currentCTC') as string;
+    const expectedCTC = formData.get('expectedCTC') as string;
+    const noticePeriod = formData.get('noticePeriod') as string;
 
     // --- Validation ---
-    if (!title || !fullName || !location  || !email || !phone || !workplacetype || !employmenttype || !background || !resume) {
+    if (!title || !fullName || !location  || !email || !phone || !workplacetype || !employmenttype || !background || !resume || !experience || !currentCTC || !expectedCTC || !noticePeriod) {
       return NextResponse.json(
         { success: false, message: 'Missing required form data fields.' },
         { status: 400, headers: corsHeaders }
@@ -130,7 +134,11 @@ export async function POST(req: NextRequest) {
       workplacetype,
       employmenttype,
       background,
-      resume: resumeUrl, // Store the URL, not the file itself
+      resume: resumeUrl,
+      experience,
+      currentCTC,
+      expectedCTC,
+      noticePeriod
     });
 
     return NextResponse.json(

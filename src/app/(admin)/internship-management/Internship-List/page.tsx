@@ -112,7 +112,7 @@ const InternshipListPage: React.FC = () => {
                   <th className="px-5 py-3 text-left">Subtitle</th>
                   <th className="px-5 py-3 text-left">Fee</th>
                   <th className="px-5 py-3 text-left">Duration</th>
-                  <th className="px-5 py-3 text-left">Internship Type</th>
+                  {/* <th className="px-5 py-3 text-left">Internship Type</th> */}
                   {/* <th className="px-5 py-3 text-left">Benefits</th>
                   <th className="px-5 py-3 text-left">Eligibility</th>
                   <th className="px-5 py-3 text-left">Description</th> */}

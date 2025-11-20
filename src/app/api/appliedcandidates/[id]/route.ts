@@ -20,7 +20,11 @@ interface IAppliedCandidates {
     workplacetype?: string,
     employmenttype?: string,
     background?: string,
-    resume?: string
+    resume?: string,
+    experience?: string,
+    currentCTC?: string,
+    expectedCTC?: string,
+    noticePeriod?: string
 
 }
 
@@ -84,6 +88,10 @@ export async function PUT(req: Request) {
     const employmenttype = formData.get('employmenttype') as string | null;
     const background = formData.get('background') as string | null;
     const resumeFile = formData.get('resume') as File | null;
+    const experience = formData.get('experience') as string | null;
+    const currentCTC = formData.get('currentCTC') as string | null;
+    const expectedCTC = formData.get('expectedCTC') as string | null;
+    const noticePeriod = formData.get('noticePeriod') as string | null;
     
     // --- Text Field Validation and Assignment ---
     if (title !== null && typeof title === 'string') updateData.title = title;
@@ -92,6 +100,10 @@ export async function PUT(req: Request) {
     if (workplacetype !== null && typeof workplacetype === 'string') updateData.workplacetype = workplacetype;
     if (employmenttype !== null && typeof employmenttype === 'string') updateData.employmenttype = employmenttype;
     if (background !== null && typeof background === 'string') updateData.background = background;
+    if (experience !== null && typeof experience === 'string') updateData.experience = experience;
+    if (currentCTC !== null && typeof currentCTC === 'string') updateData.currentCTC = currentCTC;
+    if (expectedCTC !== null && typeof expectedCTC === 'string') updateData.expectedCTC = expectedCTC;
+    if (noticePeriod !== null && typeof noticePeriod === 'string') updateData.noticePeriod = noticePeriod;
     
     // --- Email Validation ---
     if (email !== null && typeof email === 'string') {

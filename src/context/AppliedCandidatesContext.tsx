@@ -14,7 +14,11 @@ type AppliedCandidate = {
     workplacetype: string,
     employmenttype: string,
     background: string,
-    resume: string
+    resume: string,
+    experience?: string,
+    currentCTC?: string,
+    expectedCTC?: string,
+    noticePeriod?: string,
     isDeleted: boolean;
     createdAt: string;
     updatedAt?: string;

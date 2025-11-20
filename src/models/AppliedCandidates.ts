@@ -11,7 +11,11 @@ export interface IAppliedCandidates extends Document {
     workplacetype: string,
     employmenttype: string,
     background: string,
-    resume: string
+    resume: string,
+    experience?: string,
+    currentCTC?: string,
+    expectedCTC?: string,
+    noticePeriod?: string
 
 }
 
@@ -67,7 +71,22 @@ const appliedCandidatesSchema: Schema = new Schema ({
         type: String,
         required: true
     },
-    
+        experience:{    
+        type: String,
+        required: false
+    },
+    currentCTC:{
+        type: String,
+        required: false
+    },
+    expectedCTC:{
+        type: String,
+        required: false
+    },
+    noticePeriod:{
+        type: String,
+        required: false
+    }
       },
      {timestamps : true})
 

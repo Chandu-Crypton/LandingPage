@@ -971,7 +971,7 @@ const candidateItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Candidates",
     subItems: [
-      // { name: "Add New Candidate", path: "/appliedcandidates-management/Add-Candidates", pro: false },
+      { name: "Add New Candidate", path: "/appliedcandidates-management/Add-Candidates", pro: false },
       { name: "Candidate List", path: "/appliedcandidates-management/Candidates-List", pro: false },
     ],
   },
