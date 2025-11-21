@@ -10,7 +10,7 @@ import { TrashBinIcon } from '@/icons';
 interface ISalesContact {
   _id: string;
   firstName: string;
-  lastName: string;
+//   lastName: string;
   email: string;
   phoneNumber: string;
   message: string;
@@ -122,10 +122,10 @@ const SaleContactDetailPage: React.FC = () => {
                         <p className="font-semibold">First Name</p>
                         <p className="text-gray-600 dark:text-gray-400">{contact.firstName}</p>
                     </div>
-                    <div>
+                    {/* <div>
                         <p className="font-semibold">Last Name</p>
                         <p className="text-gray-600 dark:text-gray-400">{contact.lastName}</p>
-                    </div>
+                    </div> */}
                     <div>
                         <p className="font-semibold">Email</p>
                         <p className="text-gray-600 dark:text-gray-400">{contact.email}</p>

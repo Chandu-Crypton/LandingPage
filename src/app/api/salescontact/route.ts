@@ -75,13 +75,23 @@ export async function POST(req: NextRequest) {
 
 
 
-        const phoneNumberAsNumber = Number(phoneNumber);
-        if (isNaN(phoneNumberAsNumber)) {
-            return NextResponse.json(
-                { success: false, message: 'Phone number must be a valid number.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
+        // const phoneNumberAsNumber = Number(phoneNumber);
+        // if (isNaN(phoneNumberAsNumber)) {
+        //     return NextResponse.json(
+        //         { success: false, message: 'Phone number must be a valid number.' },
+        //         { status: 400, headers: corsHeaders }
+        //     );
+        // }
+
+            const phoneNumberAsNumber = String(phoneNumber).trim();
+        
+                if (!/^[0-9]{10}$/.test(phoneNumberAsNumber)) {
+                    return NextResponse.json(
+                        { success: false, message: "Phone number must be exactly 10 digits." },
+                        { status: 400, headers: corsHeaders }
+                    );
+                }
+
 
 
 

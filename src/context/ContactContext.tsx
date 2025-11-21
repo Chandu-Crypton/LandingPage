@@ -50,14 +50,32 @@ export const ContactProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Add new contact
 // Add new contact
+// const addContact = async (contactData: ContactInput) => {
+//   try {
+//     await axios.post('/api/contact', contactData);
+//     fetchContacts();
+//   } catch (error) {
+//     console.error('Error adding contact:', error);
+//   }
+// };
+
 const addContact = async (contactData: ContactInput) => {
   try {
-    await axios.post('/api/contact', contactData);
-    fetchContacts();
+    const res = await axios.post('/api/contact', contactData);
+
+    if (res.status !== 200  && res.status !== 201 && res.data.success === false) {
+      throw new Error(res.data.message || "Failed to add contact");
+    }
+
+    return res.data; // return success
   } catch (error) {
-    console.error('Error adding contact:', error);
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || "API Error");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
+
 
 // Update contact
 const updateContact = async (id: string, contactData: Partial<ContactInput>) => {

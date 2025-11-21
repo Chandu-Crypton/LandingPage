@@ -49,13 +49,22 @@ export const SalesContactProvider = ({ children }: { children: React.ReactNode }
   }, []);
 
   // Add new contact
-// Add new contact
+
+
 const addContact = async (contactData: ContactInput) => {
   try {
-    await axios.post('/api/salescontact', contactData);
-    fetchContacts();
+    const res = await axios.post('/api/salescontact', contactData);
+
+    if (res.status !== 200  && res.status !== 201 && res.data.success === false) {
+      throw new Error(res.data.message || "Failed to add contact");
+    }
+
+    return res.data; // return success
   } catch (error) {
-    console.error('Error adding contact:', error);
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || "API Error");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
 

@@ -66,25 +66,78 @@ const ContactForm: React.FC<ContactFormProps> = ({ contactIdToEdit }) => {
   }, [contactIdToEdit, salecontacts]);
 
   // Submit handler
-  const handleSubmit = async (e: React.FormEvent) => {
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   const contactData = { phoneNumber, email, firstName,  message };
+
+  //   try {
+  //     if (contactIdToEdit) {
+  //       await updateContact(contactIdToEdit, contactData);
+  //       alert('Contact updated successfully!');
+  //     } else {
+  //       await addContact(contactData);
+  //       alert('Contact added successfully!');
+  //       clearForm();
+  //     }
+  //     router.push('/salescontact-management/SaleContact-List');
+  //   } catch (err) {
+  //     console.error('Submission failed:', err);
+  //     setError('An error occurred. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    const contactData = { phoneNumber, email, firstName,  message };
-
+  
+    const contactData = { phoneNumber, email, firstName, message };
+  
     try {
       if (contactIdToEdit) {
         await updateContact(contactIdToEdit, contactData);
-        alert('Contact updated successfully!');
+        alert("Contact updated successfully!");
       } else {
         await addContact(contactData);
-        alert('Contact added successfully!');
+        alert("Contact added successfully!");
         clearForm();
       }
+  
       router.push('/salescontact-management/SaleContact-List');
-    } catch (err) {
-      console.error('Submission failed:', err);
-      setError('An error occurred. Please try again.');
+    } catch (err: unknown) {
+      console.error("Submission failed:", err);
+  
+      let backendMessage = "Unknown error";
+  
+      if (err instanceof Error) {
+        backendMessage = err.message;
+      } else if (err && typeof err === "object") {
+        // try to extract a 'message' property
+        const maybeMessage = (err as { message?: unknown }).message;
+        if (typeof maybeMessage === "string") {
+          backendMessage = maybeMessage;
+        } else {
+          // try response.data.message shape
+          const maybeRespMsg = (err as { response?: { data?: { message?: unknown } } }).response?.data?.message;
+          if (typeof maybeRespMsg === "string") {
+            backendMessage = maybeRespMsg;
+          } else {
+            try {
+              backendMessage = JSON.stringify(err);
+            } catch {
+              backendMessage = String(err);
+            }
+          }
+        }
+      } else {
+        backendMessage = String(err);
+      }
+  
+      setError(backendMessage);
     } finally {
       setLoading(false);
     }

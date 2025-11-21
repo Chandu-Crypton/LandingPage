@@ -347,7 +347,7 @@ const SalesContactListPage: React.FC = () => {
               <thead className="bg-gray-100 text-gray-700 text-left">
                 <tr>
                   <th className="px-5 py-3">First Name</th>
-                  <th className="px-5 py-3">Last Name</th>
+                  {/* <th className="px-5 py-3">Last Name</th> */}
                   <th className="px-5 py-3">Email</th>
                   <th className="px-5 py-3">Phone Number</th>
                   <th className="px-5 py-3">Message</th>
@@ -365,7 +365,7 @@ const SalesContactListPage: React.FC = () => {
                       } hover:bg-gray-100`}
                     >
                       <td className="px-4 py-3 whitespace-nowrap">{entry.firstName}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{entry.lastName}</td>
+                      {/* <td className="px-4 py-3 whitespace-nowrap">{entry.lastName}</td> */}
                       <td className="px-4 py-3 break-words max-w-[150px]">{entry.email}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{entry.phoneNumber}</td>
                       <td className="px-4 py-3 break-words max-w-[200px]">{entry.message}</td>
