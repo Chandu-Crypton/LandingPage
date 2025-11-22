@@ -23,6 +23,7 @@ export interface IJob extends Document {
     workEnvironment: string[];
     openingType: string;
     benefits: {
+        icon?: string;
         title: string;
         description: string;
     }[];
@@ -127,6 +128,7 @@ const jobSchema: Schema = new Schema({
         required: true
     },
     benefits: [{
+        icon: { type: String, required: false, trim: true },
         title: { type: String, required: true, trim: true },
         description: { type: String, required: true, trim: true }
     }],

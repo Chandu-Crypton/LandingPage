@@ -25,6 +25,7 @@ type Job = {
   keyAttributes: string[],
   benefits: 
     {
+      icon?: string;
       title: string;
       description: string;
   }[];

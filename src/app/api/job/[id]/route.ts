@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import JobModal from "@/models/JobModal";
 import { connectToDatabase } from "@/utils/db";
 import mongoose from "mongoose";
-// import imagekit from "@/utils/imagekit";
+import imagekit from "@/utils/imagekit";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -73,7 +73,6 @@ export async function GET(req: Request) {
 
 
 
-
 export async function PUT(req: Request) {
     await connectToDatabase();
 
@@ -105,7 +104,6 @@ export async function PUT(req: Request) {
             formData = await req.formData();
 
             // Text fields
-
             const title = formData.get("title") as string | null;
             const about = formData.get("about") as string | null;
             const department = formData.get("department") as string | null;
@@ -129,27 +127,49 @@ export async function PUT(req: Request) {
             const jobSummary = JSON.parse(formData.get("jobSummary") as string || "[]");
             const keyAttributes = JSON.parse(formData.get("keyAttributes") as string || "[]");
 
-            // File field
-            // const bannerImage = formData.get("bannerImage") as File | null;
-            // let uploadedBannerUrl: string | undefined = undefined;
+            // Handle benefit icons upload
+            const benefitIcons: File[] = [];
+            const allBenefitIcons = formData.getAll("benefitIcons") as File[];
+            benefitIcons.push(...allBenefitIcons.filter(icon => icon && icon.size > 0));
 
-            // // Handle banner image upload if provided
-            // if (bannerImage && bannerImage.size > 0) {
-            //     const bytes = await bannerImage.arrayBuffer();
-            //     const buffer = Buffer.from(bytes);
+            console.log(`Found ${benefitIcons.length} benefit icons to upload for update`);
 
-            //     const uploadResponse = await imagekit.upload({
-            //         file: buffer,
-            //         fileName: bannerImage.name,
-            //         folder: "job-banners",
-            //     });
+            // Upload benefit icons to ImageKit and update benefits array
+            const updatedBenefits = await Promise.all(
+                benefits.map(async (benefit: { icon: string; title: string; description: string }, index: number) => {
+                    // If it's a new icon (marked with new_icon_ prefix) and we have a file
+                    if (benefit.icon.startsWith('new_icon_') && benefitIcons[index]) {
+                        const iconFile = benefitIcons[index];
+                        try {
+                            const bytes = await iconFile.arrayBuffer();
+                            const buffer = Buffer.from(bytes);
 
-            //     uploadedBannerUrl = uploadResponse.url;
-            //     updateData.bannerImage = uploadedBannerUrl;
-            // }
+                            const uploadResponse = await imagekit.upload({
+                                file: buffer,
+                                fileName: `benefit_icon_${Date.now()}_${index}`,
+                                folder: "job-benefits",
+                            });
+
+                            console.log(`Uploaded updated benefit icon ${index}: ${uploadResponse.url}`);
+                            
+                            return {
+                                ...benefit,
+                                icon: uploadResponse.url
+                            };
+                        } catch (uploadError) {
+                            console.error(`Failed to upload updated benefit icon ${index}:`, uploadError);
+                            return benefit; // Return original benefit if upload fails
+                        }
+                    }
+                    // If it's an existing URL, keep it as is
+                    return benefit;
+                })
+            );
+
+            // Filter out any null benefits
+            const filteredBenefits = updatedBenefits.filter(benefit => benefit !== null);
 
             // Populate updateData with text fields
-
             if (title !== null) updateData.title = title;
             if (about !== null) updateData.about = about;
             if (department !== null) updateData.department = department;
@@ -181,19 +201,18 @@ export async function PUT(req: Request) {
             if (Array.isArray(workEnvironment)) {
                 updateData.workEnvironment = workEnvironment.filter((item: string) => item.trim() !== '');
             }
-             if (Array.isArray(required)) {
+            if (Array.isArray(required)) {
                 updateData.required = required.filter((item: string) => item.trim() !== '');
             }
-             if (Array.isArray(preferredSkills)) {
+            if (Array.isArray(preferredSkills)) {
                 updateData.preferredSkills = preferredSkills.filter((item: string) => item.trim() !== '');
             }
-             if (Array.isArray(jobSummary)) {
+            if (Array.isArray(jobSummary)) {
                 updateData.jobSummary = jobSummary.filter((item: string) => item.trim() !== '');
             }
-             if (Array.isArray(keyAttributes)) {
+            if (Array.isArray(keyAttributes)) {
                 updateData.keyAttributes = keyAttributes.filter((item: string) => item.trim() !== '');
             }
-
 
             // Handle structured fields
             if (Array.isArray(requiredSkills)) {
@@ -206,14 +225,18 @@ export async function PUT(req: Request) {
                     .filter((skill: { title?: string; level?: string }) => skill.title !== '' || skill.level !== '');
             }
 
-            if (Array.isArray(benefits)) {
-                updateData.benefits = benefits
-                    .filter((benefit: string | { title?: string; description?: string }) => benefit && (typeof benefit === 'object' ? benefit.title || benefit.description : benefit))
-                    .map((benefit: string | { title?: string; description?: string }) => ({
-                        title: String(typeof benefit === 'object' ? benefit.title : benefit).trim(),
-                        description: String(typeof benefit === 'object' ? benefit.description : '').trim()
+            // Handle benefits with uploaded icons
+            if (Array.isArray(filteredBenefits)) {
+                updateData.benefits = filteredBenefits
+                    .filter((benefit: { icon?: string; title?: string; description?: string }) => 
+                        benefit && (benefit.icon || benefit.title || benefit.description))
+                    .map((benefit: { icon?: string; title?: string; description?: string }) => ({
+                        icon: String(benefit.icon || '').trim(),
+                        title: String(benefit.title || '').trim(),
+                        description: String(benefit.description || '').trim()
                     }))
-                    .filter((benefit: { title?: string; description?: string }) => benefit.title !== '' || benefit.description !== '');
+                    .filter((benefit: { icon?: string; title?: string; description?: string }) => 
+                        benefit.title !== '' || benefit.description !== '');
             }
 
         } else {
@@ -228,7 +251,8 @@ export async function PUT(req: Request) {
                         updateData[key] = new Date(body[key]);
                     } else if (key === 'benefits') {
                         if (Array.isArray(body[key])) {
-                            updateData.benefits = body[key].map((b: { title?: string; description?: string }) => ({
+                            updateData.benefits = body[key].map((b: { icon?: string; title?: string; description?: string }) => ({
+                                icon: String(b.icon || '').trim(),
                                 title: String(b.title || '').trim(),
                                 description: String(b.description || '').trim()
                             })).filter((b) => b.title !== '' || b.description !== '');
@@ -310,6 +334,7 @@ export async function PUT(req: Request) {
         );
     }
 }
+
 
 
 // DELETE a specific counter by ID

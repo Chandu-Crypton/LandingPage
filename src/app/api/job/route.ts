@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import JobModal from "@/models/JobModal";
-// import imagekit from '@/utils/imagekit';
+import imagekit from '@/utils/imagekit';
 import { connectToDatabase } from "@/utils/db";
 import mongoose from "mongoose";
 
@@ -44,10 +44,6 @@ export async function GET() {
 }
 
 
-
-
-
-
 export async function POST(req: NextRequest) {
   await connectToDatabase();
 
@@ -79,27 +75,77 @@ export async function POST(req: NextRequest) {
     const jobSummary = JSON.parse(formData.get("jobSummary") as string || "[]");
     const keyAttributes = JSON.parse(formData.get("keyAttributes") as string || "[]");
 
-    // File field
-    // const bannerImage = formData.get("bannerImage") as File | null;
-    // let uploadedBannerUrl: string | undefined = undefined;
+    // Handle benefit icons upload
+    const benefitIcons: File[] = [];
+    
+    // Get all benefit icons using getAll
+    const allBenefitIcons = formData.getAll("benefitIcons") as File[];
+    benefitIcons.push(...allBenefitIcons.filter(icon => icon && icon.size > 0));
 
-    // if (bannerImage) {
-    //   const bytes = await bannerImage.arrayBuffer();
-    //   const buffer = Buffer.from(bytes);
+    console.log(`Found ${benefitIcons.length} benefit icons to upload`);
+    console.log('Benefits data received:', benefits);
 
-    //   const uploadResponse = await imagekit.upload({
-    //     file: buffer, // binary buffer
-    //     fileName: bannerImage.name,
-    //     folder: "job-banners", // 👈 put in a folder
-    //   });
+    // Upload benefit icons to ImageKit and update benefits array
+    const updatedBenefits = await Promise.all(
+      benefits.map(async (benefit: {icon: string; title: string; description: string; }, index: number) => {
+        // Check if this benefit has a new icon to upload
+        const hasNewIcon = benefit.icon && benefit.icon.startsWith('new_icon_') && benefitIcons[index];
+        
+        if (hasNewIcon) {
+          const iconFile = benefitIcons[index];
+          try {
+            const bytes = await iconFile.arrayBuffer();
+            const buffer = Buffer.from(bytes);
 
-    //   uploadedBannerUrl = uploadResponse.url; // store URL in DB
-    // }
+            const uploadResponse = await imagekit.upload({
+              file: buffer,
+              fileName: `benefit_icon_${Date.now()}_${index}`,
+              folder: "job-benefits",
+            });
+
+            console.log(`Uploaded benefit icon ${index}: ${uploadResponse.url}`);
+            
+            return {
+              ...benefit,
+              icon: uploadResponse.url
+            };
+          } catch (uploadError) {
+            console.error(`Failed to upload benefit icon ${index}:`, uploadError);
+            return {
+              ...benefit,
+              icon: '' // Set empty string if upload fails
+            };
+          }
+        }
+        
+        // If no new icon but benefit has existing icon URL, keep it
+        if (benefit.icon && !benefit.icon.startsWith('new_icon_')) {
+          return benefit;
+        }
+        
+        // If no icon but benefit has content, return it with empty icon
+        if (benefit.title.trim() !== '' || benefit.description.trim() !== '') {
+          return {
+            ...benefit,
+            icon: benefit.icon || ''
+          };
+        }
+        
+        return null;
+      })
+    );
+
+    // Filter out any null benefits but keep benefits with content
+    const filteredBenefits = updatedBenefits.filter(benefit => 
+      benefit !== null && (benefit.title.trim() !== '' || benefit.description.trim() !== '')
+    );
+
+    console.log('Filtered benefits to save:', filteredBenefits);
 
     const parsedDeadline = applicationDeadline ? new Date(applicationDeadline) : null;
     const isDeadlineValid = parsedDeadline && !isNaN(parsedDeadline.getTime());
 
-    // 🔍 validation (same as before, shortened here for clarity)
+    // 🔍 validation
     if (
       !title ||
       !about ||
@@ -118,30 +164,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // requiredSkills + benefits validation as before ...
-        if (
-           !requiredSkills || !Array.isArray(requiredSkills) || !requiredSkills.every(b =>
-               typeof b === 'object' && b !== null &&
-               'title' in b && typeof b.title === 'string' && b.title.trim() !== '' && // Ensure title is a non-empty string
-               'level' in b && typeof b.level === 'string' // Level must be a string
-        )) {
-            return NextResponse.json(
-                { success: false, message: 'Invalid format for requiredSkills. Each skill must be an object with a title and a level.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
+    // requiredSkills + benefits validation
+    if (
+      !requiredSkills || !Array.isArray(requiredSkills) || !requiredSkills.every(b =>
+        typeof b === 'object' && b !== null &&
+        'title' in b && typeof b.title === 'string' && b.title.trim() !== '' &&
+        'level' in b && typeof b.level === 'string'
+      )) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid format for requiredSkills. Each skill must be an object with a title and a level.' },
+        { status: 400, headers: corsHeaders }
+      );
+    }
 
-        // Validate benefits structure specifically: must be an array of objects with title and description
-        if (!benefits || !Array.isArray(benefits) || !benefits.every(b =>
-            typeof b === 'object' && b !== null &&
-            'title' in b && typeof b.title === 'string' && b.title.trim() !== '' && // Ensure title is a non-empty string
-            'description' in b && typeof b.description === 'string' // Description can be empty, but must be string
-        )) {
-            return NextResponse.json(
-                { success: false, message: 'Invalid format for benefits. Each benefit must be an object with a non-empty title and a description.' },
-                { status: 400, headers: corsHeaders }
-            );
-        }
+    // Validate benefits structure - make this less strict for creation
+    if (!filteredBenefits || !Array.isArray(filteredBenefits) || !filteredBenefits.every(b =>
+      typeof b === 'object' && b !== null &&
+      'icon' in b && typeof b.icon === 'string' &&
+      'title' in b && typeof b.title === 'string' &&
+      'description' in b && typeof b.description === 'string'
+    )) {
+      console.error('Benefits validation failed. Benefits:', filteredBenefits);
+      return NextResponse.json(
+        { success: false, message: 'Invalid format for benefits. Each benefit must be an object with title, description, and icon fields.' },
+        { status: 400, headers: corsHeaders }
+      );
+    }
 
     if (typeof addHeading !== 'string' && addHeading !== null) {
       return NextResponse.json(
@@ -149,22 +197,24 @@ export async function POST(req: NextRequest) {
         { status: 400, headers: corsHeaders }
       );
     }
-      
-  if(keyResponsibilities.some((item: string[]) => typeof item !== "string") ||
-     jobDescription.some((item: string[]) => typeof item !== "string") ||
-     requirements.some((item: string[]) => typeof item !== "string") ||
-     workEnvironment.some((item: string[]) => typeof item !== "string") ||
-      required.some((item: string[]) => typeof item !== "string") ||
-       preferredSkills.some((item: string[]) => typeof item !== "string") ||
-        jobSummary.some((item: string[]) => typeof item !== "string") ||
-         keyAttributes.some((item: string[]) => typeof item !== "string")
+
+    if (keyResponsibilities.some((item: string) => typeof item !== "string") ||
+      jobDescription.some((item: string) => typeof item !== "string") ||
+      requirements.some((item: string) => typeof item !== "string") ||
+      workEnvironment.some((item: string) => typeof item !== "string") ||
+      required.some((item: string) => typeof item !== "string") ||
+      preferredSkills.some((item: string) => typeof item !== "string") ||
+      jobSummary.some((item: string) => typeof item !== "string") ||
+      keyAttributes.some((item: string) => typeof item !== "string")
     ) {
-        return NextResponse.json(
-            { success: false, message: "keyResponsibilities, jobDescription, requirements, and workEnvironment must be arrays of strings." },
-            { status: 400, headers: corsHeaders }
-        );
+      return NextResponse.json(
+        { success: false, message: "keyResponsibilities, jobDescription, requirements, and workEnvironment must be arrays of strings." },
+        { status: 400, headers: corsHeaders }
+      );
     }
+
     // ✅ All validations passed, create the job entry
+    console.log('Creating job with benefits:', filteredBenefits);
 
     const newEntry = await JobModal.create({
       addHeading: addHeading?.trim() || undefined,
@@ -183,13 +233,14 @@ export async function POST(req: NextRequest) {
       experience,
       openingType,
       workEnvironment,
-      benefits,
-      // bannerImage: uploadedBannerUrl, 
+      benefits: filteredBenefits, // Use the filtered benefits
       required,
       preferredSkills,
       jobSummary,
       keyAttributes
     });
+
+    console.log('Job created successfully:', newEntry._id);
 
     return NextResponse.json(
       { success: true, data: newEntry, message: "Job content created successfully." },
@@ -203,6 +254,7 @@ export async function POST(req: NextRequest) {
       const errors = Object.values(error.errors).map(
         (err) => (err as mongoose.Error.ValidatorError).message
       );
+      console.error('Mongoose validation error:', errors);
       return NextResponse.json(
         { success: false, message: "Validation failed: " + errors.join(", ") },
         { status: 400, headers: corsHeaders }
