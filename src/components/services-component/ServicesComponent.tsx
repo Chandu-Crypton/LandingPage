@@ -83,10 +83,10 @@ interface FormErrors {
     [key: string]: string | undefined;
 }
 
-const ServiceFormComponent: React.FC<ServiceFormProps> = ({ 
-    serviceIdToEdit, 
-    onSuccess, 
-    onCancel 
+const ServiceFormComponent: React.FC<ServiceFormProps> = ({
+    serviceIdToEdit,
+    onSuccess,
+    onCancel
 }) => {
     // States for service fields
     const [title, setTitle] = useState('');
@@ -270,7 +270,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
     }, [title, module, name, descriptionTitle, overview, mainImage]);
 
     // ==================== HANDLERS ====================
-    
+
     // Description handlers
     const handleDescriptionContentChange = (value: string) => {
         setDescription({
@@ -546,7 +546,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
-        
+
         if (!validateForm()) {
             alert('Please fill in all required fields.');
             return;
@@ -674,7 +674,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                 alert('Service added successfully!');
                 clearForm();
             }
-            
+
             if (onSuccess) {
                 onSuccess();
             } else {
@@ -728,7 +728,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         if (isDirty && !confirm('You have unsaved changes. Are you sure you want to cancel?')) {
             return;
         }
-        
+
         if (onCancel) {
             onCancel();
         } else {
@@ -923,20 +923,8 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
     // ==================== MAIN RENDER ====================
     return (
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
-            <ComponentCard 
+            <ComponentCard
                 title={serviceIdToEdit ? 'Edit Service Entry' : 'Add New Service Entry'}
-                // actionButtons={
-                //     <div className="flex gap-2">
-                //         <button
-                //             type="button"
-                //             onClick={handleCancel}
-                //             className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
-                //             disabled={loading}
-                //         >
-                //             Cancel
-                //         </button>
-                //     </div>
-                // }
             >
                 {formError && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
@@ -962,7 +950,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base"
                                     required
-                                    // error={formErrors.title}
+                                // error={formErrors.title}
                                 />
                             </div>
 
@@ -979,7 +967,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     required
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base"
-                                    // error={formErrors.name}
+                                // error={formErrors.name}
                                 />
                             </div>
                         </div>
@@ -1031,7 +1019,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                     </div>
 
 
-                       {/* Description Section */}
+                    {/* Description Section */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
                         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
                         <div className="space-y-4">
@@ -1048,7 +1036,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base mb-4"
                                     required
-                                    // error={formErrors.descriptionTitle}
+                                // error={formErrors.descriptionTitle}
                                 />
 
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Description Content</Label>
@@ -1098,6 +1086,21 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Main Image */}
+                            {renderImageUpload(
+                                'mainImage',
+                                'Main Image',
+                                mainImage,
+                                mainImagePreview,
+                                handleMainImageChange,
+                                () => {
+                                    setMainImage(null);
+                                    setMainImagePreview(null);
+                                },
+                                true,
+                                formErrors.mainImage
+                            )}
                         </div>
                     </div>
 
@@ -1118,37 +1121,26 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                 required
                             />
                         </div>
+
+                        {/* Overview Image */}
+                        {renderImageUpload(
+                            'overviewImage',
+                            'Overview Image',
+                            overviewImageFile,
+                            overviewImagePreview,
+                            handleOverviewImageChange,
+                            () => {
+                                setOverviewImageFile(null);
+                                setOverviewImagePreview(null);
+                            }
+                        )}
+
+
                     </div>
 
-                    {/* Overview Image */}
-                    {renderImageUpload(
-                        'overviewImage',
-                        'Overview Image',
-                        overviewImageFile,
-                        overviewImagePreview,
-                        handleOverviewImageChange,
-                        () => {
-                            setOverviewImageFile(null);
-                            setOverviewImagePreview(null);
-                        }
-                    )}
 
-                    {/* Main Image */}
-                    {renderImageUpload(
-                        'mainImage',
-                        'Main Image',
-                        mainImage,
-                        mainImagePreview,
-                        handleMainImageChange,
-                        () => {
-                            setMainImage(null);
-                            setMainImagePreview(null);
-                        },
-                        true,
-                        formErrors.mainImage
-                    )}
 
-                 
+
 
                     {/* Process Section */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
