@@ -47,12 +47,11 @@ export interface IService extends Document {
 const ServiceSchema = new Schema<IService>(
   {
     description: {
-      content: {type: String, required: true},
-      points: [{type: String}],
+      content: {type: String, required: false},
+      points: [{type: String, required: false}],
     },
-    overview: { type: String },
-    overviewImage: { type: String },
-
+    overview: { type: String, required: false },
+    overviewImage: { type: String, required: false },
     // question: {
     //   title: { type: String },
     //   answer: [{ type: String }],
@@ -60,24 +59,24 @@ const ServiceSchema = new Schema<IService>(
 
     process: [
       {
-        icon: { type: String, required: true },
-        title: { type: String, required: true },
-        description: [{ type: String }],
+        icon: { type: String, required: false },
+        title: { type: String, required: false },
+        description: [{ type: String, required: false }],
       },
     ],
 
     whyChooseUs: 
       {
-        icon: { type: String, required: true },
-        description: [{ type: String, required: true }],
+        icon: { type: String, required: false },
+        description: [{ type: String, required: false }],
       },
     
 
     benefits: [
       {
-        icon: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
+        icon: { type: String, required: false },
+        title: { type: String, required: false },
+        description: { type: String, required: false },
       },
     ],
 
@@ -99,9 +98,9 @@ const ServiceSchema = new Schema<IService>(
          icon:{type:String },
          title: {type: String}
   },],
-    module: { type: String },
-    name: { type: String },
-    title: { type: String, required: true },
+    module: { type: String, required: false },
+    name: { type: String, required: false },
+    title: { type: String, required: false },
     mainImage: { type: String },
     descriptionTitle: { type: String },
     isDeleted: { type: Boolean, default: false },

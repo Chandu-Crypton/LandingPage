@@ -135,9 +135,9 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         if (!title.trim()) errors.title = 'Title is required';
         if (!module.trim()) errors.module = 'Module is required';
         if (!name.trim()) errors.name = 'Service name is required';
-        if (!descriptionTitle.trim()) errors.descriptionTitle = 'Description title is required';
-        if (!overview.trim()) errors.overview = 'Overview is required';
-        if (!mainImage && !mainImagePreview) errors.mainImage = 'Main image is required';
+        // if (!descriptionTitle.trim()) errors.descriptionTitle = 'Description title is required';
+        // if (!overview.trim()) errors.overview = 'Overview is required';
+        // if (!mainImage && !mainImagePreview) errors.mainImage = 'Main image is required';
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
