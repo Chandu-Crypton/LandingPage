@@ -5,7 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { EyeIcon, PencilIcon } from 'lucide-react';
 import { ArrowUpIcon, UserIcon, TrashBinIcon } from '@/icons';
-
+import Image from 'next/image';
 import ComponentCard from '@/components/common/ComponentCard';
 import StatCard from '@/components/common/StatCard';
 import Label from '@/components/form/Label';
@@ -118,7 +118,7 @@ const ServiceListPage: React.FC = () => {
                             <thead>
                                 <tr className="text-gray-600 border-b border-gray-200">
                                     <th className="px-5 py-3 text-left">Title</th>
-                                    <th className='px-5 py-3 text-left'>AI Technology Image</th>
+                                    <th className='px-5 py-3 text-left'>Overview Image</th>
                                     <th className="px-5 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -127,11 +127,19 @@ const ServiceListPage: React.FC = () => {
                                     <tr key={service._id as string} className="border-t hover:bg-gray-50 transition">
                                         <td className="px-5 py-3 font-semibold">{service.title}</td>
                                         <td className="px-1 py-1">
-                                            <img
-                                                src={service.aiTechnologyImage}
-                                                alt="aiTechnology"
-                                                className="w-15 h-15 object-contain"
-                                            />
+                                            {service.overviewImage ? (
+                                                <Image
+                                                    src={service.overviewImage}
+                                                    alt={service.title || 'service image'}
+                                                    className="w-15 h-15 object-contain"
+                                                    width={60}
+                                                    height={60}
+                                                />
+                                            ) : (
+                                                <div className="w-15 h-15 bg-gray-100 flex items-center justify-center text-sm text-gray-400">
+                                                    No image
+                                                </div>
+                                            )}
                                         </td>
 
 

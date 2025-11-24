@@ -46,7 +46,6 @@ export async function GET(req: Request) {
   }
 }
 
-
 const uploadIfExists = async (file: File | null, oldValue?: string) => {
   if (file && file.size > 0) {
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -66,11 +65,6 @@ interface ProcessItem {
   description?: string[];
 }
 
-interface WhyChooseUsItem {
-  icon: string;
-  description: string[];
-}
-
 interface BenefitItem {
   icon: string;
   title: string;
@@ -83,30 +77,19 @@ interface FeatureItem {
   description: string;
 }
 
-interface IntegrationItem {
-  icon: string;
-  title: string;
-  description: string;
-}
-
-interface AiTechnologyItem {
-  icon: string;
-  description: string;
-}
-
 interface TechnologyItem {
   icon?: string;
   title?: string;
 }
 
+interface SubServiceItem {
+  icon: string;
+  title: string;
+}
+
 interface ProcessInput {
   icon?: string;
   title?: string;
-  description?: unknown;
-}
-
-interface WhyChooseUsInput {
-  icon?: string;
   description?: unknown;
 }
 
@@ -122,18 +105,12 @@ interface FeatureInput {
   description?: unknown;
 }
 
-interface IntegrationInput {
+interface TechnologyInput {
   icon?: string;
   title?: string;
-  description?: unknown;
 }
 
-interface AiTechnologyInput {
-  icon?: string;
-  description?: unknown;
-}
-
-interface TechnologyInput {
+interface SubServiceInput {
   icon?: string;
   title?: string;
 }
@@ -171,27 +148,41 @@ export async function PUT(req: NextRequest) {
       formData.get("mainImage") as File | null,
       existingService.mainImage
     );
+
     // ✅ Overview & Overview Image
     const overviewString = formData.get("overview")?.toString();
-    const overview: string[] = overviewString
-      ? JSON.parse(overviewString)
-      : existingService.overview || [];
+    const overview: string = overviewString
+      ? overviewString
+      : existingService.overview || "";
 
     const overviewImage = await uploadIfExists(
       formData.get("overviewImage") as File | null,
       existingService.overviewImage
     );
 
-    // ✅ Question
-    const questionString = formData.get("question")?.toString();
-    const question = questionString
-      ? JSON.parse(questionString)
-      : existingService.question;
-
+    // ✅ Description - FIXED: Match schema structure { content: string, points: string[] }
     const descriptionString = formData.get("description")?.toString();
-    const description = descriptionString
-      ? JSON.parse(descriptionString)
-      : existingService.description;
+    let description: { content: string; points: string[] };
+    
+    if (descriptionString) {
+      try {
+        const parsedDescription = JSON.parse(descriptionString) as unknown;
+        if (typeof parsedDescription === 'object' && parsedDescription !== null) {
+          const desc = parsedDescription as { content?: unknown; points?: unknown };
+          description = {
+            content: typeof desc.content === 'string' ? desc.content : "",
+            points: Array.isArray(desc.points) ? (desc.points as string[]) : []
+          };
+        } else {
+          description = existingService.description || { content: "", points: [] };
+        }
+      } catch (e) {
+        console.log("Description parsing error:", e);
+        description = existingService.description || { content: "", points: [] };
+      }
+    } else {
+      description = existingService.description || { content: "", points: [] };
+    }
 
     // ✅ Process
     const processString = formData.get("process")?.toString();
@@ -215,36 +206,34 @@ export async function PUT(req: NextRequest) {
       process = existingService.process || [];
     }
 
-    // ✅ Why Choose Us - Handle as single object, not array
+    // ✅ Why Choose Us - Handle as single object
     const whyChooseUsString = formData.get("whyChooseUs")?.toString();
-    let whyChooseUs: WhyChooseUsItem;
+    let whyChooseUs: { icon: string; description: string[] };
 
     if (whyChooseUsString) {
-      const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
-      const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
-      
-      let iconUrl = "";
-      if (whyChooseUsIconFile) {
-        iconUrl = "pending";
-      } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null && 'icon' in (parsedWhyChooseUs as WhyChooseUsInput)) {
-        iconUrl = (parsedWhyChooseUs as WhyChooseUsInput).icon || "";
-      }
+      try {
+        const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
+        const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
+        
+        let iconUrl = "";
+        if (whyChooseUsIconFile) {
+          iconUrl = "pending";
+        } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null && 'icon' in parsedWhyChooseUs) {
+          iconUrl = (parsedWhyChooseUs as { icon?: string }).icon || "";
+        }
 
-      if (Array.isArray(parsedWhyChooseUs) && parsedWhyChooseUs.length > 0) {
-        // Handle array format (fallback)
-        const firstItem = parsedWhyChooseUs[0] as WhyChooseUsInput;
-        whyChooseUs = {
-          icon: iconUrl,
-          description: Array.isArray(firstItem.description) ? firstItem.description as string[] : [],
-        };
-      } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
-        // Handle object format
-        const obj = parsedWhyChooseUs as WhyChooseUsInput;
-        whyChooseUs = {
-          icon: iconUrl,
-          description: Array.isArray(obj.description) ? obj.description as string[] : [],
-        };
-      } else {
+        if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
+          // Handle object format
+          const obj = parsedWhyChooseUs as { icon?: string; description?: unknown };
+          whyChooseUs = {
+            icon: iconUrl,
+            description: Array.isArray(obj.description) ? (obj.description as string[]) : [],
+          };
+        } else {
+          whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+        }
+      } catch (e) {
+        console.log("Why choose us parsing error:", e);
         whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
       }
     } else {
@@ -295,58 +284,15 @@ export async function PUT(req: NextRequest) {
       keyFeatures = existingService.keyFeatures || [];
     }
 
-    // ✅ Integration
-    const integrationString = formData.get("integration")?.toString();
-    let integration: IntegrationItem[] = [];
-    
-    if (integrationString) {
-      const parsedIntegration = JSON.parse(integrationString) as unknown;
-      if (Array.isArray(parsedIntegration)) {
-        integration = (parsedIntegration as IntegrationInput[]).map((i: IntegrationInput, index: number) => {
-          const integrationIconFile = formData.get(`integrationIcon_${index}`) as File | null;
-          const iconUrl = integrationIconFile ? "pending" : (i.icon || "");
-          
-          return {
-            icon: iconUrl,
-            title: i.title || "",
-            description: typeof i.description === 'string' ? i.description : "",
-          };
-        });
-      }
-    } else {
-      integration = existingService.integration || [];
-    }
-
-    // ✅ AI Technologies
-    const aiTechString = formData.get("aiTechnologies")?.toString();
-    let aiTechnologies: AiTechnologyItem[] = [];
-    
-    if (aiTechString) {
-      const parsedAiTech = JSON.parse(aiTechString) as unknown;
-      if (Array.isArray(parsedAiTech)) {
-        aiTechnologies = (parsedAiTech as AiTechnologyInput[]).map((a: AiTechnologyInput, index: number) => {
-          const aiTechIconFile = formData.get(`aiTechnologiesIcon_${index}`) as File | null;
-          const iconUrl = aiTechIconFile ? "pending" : (a.icon || "");
-          
-          return {
-            icon: iconUrl,
-            description: typeof a.description === 'string' ? a.description : "",
-          };
-        });
-      }
-    } else {
-      aiTechnologies = existingService.aiTechnologies || [];
-    }
-
-    // ✅ Technology - FIXED: Correct field name and icon file naming
+    // ✅ Technology
     const technologyString = formData.get("technology")?.toString();
-    let technology: TechnologyItem[] = []; // ✅ Changed from 'technologies' to 'technology'
+    let technology: TechnologyItem[] = [];
     
     if (technologyString) {
       const parsedTech = JSON.parse(technologyString) as unknown;
       if (Array.isArray(parsedTech)) {
         technology = (parsedTech as TechnologyInput[]).map((a: TechnologyInput, index: number) => {
-          const techIconFile = formData.get(`technologyIcon_${index}`) as File | null; // ✅ Fixed: technologyIcon_${index}
+          const techIconFile = formData.get(`technologyIcon_${index}`) as File | null;
           const iconUrl = techIconFile ? "pending" : (a.icon || "");
           
           return {
@@ -356,14 +302,29 @@ export async function PUT(req: NextRequest) {
         });
       }
     } else {
-      technology = existingService.technology || []; // ✅ Use existingService.technology
+      technology = existingService.technology || [];
     }
 
-    // ✅ AI Technology Image
-    const aiTechnologyImage = await uploadIfExists(
-      formData.get("aiTechnologyImage") as File | null,
-      existingService.aiTechnologyImage
-    );
+    // ✅ Sub Services - ADDED: Handle subServices
+    const subServicesString = formData.get("subServices")?.toString();
+    let subServices: SubServiceItem[] = [];
+    
+    if (subServicesString) {
+      const parsedSubServices = JSON.parse(subServicesString) as unknown;
+      if (Array.isArray(parsedSubServices)) {
+        subServices = (parsedSubServices as SubServiceInput[]).map((s: SubServiceInput, index: number) => {
+          const subServicesIconFile = formData.get(`subServicesIcon_${index}`) as File | null;
+          const iconUrl = subServicesIconFile ? "pending" : (s.icon || "");
+          
+          return {
+            icon: iconUrl,
+            title: typeof s.title === 'string' ? s.title : "",
+          };
+        });
+      }
+    } else {
+      subServices = existingService.subServices || [];
+    }
 
     // ✅ Upload icons that are marked as "pending"
     const uploadPendingIcons = async (items: { icon?: string }[], prefix: string) => {
@@ -384,7 +345,11 @@ export async function PUT(req: NextRequest) {
 
     // Upload all pending icons
     await uploadPendingIcons(process, "processIcon");
-    
+    await uploadPendingIcons(benefits, "benefitsIcon");
+    await uploadPendingIcons(keyFeatures, "keyFeaturesIcon");
+    await uploadPendingIcons(technology, "technologyIcon");
+    await uploadPendingIcons(subServices, "subServicesIcon"); // ADDED: Sub services icon upload
+
     // Upload why choose us icon
     if (whyChooseUs.icon === "pending") {
       const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
@@ -395,33 +360,24 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    await uploadPendingIcons(benefits, "benefitsIcon");
-    await uploadPendingIcons(keyFeatures, "keyFeaturesIcon");
-    await uploadPendingIcons(integration, "integrationIcon");
-    await uploadPendingIcons(aiTechnologies, "aiTechnologiesIcon");
-    await uploadPendingIcons(technology, "technologyIcon"); // ✅ Added technology icon upload
-
-    // ✅ Update the document - FIXED field names to match schema
+    // ✅ Update the document with all fields matching schema
     const updatedService = await ServiceModel.findByIdAndUpdate<IService>(
       id,
       {
-        module: modules, // ✅ Changed from 'modules' to 'module' to match schema
+        module: modules,
         name,
         title,
         descriptionTitle,
         mainImage,
         overview,
         overviewImage,
-        description,
-        question,
+        description, // Now matches { content: string, points: string[] }
+        subServices, // ADDED: Sub services field
         process,
         whyChooseUs,
         benefits,
         keyFeatures,
-        integration,
-        technology, // ✅ Changed from 'technologies' to 'technology' to match schema
-        aiTechnologies,
-        aiTechnologyImage,
+        technology,
       },
       { new: true, runValidators: true }
     );
@@ -434,7 +390,7 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, message: "Service updated successfully." }, // ✅ Fixed: should be success: true
+      { success: true, data: updatedService, message: "Service updated successfully." }, // FIXED: success: true and added data
       { status: 200, headers: corsHeaders }
     );
   } catch (error) {
@@ -457,7 +413,6 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-
 
 
 export async function DELETE(req: NextRequest) {

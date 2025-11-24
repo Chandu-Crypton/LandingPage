@@ -5,12 +5,12 @@ export interface IService extends Document {
         content: string,
         points: string[],
     },
-  overview?: string[];
+  overview?: string;
   overviewImage?: string;
-  question?: {
+  subServices?: {
     title: string;
-    answer: string[];
-  };
+    icon: string;
+  }[];
   process: {
     icon: string;
     title: string;
@@ -30,16 +30,6 @@ export interface IService extends Document {
     title: string;
     description: string;
   }[];
-  integration: {
-    icon: string;
-    title: string;
-    description: string;
-  }[];
-  aiTechnologies: {
-    icon: string;
-    description: string;
-  }[];
-  aiTechnologyImage?: string;
   technology:{
     icon: string,
     title: string,
@@ -60,13 +50,13 @@ const ServiceSchema = new Schema<IService>(
       content: {type: String, required: true},
       points: [{type: String}],
     },
-    overview: [{ type: String }],
+    overview: { type: String },
     overviewImage: { type: String },
 
-    question: {
-      title: { type: String },
-      answer: [{ type: String }],
-    },
+    // question: {
+    //   title: { type: String },
+    //   answer: [{ type: String }],
+    // },
 
     process: [
       {
@@ -93,28 +83,18 @@ const ServiceSchema = new Schema<IService>(
 
     keyFeatures: [
       {
-        icon: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
+        icon: { type: String, required: false },
+        title: { type: String, required: false },
+        description: { type: String, required: false },
       },
     ],
-
-    integration: [
+    subServices: [
       {
-        icon: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
+        title: { type: String, required: false },
+        icon: { type: String, required: false },
       },
     ],
 
-    aiTechnologies: [
-      {
-        icon: { type: String, required: true },
-        description: { type: String, required: true },
-      },
-    ],
-
-    aiTechnologyImage: { type: String },
     technology: [{
          icon:{type:String },
          title: {type: String}

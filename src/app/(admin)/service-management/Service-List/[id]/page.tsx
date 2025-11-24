@@ -135,17 +135,49 @@ const ServiceDetailPage: React.FC = () => {
 
                 {/* Main Service Details */}
                 <div className="space-y-8 text-gray-700 dark:text-gray-300">
+                    {/* Main Image */}
+                    {service.mainImage && (
+                        <div>
+                            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Main Image</h2>
+                            <div className="mt-2">
+                                <NextImage
+                                    src={service.mainImage}
+                                    alt={`Main image for ${service.title}`}
+                                    width={400}
+                                    height={300}
+                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
+                                    unoptimized={true}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Description Section */}
+                    {service.description && (
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                                {service.descriptionTitle || 'Description'}
+                            </h2>
+                            {service.description.content && (
+                                <p className="mb-4 text-gray-600 dark:text-gray-300">{service.description.content}</p>
+                            )}
+                            {service.description.points && service.description.points.length > 0 && (
+                                <ul className="list-disc list-inside space-y-2 ml-4">
+                                    {service.description.points.map((point, index) => (
+                                        <li key={index} className="text-gray-600 dark:text-gray-300">
+                                            {point}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
+
                     {/* Overview Section */}
-                    {service.overview && service.overview.length > 0 && (
+                    {service.overview && (
                         <div>
                             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Overview</h2>
-                            <div className="space-y-3">
-                                {service.overview.map((item, index) => (
-                                    <p key={index} className="text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-                                        {item}
-                                    </p>
-                                ))}
-                            </div>
+                            <p className="text-gray-600 dark:text-gray-300">{service.overview}</p>
                         </div>
                     )}
 
@@ -166,23 +198,28 @@ const ServiceDetailPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Question Section */}
-                    {service.question && service.question.title && (
+                    {/* Sub Services Section */}
+                    {service.subServices && service.subServices.length > 0 && (
                         <div>
-                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Question & Answer</h2>
-                            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                                <h3 className="font-medium text-lg text-gray-900 dark:text-white mb-3">
-                                    {service.question.title}
-                                </h3>
-                                {service.question.answer && service.question.answer.length > 0 && (
-                                    <div className="space-y-2">
-                                        {service.question.answer.map((answer, index) => (
-                                            <p key={index} className="text-gray-600 dark:text-gray-300 pl-4 border-l-2 border-blue-500">
-                                                {answer}
-                                            </p>
-                                        ))}
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Sub Services</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {service.subServices.map((subService, index) => (
+                                    <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md text-center">
+                                        {subService.icon && (
+                                            <NextImage
+                                                src={subService.icon}
+                                                alt={`${subService.title} icon`}
+                                                width={60}
+                                                height={60}
+                                                className="mx-auto mb-3 object-contain"
+                                                unoptimized={true}
+                                            />
+                                        )}
+                                        <h3 className="font-medium text-lg text-gray-900 dark:text-white">
+                                            {subService.title}
+                                        </h3>
                                     </div>
-                                )}
+                                ))}
                             </div>
                         </div>
                     )}
@@ -310,70 +347,30 @@ const ServiceDetailPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Integration Section */}
-                    {service.integration && service.integration.length > 0 && (
+                    {/* Technology Section */}
+                    {service.technology && service.technology.length > 0 && (
                         <div>
-                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Integration</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {service.integration.map((integration, index) => (
-                                    <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md flex items-start">
-                                        {integration.icon && (
-                                            <NextImage
-                                                src={integration.icon}
-                                                alt={`${integration.title} icon`}
-                                                width={50}
-                                                height={50}
-                                                className="mr-4 object-contain flex-shrink-0"
-                                                unoptimized={true}
-                                            />
-                                        )}
-                                        <div>
-                                            <h3 className="font-medium text-lg text-gray-900 dark:text-white">{integration.title}</h3>
-                                            <p className="mt-1 text-gray-600 dark:text-gray-300">{integration.description}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* AI Technologies Section */}
-                    {service.aiTechnologies && service.aiTechnologies.length > 0 && (
-                        <div>
-                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">AI Technologies</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {service.aiTechnologies.map((tech, index) => (
-                                    <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md flex items-start">
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Technology</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                {service.technology.map((tech, index) => (
+                                    <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md text-center">
                                         {tech.icon && (
                                             <NextImage
                                                 src={tech.icon}
-                                                alt={`AI Technology icon ${index + 1}`}
+                                                alt={`${tech.title} icon`}
                                                 width={50}
                                                 height={50}
-                                                className="mr-4 object-contain flex-shrink-0"
+                                                className="mx-auto mb-2 object-contain"
                                                 unoptimized={true}
                                             />
                                         )}
-                                        <p className="text-gray-600 dark:text-gray-300">{tech.description}</p>
+                                        {tech.title && (
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white mt-2">
+                                                {tech.title}
+                                            </p>
+                                        )}
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* AI Technology Image */}
-                    {service.aiTechnologyImage && (
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">AI Technology Image</h2>
-                            <div className="mt-2">
-                                <NextImage
-                                    src={service.aiTechnologyImage}
-                                    alt={`AI Technology image for ${service.title}`}
-                                    width={400}
-                                    height={300}
-                                    className="rounded-md shadow-md object-cover w-full h-auto max-w-lg mx-auto"
-                                    unoptimized={true}
-                                />
                             </div>
                         </div>
                     )}

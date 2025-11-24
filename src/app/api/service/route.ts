@@ -61,6 +61,9 @@ const uploadFile = async (file: File | null, folder = "/service_images") => {
   return uploadRes.url;
 };
 
+
+
+
 export async function POST(req: NextRequest) {
   await connectToDatabase();
 
@@ -74,19 +77,29 @@ export async function POST(req: NextRequest) {
     const title = formData.get("title")?.toString() || "";
     const descriptionTitle = formData.get("descriptionTitle")?.toString() || "";
     const mainImage = await uploadFile(formData.get("mainImage") as File | null);
-    // ✅ Overview
-    const overviewString = formData.get("overview")?.toString() || "[]";
-    const overview: string[] = JSON.parse(overviewString);
+    
+    // ✅ Overview - FIXED: Handle as plain string, not JSON
+    const overview = formData.get("overview")?.toString() || "";
     const overviewImage = await uploadFile(formData.get("overviewImage") as File | null);
 
-    // ✅ Question (optional)
-    const questionString = formData.get("question")?.toString() || "";
-    const question = questionString ? JSON.parse(questionString) : undefined;
-
-    const descriptionString = formData.get("description")?.toString() || "";
-    const description = descriptionString ? JSON.parse(descriptionString) : undefined;
-
-
+    // ✅ Description - FIXED: Match schema structure
+    const descriptionString = formData.get("description")?.toString() || "{}";
+    let description: { content: string; points: string[] };
+    try {
+      const parsedDescription = JSON.parse(descriptionString) as unknown;
+      if (typeof parsedDescription === 'object' && parsedDescription !== null) {
+        const desc = parsedDescription as { content?: unknown; points?: unknown };
+        description = {
+          content: typeof desc.content === 'string' ? desc.content : "",
+          points: Array.isArray(desc.points) ? (desc.points as string[]) : []
+        };
+      } else {
+        description = { content: "", points: [] };
+      }
+    } catch (e) {
+      console.log("Description parsing error:", e);
+      description = { content: "", points: [] };
+    }
 
     // ✅ Process
     const processString = formData.get("process")?.toString() || "[]";
@@ -103,35 +116,24 @@ export async function POST(req: NextRequest) {
       })
       : [];
 
-    // ✅ Why Choose Us - FIXED: Handle both object and array
+    // ✅ Why Choose Us - FIXED: Match schema structure
     const whyChooseUsString = formData.get("whyChooseUs")?.toString() || "{}";
-    type WhyChooseUsItem = { icon?: string; description?: string[] };
+    let whyChooseUs: { icon: string; description: string[] };
 
-    let whyChooseUs: WhyChooseUsItem;
     try {
       const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
 
-      // Handle both object and array formats
-      if (Array.isArray(parsedWhyChooseUs) && parsedWhyChooseUs.length > 0) {
-        // If it's an array, take the first item
-        const firstItem = parsedWhyChooseUs[0] as { icon?: string; description?: unknown };
-        whyChooseUs = {
-          icon: firstItem.icon ?? "",
-          description: Array.isArray(firstItem.description) ? (firstItem.description as string[]) : [],
-        };
-      } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
-        // If it's an object, use it directly
+      if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
         const obj = parsedWhyChooseUs as { icon?: string; description?: unknown };
         whyChooseUs = {
           icon: obj.icon ?? "",
           description: Array.isArray(obj.description) ? (obj.description as string[]) : [],
         };
       } else {
-        // Default empty object
         whyChooseUs = { icon: "", description: [] };
       }
     } catch (e) {
-      console.log("why choose us error occured:", e)
+      console.log("Why choose us error occurred:", e);
       whyChooseUs = { icon: "", description: [] };
     }
 
@@ -165,107 +167,65 @@ export async function POST(req: NextRequest) {
       })
       : [];
 
-    // ✅ Integration
-    const integrationString = formData.get("integration")?.toString() || "[]";
-    type IntegrationItem = { icon?: string; title?: string; description?: string };
-    const parsedIntegration = JSON.parse(integrationString) as unknown;
-    const integration: IntegrationItem[] = Array.isArray(parsedIntegration)
-      ? (parsedIntegration as unknown[]).map((i: unknown) => {
-        const obj = i as { icon?: string; title?: string; description?: unknown };
-        return {
-          icon: obj.icon ?? "",
-          title: obj.title ?? "",
-          description: typeof obj.description === 'string' ? obj.description : "",
-        };
-      })
+    // ✅ Technology - FIXED: Proper upload handling
+    const technologyString = formData.get("technology")?.toString() || "[]";
+    type TechItem = { icon?: string; title?: string };
+    const parsedTech = JSON.parse(technologyString) as unknown;
+    const technology: TechItem[] = Array.isArray(parsedTech)
+      ? (parsedTech as unknown[]).map((a: unknown, index) => {
+          const obj = a as { icon?: string; title?: unknown };
+          console.log(`🔧 Technology item ${index}:`, obj);
+          return {
+            icon: obj.icon ?? "",
+            title: typeof obj.title === 'string' ? obj.title : "",
+          };
+        })
       : [];
 
-    // ✅ AI Technologies
-    const aiTechString = formData.get("aiTechnologies")?.toString() || "[]";
-    type AITechItem = { icon?: string; description?: string };
-    const parsedAiTech = JSON.parse(aiTechString) as unknown;
-    const aiTechnologies: AITechItem[] = Array.isArray(parsedAiTech)
-      ? (parsedAiTech as unknown[]).map((a: unknown) => {
-        const obj = a as { icon?: string; description?: unknown };
-        return {
-          icon: obj.icon ?? "",
-          description: typeof obj.description === 'string' ? obj.description : "",
-        };
-      })
+    // ✅ Sub Services - FIXED: Proper upload handling
+    const subServicesString = formData.get("subServices")?.toString() || "[]";
+    type SubServiceItem = { icon?: string; title?: string };
+    const parsedSubServices = JSON.parse(subServicesString) as unknown;
+    const subServices: SubServiceItem[] = Array.isArray(parsedSubServices)
+      ? (parsedSubServices as unknown[]).map((a: unknown, index) => {
+          const obj = a as { icon?: string; title?: unknown };
+          console.log(`🔧 Sub Service item ${index}:`, obj);
+          return {
+            icon: obj.icon ?? "",
+            title: typeof obj.title === 'string' ? obj.title : "",
+          };
+        })
       : [];
 
-    //Technology
-  //Technology
-// ✅ Technology - with better debugging
-const technologyString = formData.get("technology")?.toString() || "[]";
-console.log("🔧 Technology raw string:", technologyString);
-
-type TechItem = { icon?: string; title?: string };
-const parsedTech = JSON.parse(technologyString) as unknown;
-const technology: TechItem[] = Array.isArray(parsedTech)
-  ? (parsedTech as unknown[]).map((a: unknown, index) => {
-      const obj = a as { icon?: string; title?: unknown };
-      console.log(`🔧 Technology item ${index}:`, obj);
-      return {
-        icon: obj.icon ?? "",
-        title: typeof obj.title === 'string' ? obj.title : "",
-      };
-    })
-  : [];
-
-console.log("🔧 Technology array before upload:", technology);
-
-// Upload technology icons with debugging
-console.log("🔧 Starting technology icon upload...");
- // ✅ THIS WAS MISSING
-console.log("🔧 Technology array after upload:", technology);
-
-// Also check if technologyIcon files exist in formData
-const technologyIconFiles = [];
-for (let i = 0; i < technology.length; i++) {
-  const fieldName = `technologyIcon_${i}`;
-  const file = formData.get(fieldName);
-  technologyIconFiles.push({
-    fieldName,
-    hasFile: !!file,
-    fileSize: file instanceof File ? file.size : undefined
-  });
-}
-console.log("🔧 Technology icon files in formData:", technologyIconFiles);
-
-    const aiTechnologyImage = await uploadFile(formData.get("aiTechnologyImage") as File | null);
-
-    // ✅ Upload icons
+    // ✅ Upload icons function - IMPROVED
     const uploadIcons = async (items: Array<{ icon?: string }>, prefix: string) => {
-      for (let i = 0; i < items.length; i++) {
+      const updatedItems = [...items];
+      for (let i = 0; i < updatedItems.length; i++) {
         const iconFile = formData.get(`${prefix}_${i}`) as File | null;
         if (iconFile && iconFile.size > 0) {
-          items[i].icon = await uploadFile(iconFile);
-        } else if (items[i].icon === "pending") {
-          items[i].icon = ""; // Set to empty if no file uploaded
+          updatedItems[i].icon = await uploadFile(iconFile);
+        } else if (updatedItems[i].icon === "pending") {
+          updatedItems[i].icon = "";
         }
       }
+      return updatedItems;
     };
 
-    // Upload process icons
-    await uploadIcons(process, "processIcon");
-    await uploadIcons(technology, "technologyIcon")
+    // ✅ Upload all icons
+    const processWithIcons = await uploadIcons(process, "processIcon");
+    const technologyWithIcons = await uploadIcons(technology, "technologyIcon");
+    const subServicesWithIcons = await uploadIcons(subServices, "subServicesIcon");
+    const benefitsWithIcons = await uploadIcons(benefits, "benefitsIcon");
+    const keyFeaturesWithIcons = await uploadIcons(keyFeatures, "keyFeaturesIcon");
 
     // Upload why choose us icon
     const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
     if (whyChooseUsIconFile && whyChooseUsIconFile.size > 0) {
-      whyChooseUs.icon = await uploadFile(whyChooseUsIconFile);
+      whyChooseUs.icon = await uploadFile(whyChooseUsIconFile) || "";
     } else if (whyChooseUs.icon === "pending") {
       whyChooseUs.icon = "";
     }
 
-    // Upload other icons
-    await uploadIcons(benefits, "benefitsIcon");
-    await uploadIcons(keyFeatures, "keyFeaturesIcon");
-    await uploadIcons(integration, "integrationIcon");
-    await uploadIcons(aiTechnologies, "aiTechnologiesIcon");
-  
-  
     // ✅ Validation
     if (!title) {
       return NextResponse.json(
@@ -274,25 +234,22 @@ console.log("🔧 Technology icon files in formData:", technologyIconFiles);
       );
     }
 
-    // ✅ Create new document
+    // ✅ Create new document with corrected structure
     const newService = await ServiceModel.create({
       module: modules,
       name,
       title,
       mainImage,
       descriptionTitle,
-      overview,
+      overview, // Now using the plain string directly
       overviewImage,
       description,
-      question,
-      process,
+      subServices: subServicesWithIcons,
+      process: processWithIcons,
       whyChooseUs,
-      benefits,
-      keyFeatures,
-      integration,
-      technology,
-      aiTechnologies,
-      aiTechnologyImage,
+      benefits: benefitsWithIcons,
+      keyFeatures: keyFeaturesWithIcons,
+      technology: technologyWithIcons,
     });
 
     return NextResponse.json(
