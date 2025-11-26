@@ -261,34 +261,32 @@ const ServiceDetailPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Why Choose Us Section */}
-                    {service.whyChooseUs && (
+                    {/* Why Choose Us Section - UPDATED FOR ARRAY */}
+                    {service.whyChooseUs && service.whyChooseUs.length > 0 && (
                         <div>
                             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Why Choose Us</h2>
-                            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                                <div className="flex items-start">
-                                    {service.whyChooseUs.icon && (
-                                        <NextImage
-                                            src={service.whyChooseUs.icon}
-                                            alt="Why choose us icon"
-                                            width={50}
-                                            height={50}
-                                            className="mr-4 object-contain flex-shrink-0"
-                                            unoptimized={true}
-                                        />
-                                    )}
-                                    <div className="flex-1">
-                                        {service.whyChooseUs.description && service.whyChooseUs.description.length > 0 && (
-                                            <div className="space-y-2">
-                                                {service.whyChooseUs.description.map((desc, index) => (
-                                                    <p key={index} className="text-gray-600 dark:text-gray-300">
-                                                        {desc}
-                                                    </p>
-                                                ))}
+                            <div className="space-y-4">
+                                {service.whyChooseUs.map((item, index) => (
+                                    <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
+                                        <div className="flex items-start">
+                                            {item.icon && (
+                                                <NextImage
+                                                    src={item.icon}
+                                                    alt={`Why choose us icon ${index + 1}`}
+                                                    width={50}
+                                                    height={50}
+                                                    className="mr-4 object-contain flex-shrink-0"
+                                                    unoptimized={true}
+                                                />
+                                            )}
+                                            <div className="flex-1">
+                                                <p className="text-gray-600 dark:text-gray-300">
+                                                    {item.description}
+                                                </p>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     )}
