@@ -115,6 +115,11 @@ interface SubServiceInput {
   title?: string;
 }
 
+interface WhyChooseUsInput {
+  icon?: string;
+  description?: string;
+}; 
+
 export async function PUT(req: NextRequest) {
   await connectToDatabase();
 
@@ -206,38 +211,42 @@ export async function PUT(req: NextRequest) {
       process = existingService.process || [];
     }
 
-    // ✅ Why Choose Us - Handle as single object
+    // ✅ FIXED: Why Choose Us - Handle as array to match schema
     const whyChooseUsString = formData.get("whyChooseUs")?.toString();
-    let whyChooseUs: { icon: string; description: string[] };
+    let whyChooseUs: { icon: string; description: string }[] = [];
 
     if (whyChooseUsString) {
       try {
         const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
-        const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
         
-        let iconUrl = "";
-        if (whyChooseUsIconFile) {
-          iconUrl = "pending";
-        } else if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null && 'icon' in parsedWhyChooseUs) {
-          iconUrl = (parsedWhyChooseUs as { icon?: string }).icon || "";
-        }
-
-        if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
-          // Handle object format
-          const obj = parsedWhyChooseUs as { icon?: string; description?: unknown };
-          whyChooseUs = {
-            icon: iconUrl,
-            description: Array.isArray(obj.description) ? (obj.description as string[]) : [],
-          };
+        if (Array.isArray(parsedWhyChooseUs)) {
+          whyChooseUs = (parsedWhyChooseUs as WhyChooseUsInput[]).map((w: WhyChooseUsInput, index: number) => {
+            const whyChooseUsIconFile = formData.get(`whyChooseUsIcon_${index}`) as File | null;
+            const iconUrl = whyChooseUsIconFile ? "pending" : (w.icon || "");
+            
+            return {
+              icon: iconUrl,
+              description: typeof w.description === 'string' ? w.description : "",
+            };
+          });
         } else {
-          whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+          // Handle legacy single object format by converting to array
+          const obj = parsedWhyChooseUs as { icon?: string; description?: unknown };
+          if (typeof obj === 'object' && obj !== null) {
+            whyChooseUs = [{
+              icon: obj.icon || "",
+              description: typeof obj.description === 'string' ? obj.description : "",
+            }];
+          } else {
+            whyChooseUs = existingService.whyChooseUs || [];
+          }
         }
       } catch (e) {
         console.log("Why choose us parsing error:", e);
-        whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+        whyChooseUs = existingService.whyChooseUs || [];
       }
     } else {
-      whyChooseUs = existingService.whyChooseUs || { icon: "", description: [] };
+      whyChooseUs = existingService.whyChooseUs || [];
     }
 
     // ✅ Benefits
@@ -305,7 +314,7 @@ export async function PUT(req: NextRequest) {
       technology = existingService.technology || [];
     }
 
-    // ✅ Sub Services - ADDED: Handle subServices
+    // ✅ Sub Services
     const subServicesString = formData.get("subServices")?.toString();
     let subServices: SubServiceItem[] = [];
     
@@ -348,17 +357,8 @@ export async function PUT(req: NextRequest) {
     await uploadPendingIcons(benefits, "benefitsIcon");
     await uploadPendingIcons(keyFeatures, "keyFeaturesIcon");
     await uploadPendingIcons(technology, "technologyIcon");
-    await uploadPendingIcons(subServices, "subServicesIcon"); // ADDED: Sub services icon upload
-
-    // Upload why choose us icon
-    if (whyChooseUs.icon === "pending") {
-      const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
-      if (whyChooseUsIconFile && whyChooseUsIconFile.size > 0) {
-        whyChooseUs.icon = await uploadIfExists(whyChooseUsIconFile, "") || "";
-      } else {
-        whyChooseUs.icon = "";
-      }
-    }
+    await uploadPendingIcons(subServices, "subServicesIcon");
+    await uploadPendingIcons(whyChooseUs, "whyChooseUsIcon"); // ADDED: Why choose us icon upload
 
     // ✅ Update the document with all fields matching schema
     const updatedService = await ServiceModel.findByIdAndUpdate<IService>(
@@ -371,10 +371,10 @@ export async function PUT(req: NextRequest) {
         mainImage,
         overview,
         overviewImage,
-        description, // Now matches { content: string, points: string[] }
-        subServices, // ADDED: Sub services field
+        description,
+        subServices,
         process,
-        whyChooseUs,
+        whyChooseUs, // ✅ Now as array to match schema
         benefits,
         keyFeatures,
         technology,
@@ -390,7 +390,7 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: true, data: updatedService, message: "Service updated successfully." }, // FIXED: success: true and added data
+      { success: true, data: updatedService, message: "Service updated successfully." },
       { status: 200, headers: corsHeaders }
     );
   } catch (error) {
@@ -413,7 +413,6 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-
 
 export async function DELETE(req: NextRequest) {
     await connectToDatabase();

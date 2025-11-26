@@ -32,7 +32,7 @@ interface ProcessItem {
 
 interface WhyChooseUsItem {
     icon: string;
-    description: string[];
+    description: string;
     iconFile: File | null;
     iconPreview: string | null;
 }
@@ -106,12 +106,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
 
     // Arrays for different sections
     const [processItems, setProcessItems] = useState<ProcessItem[]>([]);
-    const [whyChooseUs, setWhyChooseUs] = useState<WhyChooseUsItem>({
-        icon: '',
-        description: [],
-        iconFile: null,
-        iconPreview: null
-    });
+    const [whyChooseUs, setWhyChooseUs] = useState<WhyChooseUsItem[]>([]);
     const [benefitsItems, setBenefitsItems] = useState<BenefitsItem[]>([]);
     const [keyFeaturesItems, setKeyFeaturesItems] = useState<KeyFeaturesItem[]>([]);
     const [subServicesItems, setSubServicesItems] = useState<SubServicesItem[]>([]);
@@ -135,9 +130,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         if (!title.trim()) errors.title = 'Title is required';
         if (!module.trim()) errors.module = 'Module is required';
         if (!name.trim()) errors.name = 'Service name is required';
-        // if (!descriptionTitle.trim()) errors.descriptionTitle = 'Description title is required';
-        // if (!overview.trim()) errors.overview = 'Overview is required';
-        // if (!mainImage && !mainImagePreview) errors.mainImage = 'Main image is required';
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -169,19 +161,14 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                 })) || []
             );
 
-            // Why choose us
+            // Why choose us - NOW AN ARRAY
             setWhyChooseUs(
-                serviceData.whyChooseUs ? {
-                    icon: serviceData.whyChooseUs.icon || '',
-                    description: serviceData.whyChooseUs.description || [],
-                    iconPreview: serviceData.whyChooseUs.icon || null,
+                serviceData.whyChooseUs?.map((item): WhyChooseUsItem => ({
+                    icon: item.icon || '',
+                    description: item.description || '',
+                    iconPreview: item.icon || null,
                     iconFile: null
-                } : {
-                    icon: '',
-                    description: [],
-                    iconFile: null,
-                    iconPreview: null
-                }
+                })) || []
             );
 
             // Benefits
@@ -323,28 +310,24 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         setProcessItems(processItems.filter((_, i) => i !== index));
     };
 
-    // Why Choose Us handlers
-    const handleWhyChooseUsDescriptionChange = (index: number, value: string) => {
-        const newDescriptions = [...whyChooseUs.description];
-        newDescriptions[index] = value;
-        setWhyChooseUs({
-            ...whyChooseUs,
-            description: newDescriptions
-        });
+    // Why Choose Us handlers - UPDATED FOR ARRAY
+    const handleWhyChooseUsChange = (index: number, field: keyof WhyChooseUsItem, value: string) => {
+        const newItems = [...whyChooseUs];
+        newItems[index] = { ...newItems[index], [field]: value };
+        setWhyChooseUs(newItems);
     };
 
-    const addWhyChooseUsDescription = () => {
-        setWhyChooseUs({
-            ...whyChooseUs,
-            description: [...whyChooseUs.description, '']
-        });
+    const addWhyChooseUsItem = () => {
+        setWhyChooseUs([...whyChooseUs, {
+            icon: '',
+            description: '',
+            iconFile: null,
+            iconPreview: null
+        }]);
     };
 
-    const removeWhyChooseUsDescription = (index: number) => {
-        setWhyChooseUs({
-            ...whyChooseUs,
-            description: whyChooseUs.description.filter((_, i) => i !== index)
-        });
+    const removeWhyChooseUsItem = (index: number) => {
+        setWhyChooseUs(whyChooseUs.filter((_, i) => i !== index));
     };
 
     // Benefits handlers
@@ -465,13 +448,16 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         setProcessItems(newItems);
     };
 
-    const handleWhyChooseUsIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Why Choose Us icon handler - UPDATED FOR ARRAY
+    const handleWhyChooseUsIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
-        setWhyChooseUs({
-            ...whyChooseUs,
+        const newItems = [...whyChooseUs];
+        newItems[index] = {
+            ...newItems[index],
             iconFile: file,
-            iconPreview: file ? URL.createObjectURL(file) : whyChooseUs.iconPreview
-        });
+            iconPreview: file ? URL.createObjectURL(file) : newItems[index].iconPreview
+        };
+        setWhyChooseUs(newItems);
     };
 
     const handleBenefitsIconChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -578,11 +564,11 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
         }));
         formData.append('process', JSON.stringify(processData));
 
-        // Why choose us
-        const whyChooseUsData = {
-            icon: whyChooseUs.iconFile ? "pending" : (whyChooseUs.icon || "pending"),
-            description: whyChooseUs.description
-        };
+        // Why choose us - UPDATED FOR ARRAY
+        const whyChooseUsData = whyChooseUs.map(item => ({
+            icon: item.iconFile ? "pending" : (item.icon || "pending"),
+            description: item.description
+        }));
         formData.append('whyChooseUs', JSON.stringify(whyChooseUsData));
 
         // Benefits
@@ -636,9 +622,12 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
             }
         });
 
-        if (whyChooseUs.iconFile) {
-            formData.append('whyChooseUsIcon', whyChooseUs.iconFile);
-        }
+        // Why Choose Us icon uploads - UPDATED FOR ARRAY
+        whyChooseUs.forEach((item, index) => {
+            if (item.iconFile) {
+                formData.append(`whyChooseUsIcon_${index}`, item.iconFile);
+            }
+        });
 
         benefitsItems.forEach((item, index) => {
             if (item.iconFile) {
@@ -704,12 +693,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
             points: []
         });
         setProcessItems([]);
-        setWhyChooseUs({
-            icon: '',
-            description: [],
-            iconFile: null,
-            iconPreview: null
-        });
+        setWhyChooseUs([]); // Reset to empty array
         setBenefitsItems([]);
         setKeyFeaturesItems([]);
         setSubServicesItems([]);
@@ -950,7 +934,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base"
                                     required
-                                // error={formErrors.title}
                                 />
                             </div>
 
@@ -967,7 +950,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     required
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base"
-                                // error={formErrors.name}
                                 />
                             </div>
                         </div>
@@ -1018,7 +1000,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                         </div>
                     </div>
 
-
                     {/* Description Section */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
                         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Description</h3>
@@ -1036,7 +1017,6 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                     disabled={loading}
                                     className="w-full text-sm sm:text-base mb-4"
                                     required
-                                // error={formErrors.descriptionTitle}
                                 />
 
                                 <Label className="block text-sm font-medium text-gray-700 mb-2">Description Content</Label>
@@ -1134,13 +1114,7 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                                 setOverviewImagePreview(null);
                             }
                         )}
-
-
                     </div>
-
-
-
-
 
                     {/* Process Section */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
@@ -1225,35 +1199,66 @@ const ServiceFormComponent: React.FC<ServiceFormProps> = ({
                         </div>
                     </div>
 
-                    {/* Why Choose Us Section */}
+                    {/* Why Choose Us Section - UPDATED FOR ARRAY */}
                     <div className="border border-gray-200 rounded-lg p-4 sm:p-6 bg-white shadow-sm">
                         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Why Choose Us</h3>
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-                            <div className="lg:col-span-1">
-                                {renderItemImageUpload(
-                                    whyChooseUs.iconPreview,
-                                    whyChooseUs.iconFile,
-                                    handleWhyChooseUsIconChange,
-                                    () => {
-                                        setWhyChooseUs({
-                                            ...whyChooseUs,
-                                            iconFile: null,
-                                            iconPreview: null
-                                        });
-                                    },
-                                    "Why Choose Us Icon"
-                                )}
-                            </div>
-                            <div className="lg:col-span-3">
-                                {renderArrayInputSection(
-                                    "Why Choose Us Descriptions",
-                                    whyChooseUs.description,
-                                    addWhyChooseUsDescription,
-                                    handleWhyChooseUsDescriptionChange,
-                                    removeWhyChooseUsDescription,
-                                    "Description"
-                                )}
-                            </div>
+                        <div className="space-y-4 sm:space-y-6">
+                            {whyChooseUs.map((item, index) => (
+                                <div key={index} className="border border-gray-300 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
+                                        <div className="lg:col-span-1">
+                                            {renderItemImageUpload(
+                                                item.iconPreview,
+                                                item.iconFile,
+                                                (e) => handleWhyChooseUsIconChange(index, e),
+                                                () => {
+                                                    const newItems = [...whyChooseUs];
+                                                    newItems[index] = {
+                                                        ...newItems[index],
+                                                        iconFile: null,
+                                                        iconPreview: null
+                                                    };
+                                                    setWhyChooseUs(newItems);
+                                                },
+                                                "Why Choose Us Icon"
+                                            )}
+                                        </div>
+                                        <div className="lg:col-span-3">
+                                            <div>
+                                                <Label className="block text-sm font-medium text-gray-700 mb-2">Description</Label>
+                                                <textarea
+                                                    value={item.description}
+                                                    onChange={(e) => handleWhyChooseUsChange(index, 'description', e.target.value)}
+                                                    placeholder="Why choose us description"
+                                                    disabled={loading}
+                                                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px] text-sm sm:text-base"
+                                                    rows={3}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeWhyChooseUsItem(index)}
+                                            className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm sm:text-base"
+                                            disabled={loading}
+                                        >
+                                            Remove Why Choose Us Item
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={addWhyChooseUsItem}
+                                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-black transition-colors font-medium text-sm sm:text-base"
+                                disabled={loading}
+                            >
+                                + Add Why Choose Us Item
+                            </button>
                         </div>
                     </div>
 

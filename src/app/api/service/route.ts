@@ -120,26 +120,19 @@ export async function POST(req: NextRequest) {
       })
       : [];
 
-    // ✅ Why Choose Us
-    const whyChooseUsString = formData.get("whyChooseUs")?.toString() || "{}";
-    let whyChooseUs: { icon: string; description: string[] };
-
-    try {
-      const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
-
-      if (typeof parsedWhyChooseUs === 'object' && parsedWhyChooseUs !== null) {
-        const obj = parsedWhyChooseUs as { icon?: string; description?: unknown };
-        whyChooseUs = {
+    // ✅ FIXED: Why Choose Us - Now as array to match schema
+    const whyChooseUsString = formData.get("whyChooseUs")?.toString() || "[]";
+    type WhyChooseUsItem = { icon?: string; description?: string };
+    const parsedWhyChooseUs = JSON.parse(whyChooseUsString) as unknown;
+    const whyChooseUs: WhyChooseUsItem[] = Array.isArray(parsedWhyChooseUs)
+      ? (parsedWhyChooseUs as unknown[]).map((w: unknown) => {
+        const obj = w as { icon?: string; description?: unknown };
+        return {
           icon: obj.icon ?? "",
-          description: Array.isArray(obj.description) ? (obj.description as string[]) : [],
+          description: typeof obj.description === 'string' ? obj.description : "",
         };
-      } else {
-        whyChooseUs = { icon: "", description: [] };
-      }
-    } catch (e) {
-      console.log("Why choose us error occurred:", e);
-      whyChooseUs = { icon: "", description: [] };
-    }
+      })
+      : [];
 
     // ✅ Benefits
     const benefitsString = formData.get("benefits")?.toString() || "[]";
@@ -221,14 +214,7 @@ export async function POST(req: NextRequest) {
     const subServicesWithIcons = await uploadIcons(subServices, "subServicesIcon");
     const benefitsWithIcons = await uploadIcons(benefits, "benefitsIcon");
     const keyFeaturesWithIcons = await uploadIcons(keyFeatures, "keyFeaturesIcon");
-
-    // ✅ Upload why choose us icon
-    const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
-    if (whyChooseUsIconFile && whyChooseUsIconFile.size > 0) {
-      whyChooseUs.icon = await uploadFile(whyChooseUsIconFile) || "";
-    } else if (whyChooseUs.icon === "pending") {
-      whyChooseUs.icon = "";
-    }
+    const whyChooseUsWithIcons = await uploadIcons(whyChooseUs, "whyChooseUsIcon");
 
     // ✅ Validation
     if (!title) {
@@ -250,14 +236,14 @@ export async function POST(req: NextRequest) {
       description,
       subServices: subServicesWithIcons,
       process: processWithIcons,
-      whyChooseUs,
+      whyChooseUs: whyChooseUsWithIcons, // ✅ Now as array to match schema
       benefits: benefitsWithIcons,
       keyFeatures: keyFeaturesWithIcons,
       technology: technologyWithIcons,
     });
 
     return NextResponse.json(
-      { success: true, data: newService, message: "Service created successfully." },
+      { success: false, data: newService, message: "Service created successfully." },
       { status: 201, headers: corsHeaders }
     );
   } catch (error) {

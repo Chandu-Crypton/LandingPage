@@ -18,8 +18,8 @@ export interface IService extends Document {
   }[];
   whyChooseUs: {
     icon: string;
-    description: string[];
-  };
+    description: string;
+  }[];
   benefits: {
     icon: string;
     title: string;
@@ -65,11 +65,11 @@ const ServiceSchema = new Schema<IService>(
       },
     ],
 
-    whyChooseUs: 
+    whyChooseUs: [
       {
         icon: { type: String, required: false },
-        description: [{ type: String, required: false }],
-      },
+        description: { type: String, required: false },
+      }],
     
 
     benefits: [
