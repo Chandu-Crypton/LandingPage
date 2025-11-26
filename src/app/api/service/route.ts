@@ -76,13 +76,17 @@ export async function POST(req: NextRequest) {
     const name = formData.get("name")?.toString() || "";
     const title = formData.get("title")?.toString() || "";
     const descriptionTitle = formData.get("descriptionTitle")?.toString() || "";
-    const mainImage = await uploadFile(formData.get("mainImage") as File | null);
     
-    // ✅ Overview - FIXED: Handle as plain string, not JSON
-    const overview = formData.get("overview")?.toString() || "";
-    const overviewImage = await uploadFile(formData.get("overviewImage") as File | null);
+    // ✅ FIXED: Upload mainImage file and get URL
+    const mainImageFile = formData.get("mainImage") as File | null;
+    const mainImageUrl = mainImageFile ? await uploadFile(mainImageFile) : "";
 
-    // ✅ Description - FIXED: Match schema structure
+    // ✅ Overview
+    const overview = formData.get("overview")?.toString() || "";
+    const overviewImageFile = formData.get("overviewImage") as File | null;
+    const overviewImageUrl = overviewImageFile ? await uploadFile(overviewImageFile) : "";
+
+    // ✅ Description
     const descriptionString = formData.get("description")?.toString() || "{}";
     let description: { content: string; points: string[] };
     try {
@@ -116,7 +120,7 @@ export async function POST(req: NextRequest) {
       })
       : [];
 
-    // ✅ Why Choose Us - FIXED: Match schema structure
+    // ✅ Why Choose Us
     const whyChooseUsString = formData.get("whyChooseUs")?.toString() || "{}";
     let whyChooseUs: { icon: string; description: string[] };
 
@@ -167,34 +171,34 @@ export async function POST(req: NextRequest) {
       })
       : [];
 
-    // ✅ Technology - FIXED: Proper upload handling
+    // ✅ Technology
     const technologyString = formData.get("technology")?.toString() || "[]";
     type TechItem = { icon?: string; title?: string };
     const parsedTech = JSON.parse(technologyString) as unknown;
     const technology: TechItem[] = Array.isArray(parsedTech)
       ? (parsedTech as unknown[]).map((a: unknown, index) => {
-          const obj = a as { icon?: string; title?: unknown };
-          console.log(`🔧 Technology item ${index}:`, obj);
-          return {
-            icon: obj.icon ?? "",
-            title: typeof obj.title === 'string' ? obj.title : "",
-          };
-        })
+        const obj = a as { icon?: string; title?: unknown };
+        console.log(`🔧 Technology item ${index}:`, obj);
+        return {
+          icon: obj.icon ?? "",
+          title: typeof obj.title === 'string' ? obj.title : "",
+        };
+      })
       : [];
 
-    // ✅ Sub Services - FIXED: Proper upload handling
+    // ✅ Sub Services
     const subServicesString = formData.get("subServices")?.toString() || "[]";
     type SubServiceItem = { icon?: string; title?: string };
     const parsedSubServices = JSON.parse(subServicesString) as unknown;
     const subServices: SubServiceItem[] = Array.isArray(parsedSubServices)
       ? (parsedSubServices as unknown[]).map((a: unknown, index) => {
-          const obj = a as { icon?: string; title?: unknown };
-          console.log(`🔧 Sub Service item ${index}:`, obj);
-          return {
-            icon: obj.icon ?? "",
-            title: typeof obj.title === 'string' ? obj.title : "",
-          };
-        })
+        const obj = a as { icon?: string; title?: unknown };
+        console.log(`🔧 Sub Service item ${index}:`, obj);
+        return {
+          icon: obj.icon ?? "",
+          title: typeof obj.title === 'string' ? obj.title : "",
+        };
+      })
       : [];
 
     // ✅ Upload icons function - IMPROVED
@@ -218,7 +222,7 @@ export async function POST(req: NextRequest) {
     const benefitsWithIcons = await uploadIcons(benefits, "benefitsIcon");
     const keyFeaturesWithIcons = await uploadIcons(keyFeatures, "keyFeaturesIcon");
 
-    // Upload why choose us icon
+    // ✅ Upload why choose us icon
     const whyChooseUsIconFile = formData.get("whyChooseUsIcon") as File | null;
     if (whyChooseUsIconFile && whyChooseUsIconFile.size > 0) {
       whyChooseUs.icon = await uploadFile(whyChooseUsIconFile) || "";
@@ -234,15 +238,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Create new document with corrected structure
+    // ✅ Create new document with CORRECTED structure
     const newService = await ServiceModel.create({
       module: modules,
       name,
       title,
-      mainImage,
+      mainImage: mainImageUrl, // ✅ Now using the uploaded URL string
       descriptionTitle,
-      overview, // Now using the plain string directly
-      overviewImage,
+      overview,
+      overviewImage: overviewImageUrl, // ✅ Now using the uploaded URL string
       description,
       subServices: subServicesWithIcons,
       process: processWithIcons,

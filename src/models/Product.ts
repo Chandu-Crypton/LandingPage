@@ -7,61 +7,12 @@ export interface IProduct extends Document {
     category: string,
     description: string,
     homeFeatureTags: string[],
-    mainImage: string,
+    mainImage: string[],
     bannerImage: string,
     galleryImages: string[],
     livedemoLink?: string,
     googleStoreLink?: string,
     appleStoreLink?: string,
-    heading: {
-        headingPercentage: string,
-        headingDesc: string,
-    }[],
-
-    measurableResults?: {
-        title: string,
-        description: string,
-    }[],
-
-    projectTeam?: {
-        members: string,
-        role: string,
-    }[],
-
-    overview: {
-        title: string,
-        desc: string,
-    }[],
-
-    overviewImage: string,
-
-    keyFeatures: {
-        title: string,
-        description: string,
-        image: string,
-    }[],
-
-
-    developmentTimeline?: {
-        title: string,
-        time: string,
-    }[],
-
-    technologyTitle: string,
-    technologyImage: string,
-    technologyPoints: string[],
-    technologyDesc: string,
-
-    projectDetails: {
-        title: string,
-        image: string,
-        description: string,
-    }[],
-
-    futurePoints?: string[],
-
-
-
     isDeleted?: boolean;
     createdAt?: string;
     updatedAt?: string;
@@ -72,37 +23,37 @@ const productSchema: Schema = new Schema({
 
     title: {
         type: String,
-        required: true
+        required: false
     },
 
     subTitle: {
         type: String,
-        required: true
+        required: false
     },
 
     description: {
         type: String,
-        required: true
+        required: false
     },
 
     homeFeatureTags: {
         type: [String],
-        required: true
+        required: false
     },
 
     category: {
         type: String,
-        required: true
+        required: false
     },
 
     mainImage: {
-        type: String,
-        required: true
+        type: [String],
+        required: false
     },
 
     galleryImages: {
         type: [String],
-        required: true
+        required: false
     },
     livedemoLink: {
         type: String,
@@ -117,20 +68,6 @@ const productSchema: Schema = new Schema({
         required: false
     },
 
-    heading: [
-        {
-            headingPercentage: { type: String, required: true },
-            headingDesc: { type: String, required: true },
-        }
-    ],
-
-    measurableResults: [
-        {
-            title: { type: String, required: false },
-            description: { type: String, required: false },
-        }
-    ],
-
     projectTeam: [
         {
             members: { type: String, required: false },
@@ -138,74 +75,9 @@ const productSchema: Schema = new Schema({
         }
     ],
 
-
-    developmentTimeline: [
-        {
-            title: { type: String, required: false },
-            time: { type: String, required: false },
-        }
-    ],
-
-    overview: [{
-        title: { type: String, required: true },
-        desc: { type: String, required: true }
-    }],
-
-    overviewImage: {
-        type: String,
-        required: true
-    },
-
-
-    keyFeatures: [{
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        image: { type: String, required: true }
-    }],
-
-    technologyTitle: {
-        type: String,
-        required: true
-    },
-    technologyImage: {
-        type: String,
-        required: true
-    },
-    technologyPoints: {
-        type: [String],
-        required: true
-    },
-    technologyDesc: {
-        type: String,
-        required: true
-    },
-
-
-    projectDetails: [
-        {
-            title: {
-                type: String,
-                required: true, trim: true
-            },
-            image: {
-                type: String,
-                required: true, trim: true
-            },
-            description: {
-                type: String,
-                required: true, trim: true
-            },
-        }
-    ],
-
-
-    futurePoints: {
-        type: [String],
-        required: false
-    },
     bannerImage: {
         type: String,
-        required: true
+        required: false
     },
 
 

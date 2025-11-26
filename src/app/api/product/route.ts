@@ -52,53 +52,17 @@ export async function POST(req: NextRequest) {
       ? JSON.parse(formData.get("homeFeatureTags") as string)
       : [];
 
-    const technologyPoints = formData.get("technologyPoints")
-      ? JSON.parse(formData.get("technologyPoints") as string)
-      : [];
-
-    const futurePoints = formData.get("futurePoints")
-      ? JSON.parse(formData.get("futurePoints") as string)
-      : [];
-
-    // ✅ Arrays of objects
-    const heading = formData.get("heading")
-      ? JSON.parse(formData.get("heading") as string)
-      : [];
-
-    const measurableResults = formData.get("measurableResults")
-      ? JSON.parse(formData.get("measurableResults") as string)
-      : [];
-
-    const projectTeam = formData.get("projectTeam")
-      ? JSON.parse(formData.get("projectTeam") as string)
-      : [];
-
-    const overview = formData.get("overview")
-      ? JSON.parse(formData.get("overview") as string)
-      : [];
-
-    const developmentTimeline = formData.get("developmentTimeline")
-      ? JSON.parse(formData.get("developmentTimeline") as string)
-      : [];
-
-    const keyFeaturesRaw = formData.get("keyFeatures")
-      ? JSON.parse(formData.get("keyFeatures") as string)
-      : [];
-
-    const projectDetailsRaw = formData.get("projectDetails")
-      ? JSON.parse(formData.get("projectDetails") as string)
-      : [];
-
+    
+  
     // ✅ Handle file uploads
-    const mainImageFile = formData.get("mainImage") as File | null;
+    const mainImageFiles = formData.getAll("mainImage") as File[];
     const bannerImageFile = formData.get("bannerImage") as File | null;
     const galleryImageFiles = formData.getAll("galleryImages") as File[];
-    const overviewImageFile = formData.get("overviewImage") as File | null;
-    const technologyImageFile = formData.get("technologyImage") as File | null;
+    
 
     // Upload images
-    const mainImageUrl = mainImageFile
-      ? await uploadSingleImage(mainImageFile, "/products/main")
+    const mainImageUrl = mainImageFiles.length > 0
+      ? await uploadMultipleImages(mainImageFiles, "/products/main")
       : "";
 
     const bannerImageUrl = bannerImageFile
@@ -109,57 +73,8 @@ export async function POST(req: NextRequest) {
       ? await uploadMultipleImages(galleryImageFiles, "/products/gallery")
       : [];
 
-    const overviewImageUrl = overviewImageFile
-      ? await uploadSingleImage(overviewImageFile, "/products/overview")
-      : "";
 
-    const technologyImageUrl = technologyImageFile
-      ? await uploadSingleImage(technologyImageFile, "/products/technology")
-      : "";
 
-    // ✅ Other text fields
-    const technologyTitle = formData.get("technologyTitle")?.toString() || "";
-    const technologyDesc = formData.get("technologyDesc")?.toString() || "";
-
-    // ✅ Key features (with image upload per item)
-    const keyFeatures: { title: string; description: string; image: string }[] = [];
-    for (let i = 0; i < keyFeaturesRaw.length; i++) {
-      const feature = keyFeaturesRaw[i];
-      const imageFile = formData.get(`keyFeatureImage_${i}`) as File | null;
-
-      let imageUrl = "";
-      if (imageFile) {
-        imageUrl = await uploadSingleImage(imageFile, "/products/keyFeatures");
-      } else if (feature.image) {
-        imageUrl = feature.image;
-      }
-
-      keyFeatures.push({
-        title: feature.title,
-        description: feature.description,
-        image: imageUrl,
-      });
-    }
-
-    // ✅ Project details (with image upload per item)
-    const projectDetails: { title: string; description: string; image: string }[] = [];
-    for (let i = 0; i < projectDetailsRaw.length; i++) {
-      const detail = projectDetailsRaw[i];
-      const imageFile = formData.get(`projectDetailsImage_${i}`) as File | null;
-
-      let imageUrl = "";
-      if (imageFile) {
-        imageUrl = await uploadSingleImage(imageFile, "/products/projectDetails");
-      } else if (detail.image) {
-        imageUrl = detail.image;
-      }
-
-      projectDetails.push({
-        title: detail.title,
-        description: detail.description,
-        image: imageUrl,
-      });
-    }
 
     // ✅ Validation for required fields
     if (!title || !subTitle || !description || !category || !mainImageUrl || !bannerImageUrl) {
@@ -182,19 +97,6 @@ export async function POST(req: NextRequest) {
       livedemoLink,
       googleStoreLink,
       appleStoreLink,
-      heading,
-      measurableResults,
-      projectTeam,
-      developmentTimeline,
-      overview,
-      overviewImage: overviewImageUrl,
-      keyFeatures,
-      technologyTitle,
-      technologyImage: technologyImageUrl,
-      technologyPoints,
-      technologyDesc,
-      projectDetails,
-      futurePoints
     });
 
     return NextResponse.json(

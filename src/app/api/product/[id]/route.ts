@@ -1,5 +1,3 @@
-
-
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/utils/db';
 import Product, { IProduct } from '@/models/Product';
@@ -116,8 +114,6 @@ export async function PUT(req: NextRequest) {
       "subTitle",
       "description",
       "category",
-      "technologyTitle",
-      "technologyDesc",
       "livedemoLink",
       "googleStoreLink",
       "appleStoreLink"
@@ -128,7 +124,7 @@ export async function PUT(req: NextRequest) {
     });
 
     // ✅ Arrays of strings
-    const arrayFields = ["homeFeatureTags", "technologyPoints", "futurePoints"];
+    const arrayFields = ["homeFeatureTags"];
     arrayFields.forEach((field) => {
       if (formData.has(field)) {
         try {
@@ -141,114 +137,11 @@ export async function PUT(req: NextRequest) {
       }
     });
 
-    // ✅ Arrays of objects
-    const objectArrayFields = [
-      "heading",
-      "measurableResults",
-      "projectTeam",
-      "keyFeatures",
-      "overview",
-      "developmentTimeline"
-    ];
-    objectArrayFields.forEach((field) => {
-      if (formData.has(field)) {
-        try {
-          updateData[field as keyof IProduct] = JSON.parse(
-            formData.get(field) as string
-          );
-        } catch {
-          updateData[field as keyof IProduct] = [];
-        }
-      }
-    });
+  
 
-    // ✅ Project Details (array of objects with image uploads)
-    if (formData.has("projectDetails")) {
-      const projectDetailsRaw = JSON.parse(
-        formData.get("projectDetails") as string
-      );
-      const projectDetails: {
-        title: string;
-        description: string;
-        image: string;
-      }[] = [];
-
-      for (let i = 0; i < projectDetailsRaw.length; i++) {
-        const detail = projectDetailsRaw[i];
-        const imageFileEntry = formData.get(`projectDetailsImage_${i}`);
-
-        let imageFile: File | null = null;
-        if (imageFileEntry && imageFileEntry instanceof File) {
-          imageFile = imageFileEntry;
-        }
-
-        let imageUrl = detail.image || "";
-        if (imageFile && imageFile.size > 0) {
-          imageUrl = await uploadSingleImage(
-            imageFile,
-            "/products/projectDetails"
-          );
-        } else if (detail.imagePreview && detail.imagePreview.startsWith('blob:')) {
-          // Keep existing image if no new file uploaded
-          imageUrl = detail.image;
-        }
-
-        projectDetails.push({
-          title: detail.title,
-          description: detail.description,
-          image: imageUrl,
-        });
-      }
-
-      updateData.projectDetails = projectDetails;
-    }
-
-    // ✅ Key Features with image uploads
-    if (formData.has("keyFeatures")) {
-      const keyFeaturesRaw = JSON.parse(
-        formData.get("keyFeatures") as string
-      );
-      const keyFeatures: {
-        title: string;
-        description: string;
-        image: string;
-      }[] = [];
-
-      for (let i = 0; i < keyFeaturesRaw.length; i++) {
-        const feature = keyFeaturesRaw[i];
-        const imageFileEntry = formData.get(`keyFeatureImage_${i}`);
-
-        let imageFile: File | null = null;
-        if (imageFileEntry && imageFileEntry instanceof File) {
-          imageFile = imageFileEntry;
-        }
-
-        let imageUrl = feature.image || "";
-        if (imageFile && imageFile.size > 0) {
-          imageUrl = await uploadSingleImage(
-            imageFile,
-            "/products/keyFeatures"
-          );
-        } else if (feature.imagePreview && feature.imagePreview.startsWith('blob:')) {
-          // Keep existing image if no new file uploaded
-          imageUrl = feature.image;
-        }
-
-        keyFeatures.push({
-          title: feature.title,
-          description: feature.description,
-          image: imageUrl,
-        });
-      }
-
-      updateData.keyFeatures = keyFeatures;
-    }
 
     // ✅ Single Images
     const imageFields = [
-      { name: "mainImage", folder: "/products/main" },
-      { name: "overviewImage", folder: "/products/overview" },
-      { name: "technologyImage", folder: "/products/technology" },
       { name: "bannerImage", folder: "/products/banner" },
     ];
 
@@ -285,6 +178,20 @@ export async function PUT(req: NextRequest) {
       }
     }
 
+
+     const mainImageFiles = formData.getAll("mainImage") as File[];
+    if (mainImageFiles.length > 0) {
+      const urls = await uploadMultipleImages(mainImageFiles, "/products/main");
+      updateData.mainImage = urls;
+    } else if (formData.has("mainImage_existing")) {
+      // Keep existing main images if no new files uploaded
+      try {
+        const existingMainImages = JSON.parse(formData.get("mainImage_existing") as string);
+        updateData.mainImage = existingMainImages;
+      } catch {
+        updateData.mainImage = [];
+      }
+    }
     // ✅ Update product
     const updatedProduct = await Product.findByIdAndUpdate(
       id, 
