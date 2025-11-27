@@ -52,11 +52,7 @@ const ServiceSchema = new Schema<IService>(
     },
     overview: { type: String, required: false },
     overviewImage: { type: String, required: false },
-    // question: {
-    //   title: { type: String },
-    //   answer: [{ type: String }],
-    // },
-
+  
     process: [
       {
         icon: { type: String, required: false },

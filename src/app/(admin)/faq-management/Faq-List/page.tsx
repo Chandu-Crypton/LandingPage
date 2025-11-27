@@ -49,11 +49,13 @@ const FaqListPage: React.FC = () => {
 
     const lowerSearch = searchTerm.toLowerCase();
     return faqs.filter((faq) =>
-      faq.question.some(
-        (q) =>
-          q.question.toLowerCase().includes(lowerSearch) ||
-          q.answer.toLowerCase().includes(lowerSearch)
-      )
+      faq.module?.toLowerCase().includes(lowerSearch) 
+      // faq.question.some(
+      //   (q) =>
+          
+      //     q.question.toLowerCase().includes(lowerSearch) ||
+      //     q.answer.toLowerCase().includes(lowerSearch)
+      // )
     );
   }, [faqs, searchTerm]);
 
@@ -70,7 +72,7 @@ const FaqListPage: React.FC = () => {
         <div className="w-full lg:w-3/4">
           <ComponentCard title="Search Filter">
             <div className="py-3">
-              <Label htmlFor="searchFaq">Search by Question or Answer</Label>
+              <Label htmlFor="searchFaq">Search by Module</Label>
               <Input
                 id="searchFaq"
                 type="text"
