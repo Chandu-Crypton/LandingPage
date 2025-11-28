@@ -104,6 +104,7 @@ export async function PUT(req: NextRequest) {
                 }
 
                 return {
+                  _id: existingFaq.question[idx]?._id,
                   question: q.question ?? existingFaq.question[idx]?.question,
                   answer: q.answer ?? existingFaq.question[idx]?.answer,
                   icon: iconUrl,
