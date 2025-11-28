@@ -11,7 +11,7 @@
 //     jobIdToEdit?: string;
 // }
 
-// const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
+// const JobComponent: React.FC<JobProps> = ({jobIdToEdit }) => {
 //     // State declarations
 //     const [addHeading, setAddHeading] = useState('');
 //     const [localNewHeadings, setLocalNewHeadings] = useState<string[]>([]);
@@ -29,14 +29,19 @@
 
 //     // Fixed: Separate states for each field
 //     const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>(['']);
-//     const [requiredSkills, setRequiredSkills] = useState<{ title: string; level: string; }[]>([{ title: '', level: '' }]);
+//     const [requiredSkills, setRequiredSkills] = useState<{ title: string; existingIconUrl?: string; icon: File | null; }[]>([{ title: '', existingIconUrl: '', icon: null }]);
 //     const [requirements, setRequirements] = useState<string[]>(['']);
 //     const [workEnvironment, setWorkEnvironment] = useState<string[]>(['']);
 //     const [required, setRequired] = useState<string[]>(['']);
 //     const [preferredSkills, setPreferredSkills] = useState<string[]>(['']);
 //     const [jobSummary, setJobSummary] = useState<string[]>(['']);
 //     const [keyAttributes, setKeyAttributes] = useState<string[]>(['']);
-//     const [benefits, setBenefits] = useState<{icon: string; title: string; description: string; }[]>([{ icon: '', title: '', description: '' }]);
+//     const [benefits, setBenefits] = useState<{
+//         icon: File | null;
+//         existingIconUrl?: string; 
+//         title: string;
+//         description: string;
+//     }[]>([{ icon: null, existingIconUrl: '', title: '', description: '' }]);
 
 //     const router = useRouter();
 //     const { addJob, updateJob, jobs } = useJob();
@@ -55,7 +60,7 @@
 //         if (jobIdToEdit) {
 //             const cleanJobId = jobIdToEdit.replace(/^\//, "");
 //             const jobToEdit = jobs.find((j) => j._id === cleanJobId);
-
+//             console.log('jobToEdit:', jobToEdit);
 //             if (jobToEdit) {
 //                 setTitle(jobToEdit.title || '');
 //                 setAbout(jobToEdit.about || '');
@@ -81,19 +86,29 @@
 
 //                 setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ?
 //                     (typeof jobToEdit.requiredSkills[0] === 'object' && 'title' in jobToEdit.requiredSkills[0] ?
-//                         jobToEdit.requiredSkills.map((b: { title: string; level: string }) => ({ title: b.title || '', level: b.level || '' })) :
-//                         (jobToEdit.requiredSkills as unknown as string[]).map((b: string) => ({ title: b, level: '' }))
+//                         jobToEdit.requiredSkills.map((b: { title: string; icon: string }) => ({ title: b.title || '', icon: null })) :
+//                         (jobToEdit.requiredSkills as unknown as string[]).map((b: string) => ({ title: b, icon: null }))
 //                     ) :
-//                     [{ title: '', level: '' }]
+//                     [{ title: '', icon: null }]
 //                 );
 
-//                 setBenefits(jobToEdit.benefits?.length > 0 ?
-//                     (typeof jobToEdit.benefits[0] === 'object' && 'title' in jobToEdit.benefits[0] ?
-//                         jobToEdit.benefits.map((b: { icon?: string; title: string; description: string }) => ({ icon: b.icon ?? '', title: b.title || '', description: b.description || '' })) :
-//                         (jobToEdit.benefits as unknown as string[]).map((b: string) => ({ icon: '', title: b, description: '' }))
-//                     ) :
-//                     [{ icon: '', title: '', description: '' }]
-//                 );
+//                   setBenefits(jobToEdit.benefits?.length > 0 ?
+//                 (typeof jobToEdit.benefits[0] === 'object' && 'title' in jobToEdit.benefits[0] ?
+//                     jobToEdit.benefits.map((b: { icon?: string; title: string; description: string }) => ({
+//                         icon: null, // Set to null for new file uploads
+//                         existingIconUrl: b.icon || '', // Store existing icon URL
+//                         title: b.title || '',
+//                         description: b.description || ''    
+//                     })) :
+//                     (jobToEdit.benefits as unknown as string[]).map((b: string) => ({
+//                         icon: null,
+//                         existingIconUrl: '',
+//                         title: b,
+//                         description: ''
+//                     }))
+//                 ) :
+//                 [{ icon: null, existingIconUrl: '', title: '', description: '' }]
+//             );
 //             } else {
 //                 console.warn(`Job with ID ${cleanJobId} not found in context for editing.`);
 //             }
@@ -153,7 +168,7 @@
 //             !qualification.trim() ||
 //             !openingType.trim() ||
 //             keyResponsibilities.filter(item => item.trim() !== '').length === 0 ||
-//             requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== '').length === 0 ||
+//             requiredSkills.filter(item => item.title.trim() !== '').length === 0 ||
 //             requirements.filter(item => item.trim() !== '').length === 0 ||
 //             required.filter(item => item.trim() !== '').length === 0 ||
 //             preferredSkills.filter(item => item.trim() !== '').length === 0 ||
@@ -161,6 +176,7 @@
 //             keyAttributes.filter(item => item.trim() !== '').length === 0 ||
 //             workEnvironment.filter(item => item.trim() !== '').length === 0 ||
 //             benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '').length === 0
+
 //         ) {
 //             setApiError('Please fill in all required job details, including at least one entry for all list fields.');
 //             setLoading(false);
@@ -185,14 +201,28 @@
 //         // Fixed: Append all array fields
 //         formData.append("jobDescription", JSON.stringify(jobDescription.filter(item => item.trim() !== '')));
 //         formData.append("keyResponsibilities", JSON.stringify(keyResponsibilities.filter(item => item.trim() !== '')));
-//         formData.append("requiredSkills", JSON.stringify(requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== '')));
+//         formData.append("requiredSkills", JSON.stringify(requiredSkills.filter(item => item.title.trim() !== '' && item.icon !== null)));
 //         formData.append("requirements", JSON.stringify(requirements.filter(item => item.trim() !== '')));
 //         formData.append("workEnvironment", JSON.stringify(workEnvironment.filter(item => item.trim() !== '')));
 //         formData.append("required", JSON.stringify(required.filter(item => item.trim() !== '')));
 //         formData.append("preferredSkills", JSON.stringify(preferredSkills.filter(item => item.trim() !== '')));
 //         formData.append("jobSummary", JSON.stringify(jobSummary.filter(item => item.trim() !== '')));
 //         formData.append("keyAttributes", JSON.stringify(keyAttributes.filter(item => item.trim() !== '')));
-//         formData.append("benefits", JSON.stringify(benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '')));
+//         // formData.append("benefits", JSON.stringify(benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '')));
+//          const benefitsData = benefits.map((benefit, index) => ({
+//         icon: benefit.existingIconUrl || (benefit.icon ? `new_icon_${index}` : ''), // Keep existing URL or mark as new
+//         title: benefit.title,
+//         description: benefit.description
+//     })).filter(benefit => benefit.title.trim() !== '' || benefit.description.trim() !== '');
+    
+//     formData.append("benefits", JSON.stringify(benefitsData));
+
+//     // Append new icon files
+//     benefits.forEach((benefit, ) => {
+//         if (benefit.icon) {
+//             formData.append("benefitIcons", benefit.icon);
+//         }
+//     });
 
 //         try {
 //             if (jobIdToEdit) {
@@ -232,8 +262,8 @@
 //         setPreferredSkills(['']);
 //         setJobSummary(['']);
 //         setKeyAttributes(['']);
-//         setRequiredSkills([{ title: '', level: '' }]);
-//         setBenefits([{ icon: '', title: '', description: '' }]);
+//         setRequiredSkills([{ title: '', icon: null }]);
+//         setBenefits([{ icon: null, existingIconUrl: '', title: '', description: '' }]);
 //         setRequirements(['']);
 //         setWorkEnvironment(['']);
 //         setApiError(null);
@@ -287,8 +317,8 @@
 
 //     const renderSkillsField = useCallback((
 //         label: string,
-//         list: { title: string; level: string }[],
-//         setter: React.Dispatch<React.SetStateAction<{ title: string; level: string }[]>>,
+//         list: { title: string; icon: File | null }[],
+//         setter: React.Dispatch<React.SetStateAction<{ title: string; icon: File | null }[]>>,
 //     ) => (
 //         <div className="space-y-2">
 //             <Label>{label}</Label>
@@ -310,7 +340,7 @@
 //                     </div>
 //                     <div className="flex-1 min-w-[150px]">
 //                         <Label className="text-sm">Level</Label>
-//                         <select
+//                         {/* <select
 //                             value={item.level}
 //                             onChange={(e) => {
 //                                 const updated = [...list];
@@ -324,7 +354,28 @@
 //                             <option value="Basic">Basic</option>
 //                             <option value="Intermediate">Intermediate</option>
 //                             <option value="Expert">Expert</option>
-//                         </select>
+//                         </select> */}
+//                          <input
+//                         type="file"
+//                         accept="image/*"
+//                         onChange={(e) => {
+//                             const file = e.target.files?.[0] || null;
+//                             const updated = [...list];
+//                             updated[index] = {
+//                                 ...updated[index],
+//                                 icon: file,
+//                                 existingIconUrl: file ? undefined : updated[index].existingIconUrl // Clear existing URL if new file is selected
+//                             };
+//                             setter(updated);
+//                         }}
+//                         className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
+//                         disabled={loading}
+//                     />
+//                     {item.icon && (
+//                         <p className="text-sm text-green-600 mt-1">
+//                             New image selected: {item.icon.name}
+//                         </p>
+//                     )}
 //                     </div>
 //                     {list.length > 1 && (
 //                         <button
@@ -341,7 +392,7 @@
 //             <button
 //                 type="button"
 //                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-//                 onClick={() => setter([...list, { title: '', level: '' }])}
+//                 onClick={() => setter([...list, { title: '', icon: null }])}
 //                 disabled={loading}
 //             >
 //                 Add New {label.endsWith('s') ? label.slice(0, -1) : label}
@@ -349,79 +400,102 @@
 //         </div>
 //     ), [loading]);
 
-//     const renderBenefitsField = useCallback((
-//         label: string,
-//         list: { icon: string; title: string; description: string }[],
-//         setter: React.Dispatch<React.SetStateAction<{ icon: string; title: string; description: string }[]>>,
-//     ) => (
-//         <div className="space-y-2">
-//             <Label>{label}</Label>
-//             {list.map((item, index) => (
-//                 <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
-//                     <div className="flex-1 min-w-[150px]">
-//                         <Label className="text-sm">Icon</Label>
-//                         <Input
-//                             type="file"
-//                             value={item.icon}
-//                             onChange={(e) => {
-//                                 const updated = [...list];
-//                                 updated[index].icon = e.target.value;
-//                                 setter(updated);
-//                             }}
-//                             placeholder="Enter benefit icon"
-//                             disabled={loading}
-//                         />
-//                     </div>
-//                     <div className="flex-1 min-w-[150px]">
-//                         <Label className="text-sm">Title</Label>
-//                         <Input
-//                             type="text"
-//                             value={item.title}
-//                             onChange={(e) => {
-//                                 const updated = [...list];
-//                                 updated[index].title = e.target.value;
-//                                 setter(updated);
-//                             }}
-//                             placeholder="Enter benefit title"
-//                             disabled={loading}
-//                         />
-//                     </div>
-//                     <div className="flex-1 min-w-[150px]">
-//                         <Label className="text-sm">Description</Label>
-//                         <Input
-//                             type="text"
-//                             value={item.description}
-//                             onChange={(e) => {
-//                                 const updated = [...list];
-//                                 updated[index].description = e.target.value;
-//                                 setter(updated);
-//                             }}
-//                             placeholder="Enter benefit description"
-//                             disabled={loading}
-//                         />
-//                     </div>
-//                     {list.length > 1 && (
-//                         <button
-//                             type="button"
-//                             className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-//                             onClick={() => setter(list.filter((_, i) => i !== index))}
-//                             disabled={loading}
-//                         >
-//                             Remove
-//                         </button>
+//    const renderBenefitsField = useCallback((
+//     label: string,
+//     list: { icon: File | null; existingIconUrl?: string; title: string; description: string }[],
+//     setter: React.Dispatch<React.SetStateAction<{ icon: File | null; existingIconUrl?: string; title: string; description: string }[]>>,
+// ) => (
+//     <div className="space-y-2">
+//         <Label>{label}</Label>
+//         {list.map((item, index) => (
+//             <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
+//                 <div className="flex-1 min-w-[150px]">
+//                     <Label className="text-sm">Icon Image</Label>
+                    
+//                     {/* Show existing image if available */}
+//                     {item.existingIconUrl && !item.icon && (
+//                         <div className="mb-2">
+//                             <p className="text-sm text-gray-600 mb-1">Current Image:</p>
+//                             <img 
+//                                 src={item.existingIconUrl} 
+//                                 alt="Benefit icon" 
+//                                 className="h-12 w-12 object-cover rounded"
+//                             />
+//                         </div>
+//                     )}
+                    
+//                     <input
+//                         type="file"
+//                         accept="image/*"
+//                         onChange={(e) => {
+//                             const file = e.target.files?.[0] || null;
+//                             const updated = [...list];
+//                             updated[index] = {
+//                                 ...updated[index],
+//                                 icon: file,
+//                                 existingIconUrl: file ? undefined : updated[index].existingIconUrl // Clear existing URL if new file is selected
+//                             };
+//                             setter(updated);
+//                         }}
+//                         className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
+//                         disabled={loading}
+//                     />
+//                     {item.icon && (
+//                         <p className="text-sm text-green-600 mt-1">
+//                             New image selected: {item.icon.name}
+//                         </p>
 //                     )}
 //                 </div>
-//             ))}
-//             <button
-//                 type="button"
-//                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-//                 onClick={() => setter([...list, { icon: '', title: '', description: '' }])}
-//                 disabled={loading}
-//             >
-//                 Add New {label.endsWith('s') ? label.slice(0, -1) : label}
-//             </button>
-//         </div>
-//     ), [loading]);
+//                 <div className="flex-1 min-w-[150px]">
+//                     <Label className="text-sm">Title</Label>
+//                     <Input
+//                         type="text"
+//                         value={item.title}
+//                         onChange={(e) => {
+//                             const updated = [...list];
+//                             updated[index].title = e.target.value;
+//                             setter(updated);
+//                         }}
+//                         placeholder="Enter benefit title"
+//                         disabled={loading}
+//                     />
+//                 </div>
+//                 <div className="flex-1 min-w-[150px]">
+//                     <Label className="text-sm">Description</Label>
+//                     <Input
+//                         type="text"
+//                         value={item.description}
+//                         onChange={(e) => {
+//                             const updated = [...list];
+//                             updated[index].description = e.target.value;
+//                             setter(updated);
+//                         }}
+//                         placeholder="Enter benefit description"
+//                         disabled={loading}
+//                     />
+//                 </div>
+//                 {list.length > 1 && (
+//                     <button
+//                         type="button"
+//                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+//                         onClick={() => setter(list.filter((_, i) => i !== index))}
+//                         disabled={loading}
+//                     >
+//                         Remove
+//                     </button>
+//                 )}
+//             </div>
+//         ))}
+//         <button
+//             type="button"
+//             className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+//             onClick={() => setter([...list, { icon: null, existingIconUrl: '', title: '', description: '' }])}
+//             disabled={loading}
+//         >
+//             Add New {label.endsWith('s') ? label.slice(0, -1) : label}
+//         </button>
+//     </div>
+// ), [loading]);
 
 //     return (
 //         <div className="container mx-auto px-4 py-8">
@@ -569,6 +643,7 @@
 
 
 
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -600,7 +675,11 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
     // Fixed: Separate states for each field
     const [keyResponsibilities, setKeyResponsibilities] = useState<string[]>(['']);
-    const [requiredSkills, setRequiredSkills] = useState<{ title: string; level: string; }[]>([{ title: '', level: '' }]);
+    const [requiredSkills, setRequiredSkills] = useState<{ 
+        title: string; 
+        icon: File | null; 
+        existingIconUrl?: string;
+    }[]>([{ title: '', icon: null }]);
     const [requirements, setRequirements] = useState<string[]>(['']);
     const [workEnvironment, setWorkEnvironment] = useState<string[]>(['']);
     const [required, setRequired] = useState<string[]>(['']);
@@ -655,31 +734,26 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                 setJobSummary(jobToEdit.jobSummary?.length > 0 ? jobToEdit.jobSummary : ['']);
                 setKeyAttributes(jobToEdit.keyAttributes?.length > 0 ? jobToEdit.keyAttributes : ['']);
 
+                // Fixed: Handle requiredSkills properly
                 setRequiredSkills(jobToEdit.requiredSkills?.length > 0 ?
-                    (typeof jobToEdit.requiredSkills[0] === 'object' && 'title' in jobToEdit.requiredSkills[0] ?
-                        jobToEdit.requiredSkills.map((b: { title: string; level: string }) => ({ title: b.title || '', level: b.level || '' })) :
-                        (jobToEdit.requiredSkills as unknown as string[]).map((b: string) => ({ title: b, level: '' }))
-                    ) :
-                    [{ title: '', level: '' }]
+                    jobToEdit.requiredSkills.map((skill: { title: string; icon: string }) => ({ 
+                        title: skill.title || '', 
+                        icon: null,
+                        existingIconUrl: skill.icon || ''
+                    })) :
+                    [{ title: '', icon: null }]
                 );
 
-                  setBenefits(jobToEdit.benefits?.length > 0 ?
-                (typeof jobToEdit.benefits[0] === 'object' && 'title' in jobToEdit.benefits[0] ?
-                    jobToEdit.benefits.map((b: { icon?: string; title: string; description: string }) => ({
-                        icon: null, // Set to null for new file uploads
-                        existingIconUrl: b.icon || '', // Store existing icon URL
-                        title: b.title || '',
-                        description: b.description || ''
-                    })) :
-                    (jobToEdit.benefits as unknown as string[]).map((b: string) => ({
+                // Fixed: Handle benefits properly
+                setBenefits(jobToEdit.benefits?.length > 0 ?
+                    jobToEdit.benefits.map((benefit: { icon?: string; title: string; description: string }) => ({
                         icon: null,
-                        existingIconUrl: '',
-                        title: b,
-                        description: ''
-                    }))
-                ) :
-                [{ icon: null, existingIconUrl: '', title: '', description: '' }]
-            );
+                        existingIconUrl: benefit.icon || '',
+                        title: benefit.title || '',
+                        description: benefit.description || ''    
+                    })) :
+                    [{ icon: null, existingIconUrl: '', title: '', description: '' }]
+                );
             } else {
                 console.warn(`Job with ID ${cleanJobId} not found in context for editing.`);
             }
@@ -739,7 +813,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             !qualification.trim() ||
             !openingType.trim() ||
             keyResponsibilities.filter(item => item.trim() !== '').length === 0 ||
-            requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== '').length === 0 ||
+            requiredSkills.filter(item => item.title.trim() !== '').length === 0 ||
             requirements.filter(item => item.trim() !== '').length === 0 ||
             required.filter(item => item.trim() !== '').length === 0 ||
             preferredSkills.filter(item => item.trim() !== '').length === 0 ||
@@ -747,7 +821,6 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             keyAttributes.filter(item => item.trim() !== '').length === 0 ||
             workEnvironment.filter(item => item.trim() !== '').length === 0 ||
             benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '').length === 0
-
         ) {
             setApiError('Please fill in all required job details, including at least one entry for all list fields.');
             setLoading(false);
@@ -772,28 +845,46 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         // Fixed: Append all array fields
         formData.append("jobDescription", JSON.stringify(jobDescription.filter(item => item.trim() !== '')));
         formData.append("keyResponsibilities", JSON.stringify(keyResponsibilities.filter(item => item.trim() !== '')));
-        formData.append("requiredSkills", JSON.stringify(requiredSkills.filter(item => item.title.trim() !== '' && item.level.trim() !== '')));
+        
+        // Fixed: Required Skills handling
+        const requiredSkillsData = requiredSkills
+            .filter(item => item.title.trim() !== '')
+            .map(skill => ({
+                title: skill.title,
+                icon: skill.existingIconUrl || '' // Use existing URL or empty string for new uploads
+            }));
+        formData.append("requiredSkills", JSON.stringify(requiredSkillsData));
+        
+        // Append required skill icon files
+        requiredSkills.forEach((skill, index) => {
+            if (skill.icon) {
+                formData.append(`requiredSkillIcon_${index}`, skill.icon);
+            }
+        });
+
         formData.append("requirements", JSON.stringify(requirements.filter(item => item.trim() !== '')));
         formData.append("workEnvironment", JSON.stringify(workEnvironment.filter(item => item.trim() !== '')));
         formData.append("required", JSON.stringify(required.filter(item => item.trim() !== '')));
         formData.append("preferredSkills", JSON.stringify(preferredSkills.filter(item => item.trim() !== '')));
         formData.append("jobSummary", JSON.stringify(jobSummary.filter(item => item.trim() !== '')));
         formData.append("keyAttributes", JSON.stringify(keyAttributes.filter(item => item.trim() !== '')));
-        // formData.append("benefits", JSON.stringify(benefits.filter(item => item.title.trim() !== '' || item.description.trim() !== '')));
-         const benefitsData = benefits.map((benefit, index) => ({
-        icon: benefit.existingIconUrl || (benefit.icon ? `new_icon_${index}` : ''), // Keep existing URL or mark as new
-        title: benefit.title,
-        description: benefit.description
-    })).filter(benefit => benefit.title.trim() !== '' || benefit.description.trim() !== '');
-    
-    formData.append("benefits", JSON.stringify(benefitsData));
-
-    // Append new icon files
-    benefits.forEach((benefit, ) => {
-        if (benefit.icon) {
-            formData.append("benefitIcons", benefit.icon);
-        }
-    });
+        
+        // Fixed: Benefits handling
+        const benefitsData = benefits
+            .filter(item => item.title.trim() !== '' || item.description.trim() !== '')
+            .map(benefit => ({
+                icon: benefit.existingIconUrl || '', // Use existing URL or empty string for new uploads
+                title: benefit.title,
+                description: benefit.description
+            }));
+        formData.append("benefits", JSON.stringify(benefitsData));
+        
+        // Append benefit icon files
+        benefits.forEach((benefit, index) => {
+            if (benefit.icon) {
+                formData.append(`benefitIcon_${index}`, benefit.icon);
+            }
+        });
 
         try {
             if (jobIdToEdit) {
@@ -833,7 +924,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         setPreferredSkills(['']);
         setJobSummary(['']);
         setKeyAttributes(['']);
-        setRequiredSkills([{ title: '', level: '' }]);
+        setRequiredSkills([{ title: '', icon: null }]);
         setBenefits([{ icon: null, existingIconUrl: '', title: '', description: '' }]);
         setRequirements(['']);
         setWorkEnvironment(['']);
@@ -888,8 +979,8 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
 
     const renderSkillsField = useCallback((
         label: string,
-        list: { title: string; level: string }[],
-        setter: React.Dispatch<React.SetStateAction<{ title: string; level: string }[]>>,
+        list: { title: string; icon: File | null; existingIconUrl?: string }[],
+        setter: React.Dispatch<React.SetStateAction<{ title: string; icon: File | null; existingIconUrl?: string }[]>>,
     ) => (
         <div className="space-y-2">
             <Label>{label}</Label>
@@ -910,22 +1001,41 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
                         />
                     </div>
                     <div className="flex-1 min-w-[150px]">
-                        <Label className="text-sm">Level</Label>
-                        <select
-                            value={item.level}
+                        <Label className="text-sm">Icon</Label>
+                        
+                        {/* Show existing icon if available */}
+                        {item.existingIconUrl && !item.icon && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600 mb-1">Current Icon:</p>
+                                <img 
+                                    src={item.existingIconUrl} 
+                                    alt="Skill icon" 
+                                    className="h-12 w-12 object-cover rounded"
+                                />
+                            </div>
+                        )}
+                        
+                        <input
+                            type="file"
+                            accept="image/*"
                             onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
                                 const updated = [...list];
-                                updated[index].level = e.target.value;
+                                updated[index] = {
+                                    ...updated[index],
+                                    icon: file,
+                                    existingIconUrl: file ? undefined : updated[index].existingIconUrl
+                                };
                                 setter(updated);
                             }}
                             className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
                             disabled={loading}
-                        >
-                            <option value="">Select level</option>
-                            <option value="Basic">Basic</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Expert">Expert</option>
-                        </select>
+                        />
+                        {item.icon && (
+                            <p className="text-sm text-green-600 mt-1">
+                                New icon selected: {item.icon.name}
+                            </p>
+                        )}
                     </div>
                     {list.length > 1 && (
                         <button
@@ -942,7 +1052,7 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
             <button
                 type="button"
                 className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                onClick={() => setter([...list, { title: '', level: '' }])}
+                onClick={() => setter([...list, { title: '', icon: null }])}
                 disabled={loading}
             >
                 Add New {label.endsWith('s') ? label.slice(0, -1) : label}
@@ -950,102 +1060,102 @@ const JobComponent: React.FC<JobProps> = ({ jobIdToEdit }) => {
         </div>
     ), [loading]);
 
-   const renderBenefitsField = useCallback((
-    label: string,
-    list: { icon: File | null; existingIconUrl?: string; title: string; description: string }[],
-    setter: React.Dispatch<React.SetStateAction<{ icon: File | null; existingIconUrl?: string; title: string; description: string }[]>>,
-) => (
-    <div className="space-y-2">
-        <Label>{label}</Label>
-        {list.map((item, index) => (
-            <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
-                <div className="flex-1 min-w-[150px]">
-                    <Label className="text-sm">Icon Image</Label>
-                    
-                    {/* Show existing image if available */}
-                    {item.existingIconUrl && !item.icon && (
-                        <div className="mb-2">
-                            <p className="text-sm text-gray-600 mb-1">Current Image:</p>
-                            <img 
-                                src={item.existingIconUrl} 
-                                alt="Benefit icon" 
-                                className="h-12 w-12 object-cover rounded"
-                            />
-                        </div>
+    const renderBenefitsField = useCallback((
+        label: string,
+        list: { icon: File | null; existingIconUrl?: string; title: string; description: string }[],
+        setter: React.Dispatch<React.SetStateAction<{ icon: File | null; existingIconUrl?: string; title: string; description: string }[]>>,
+    ) => (
+        <div className="space-y-2">
+            <Label>{label}</Label>
+            {list.map((item, index) => (
+                <div key={index} className="flex flex-wrap items-end gap-2 p-2 border rounded-md bg-gray-50 dark:bg-gray-800">
+                    <div className="flex-1 min-w-[150px]">
+                        <Label className="text-sm">Icon Image</Label>
+                        
+                        {/* Show existing image if available */}
+                        {item.existingIconUrl && !item.icon && (
+                            <div className="mb-2">
+                                <p className="text-sm text-gray-600 mb-1">Current Image:</p>
+                                <img 
+                                    src={item.existingIconUrl} 
+                                    alt="Benefit icon" 
+                                    className="h-12 w-12 object-cover rounded"
+                                />
+                            </div>
+                        )}
+                        
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                const updated = [...list];
+                                updated[index] = {
+                                    ...updated[index],
+                                    icon: file,
+                                    existingIconUrl: file ? undefined : updated[index].existingIconUrl
+                                };
+                                setter(updated);
+                            }}
+                            className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
+                            disabled={loading}
+                        />
+                        {item.icon && (
+                            <p className="text-sm text-green-600 mt-1">
+                                New image selected: {item.icon.name}
+                            </p>
+                        )}
+                    </div>
+                    <div className="flex-1 min-w-[150px]">
+                        <Label className="text-sm">Title</Label>
+                        <Input
+                            type="text"
+                            value={item.title}
+                            onChange={(e) => {
+                                const updated = [...list];
+                                updated[index].title = e.target.value;
+                                setter(updated);
+                            }}
+                            placeholder="Enter benefit title"
+                            disabled={loading}
+                        />
+                    </div>
+                    <div className="flex-1 min-w-[150px]">
+                        <Label className="text-sm">Description</Label>
+                        <Input
+                            type="text"
+                            value={item.description}
+                            onChange={(e) => {
+                                const updated = [...list];
+                                updated[index].description = e.target.value;
+                                setter(updated);
+                            }}
+                            placeholder="Enter benefit description"
+                            disabled={loading}
+                        />
+                    </div>
+                    {list.length > 1 && (
+                        <button
+                            type="button"
+                            className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            onClick={() => setter(list.filter((_, i) => i !== index))}
+                            disabled={loading}
+                        >
+                            Remove
+                        </button>
                     )}
-                    
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files?.[0] || null;
-                            const updated = [...list];
-                            updated[index] = {
-                                ...updated[index],
-                                icon: file,
-                                existingIconUrl: file ? undefined : updated[index].existingIconUrl // Clear existing URL if new file is selected
-                            };
-                            setter(updated);
-                        }}
-                        className="w-full border rounded p-2 dark:bg-gray-700 dark:text-white"
-                        disabled={loading}
-                    />
-                    {item.icon && (
-                        <p className="text-sm text-green-600 mt-1">
-                            New image selected: {item.icon.name}
-                        </p>
-                    )}
                 </div>
-                <div className="flex-1 min-w-[150px]">
-                    <Label className="text-sm">Title</Label>
-                    <Input
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => {
-                            const updated = [...list];
-                            updated[index].title = e.target.value;
-                            setter(updated);
-                        }}
-                        placeholder="Enter benefit title"
-                        disabled={loading}
-                    />
-                </div>
-                <div className="flex-1 min-w-[150px]">
-                    <Label className="text-sm">Description</Label>
-                    <Input
-                        type="text"
-                        value={item.description}
-                        onChange={(e) => {
-                            const updated = [...list];
-                            updated[index].description = e.target.value;
-                            setter(updated);
-                        }}
-                        placeholder="Enter benefit description"
-                        disabled={loading}
-                    />
-                </div>
-                {list.length > 1 && (
-                    <button
-                        type="button"
-                        className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                        onClick={() => setter(list.filter((_, i) => i !== index))}
-                        disabled={loading}
-                    >
-                        Remove
-                    </button>
-                )}
-            </div>
-        ))}
-        <button
-            type="button"
-            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            onClick={() => setter([...list, { icon: null, existingIconUrl: '', title: '', description: '' }])}
-            disabled={loading}
-        >
-            Add New {label.endsWith('s') ? label.slice(0, -1) : label}
-        </button>
-    </div>
-), [loading]);
+            ))}
+            <button
+                type="button"
+                className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                onClick={() => setter([...list, { icon: null, existingIconUrl: '', title: '', description: '' }])}
+                disabled={loading}
+            >
+                Add New {label.endsWith('s') ? label.slice(0, -1) : label}
+            </button>
+        </div>
+    ), [loading]);
 
     return (
         <div className="container mx-auto px-4 py-8">

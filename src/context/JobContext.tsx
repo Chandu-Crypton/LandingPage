@@ -15,7 +15,7 @@ type Job = {
   keyResponsibilities: string[];
   requiredSkills: {
     title: string;
-    level: string;
+    icon: string;
   }[];
   requirements: string[];
   workEnvironment: string[];

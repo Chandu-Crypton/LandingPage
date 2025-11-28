@@ -11,7 +11,7 @@ export interface IJob extends Document {
     keyResponsibilities: string[];
     requiredSkills: {
         title: string;
-        level: string;
+        icon: string;
     }[]
     requirements: string[];
     jobDescription: string[];
@@ -71,7 +71,7 @@ const jobSchema: Schema = new Schema({
     requiredSkills: {
         type: [{
             title: { type: String, required: true },
-            level: { type: String, required: true }
+            icon: { type: String, required: true }
         }],
         required: true
     },

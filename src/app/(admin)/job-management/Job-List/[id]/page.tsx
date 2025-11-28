@@ -247,7 +247,7 @@ const JobDetailPage: React.FC = () => {
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {skill.title}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    {/* <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       skill.level === 'Expert' 
                         ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
                         : skill.level === 'Intermediate'
@@ -255,7 +255,7 @@ const JobDetailPage: React.FC = () => {
                         : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
                     }`}>
                       {skill.level}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               ))}
