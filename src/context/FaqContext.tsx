@@ -54,6 +54,7 @@ export const FaqProvider = ({ children }: { children: React.ReactNode }) => {
     const deleteFaq = async (id: string) => {
         try {
             await axios.delete(`/api/faq/${id}`);
+            
             fetchFaqs();
         } catch (error) {
             console.error('Error deleting faq:', error);

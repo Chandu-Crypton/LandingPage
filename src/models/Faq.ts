@@ -4,6 +4,7 @@ import mongoose, {Document,Schema} from 'mongoose'
 export interface IFaq extends Document {
     module?: string,
     question:{
+         _id: string;
         icon: string,
         question: string,
         answer: string
